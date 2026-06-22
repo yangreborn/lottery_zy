@@ -124,3 +124,7 @@ LOGGING = {
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": "INFO"},
 }
+
+# 微信小程序登录（未注册主体前留空；留空时登录走开发态 mock）
+WECHAT_APPID = os.environ.get("WECHAT_APPID", "")
+WECHAT_SECRET = os.environ.get("WECHAT_SECRET", "")
