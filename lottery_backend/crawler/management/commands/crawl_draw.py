@@ -31,4 +31,7 @@ class Command(BaseCommand):
                 logger.error("抓取 %s 失败", code, exc_info=True)
                 continue
             for item in items:
-                persist_draw(lottery, item)
+                try:
+                    persist_draw(lottery, item)
+                except Exception:
+                    logger.error("persist %s %s 失败", code, item.get("issue"), exc_info=True)
