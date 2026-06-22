@@ -6,4 +6,5 @@ urlpatterns = [
     path("draw/latest", views.DrawLatestView.as_view(), name="openapi-draw-latest"),
     path("draw/history", views.DrawHistoryView.as_view(), name="openapi-draw-history"),
     path("draw/detail", views.DrawDetailView.as_view(), name="openapi-draw-detail"),
+    path("draw/stats", views.DrawStatsView.as_view(), name="openapi-draw-stats"),
 ]

@@ -5,6 +5,7 @@ from common.utils import make_response
 from lottery.models import Lottery, DrawResult
 from lottery.serializers import LotterySerializer, DrawResultSerializer, DrawDetailSerializer
 from lottery.pagination import parse_page_params, paginate
+from lottery.stats import compute_number_stats
 
 logger = logging.getLogger(__name__)
 
@@ -81,3 +82,25 @@ class DrawDetailView(APIView):
         if draw is None:
             return Response(make_response(code=1, msg="期号不存在或未发布", error=str(issue)))
         return Response(make_response(data=DrawDetailSerializer(draw).data))
+
+
+class DrawStatsView(APIView):
+    """GET /api/openapi/draw/stats?code=ssq&periods=30 —— 最近 N 期号码出现/遗漏统计。"""
+
+    def get(self, request):
+        code = request.query_params.get("code")
+        lottery = _get_active_lottery(code)
+        if lottery is None:
+            return Response(make_response(code=1, msg="未知彩种", error=f"code={code}"))
+        try:
+            periods = int(request.query_params.get("periods", 30))
+        except (TypeError, ValueError):
+            periods = 30
+        periods = max(1, min(periods, 100))
+        draws = list(DrawResult.objects
+                     .filter(lottery=lottery, status=DrawResult.STATUS_PUBLISHED)
+                     .order_by("-draw_date", "-issue")[:periods]
+                     .values_list("numbers", flat=True))
+        stats = compute_number_stats(lottery.rule_config, draws)
+        stats["periods"] = len(draws)
+        return Response(make_response(data=stats))
