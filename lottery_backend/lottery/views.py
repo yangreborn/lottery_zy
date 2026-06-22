@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from common.utils import make_response
 from lottery.models import Lottery, DrawResult
-from lottery.serializers import LotterySerializer, DrawResultSerializer
+from lottery.serializers import LotterySerializer, DrawResultSerializer, DrawDetailSerializer
 from lottery.pagination import parse_page_params, paginate
 
 logger = logging.getLogger(__name__)
@@ -64,3 +64,20 @@ class DrawHistoryView(APIView):
             "results": DrawResultSerializer(items, many=True).data,
             "total": total, "page": page, "page_size": page_size,
         }))
+
+
+class DrawDetailView(APIView):
+    """GET /api/openapi/draw/detail?code=ssq&issue=2026073 —— 单期详情(含奖级文字)。"""
+
+    def get(self, request):
+        code = request.query_params.get("code")
+        issue = request.query_params.get("issue")
+        lottery = _get_active_lottery(code)
+        if lottery is None:
+            return Response(make_response(code=1, msg="未知彩种", error=f"code={code}"))
+        draw = (DrawResult.objects
+                .filter(lottery=lottery, issue=issue,
+                        status=DrawResult.STATUS_PUBLISHED).first())
+        if draw is None:
+            return Response(make_response(code=1, msg="期号不存在或未发布", error=str(issue)))
+        return Response(make_response(data=DrawDetailSerializer(draw).data))

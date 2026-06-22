@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from lottery.models import Lottery, DrawResult
+from lottery.grades import grade_label
 
 
 class LotterySerializer(serializers.ModelSerializer):
@@ -13,3 +14,11 @@ class DrawResultSerializer(serializers.ModelSerializer):
         model = DrawResult
         fields = ("issue", "draw_date", "numbers", "sales_amount",
                   "pool_amount", "prize_grades")
+
+
+class DrawDetailSerializer(DrawResultSerializer):
+    prize_grades = serializers.SerializerMethodField()
+
+    def get_prize_grades(self, obj):
+        return [{**g, "level_label": grade_label(g.get("level"))}
+                for g in (obj.prize_grades or [])]

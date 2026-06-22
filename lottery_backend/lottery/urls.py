@@ -5,4 +5,5 @@ urlpatterns = [
     path("lottery/list", views.LotteryListView.as_view(), name="openapi-lottery-list"),
     path("draw/latest", views.DrawLatestView.as_view(), name="openapi-draw-latest"),
     path("draw/history", views.DrawHistoryView.as_view(), name="openapi-draw-history"),
+    path("draw/detail", views.DrawDetailView.as_view(), name="openapi-draw-detail"),
 ]
