@@ -10,6 +10,8 @@ from lottery.validators import validate_numbers
 from usernumber.models import UserNumber
 from usernumber.generator import random_numbers, dan_random_numbers
 from usernumber.serializers import UserNumberSerializer
+from lottery.models import DrawResult
+from usernumber.judge import judge_prize
 
 logger = logging.getLogger(__name__)
 
@@ -93,3 +95,25 @@ class NumberDeleteView(APIView):
             return Response(make_response(code=1, msg="记录不存在"))
         rec.delete()
         return Response(make_response(data={"deleted": True}))
+
+
+class NumberCheckView(APIView):
+    """GET /api/user/number/check?id= —— 与目标期开奖比对，提示中几等奖(仅展示)。"""
+    authentication_classes = []
+
+    def get(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        rec = UserNumber.objects.filter(id=request.query_params.get("id"), user_id=uid).first()
+        if rec is None:
+            return Response(make_response(code=1, msg="记录不存在"))
+        if not rec.target_issue:
+            return Response(make_response(code=1, msg="未设置目标期号"))
+        draw = (DrawResult.objects
+                .filter(lottery=rec.lottery, issue=rec.target_issue,
+                        status=DrawResult.STATUS_PUBLISHED).first())
+        if draw is None:
+            return Response(make_response(code=1, msg="目标期号暂未开奖"))
+        result = judge_prize(rec.lottery.rule_config, draw.numbers, rec.numbers)
+        return Response(make_response(data=result))
