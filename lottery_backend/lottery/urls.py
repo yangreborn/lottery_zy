@@ -1,0 +1,6 @@
+from django.urls import path
+from lottery import views
+
+urlpatterns = [
+    path("lottery/list", views.LotteryListView.as_view(), name="openapi-lottery-list"),
+]
