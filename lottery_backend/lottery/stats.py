@@ -11,8 +11,11 @@ def compute_number_stats(rule_config, draws):
         rule = rule_config.get(zone)
         if rule is None:
             continue
+        lo, hi = rule.get("min"), rule.get("max")
+        if lo is None or hi is None:
+            continue
         zone_stats = []
-        for number in range(rule["min"], rule["max"] + 1):
+        for number in range(lo, hi + 1):
             count = 0
             miss = window  # 默认: 从未出现
             first_seen = False

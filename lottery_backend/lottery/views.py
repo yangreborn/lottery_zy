@@ -1,6 +1,7 @@
 import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.utils.dateparse import parse_date
 from common.utils import make_response
 from lottery.models import Lottery, DrawResult
 from lottery.serializers import LotterySerializer, DrawResultSerializer, DrawDetailSerializer
@@ -56,9 +57,21 @@ class DrawHistoryView(APIView):
         date_from = request.query_params.get("date_from")
         date_to = request.query_params.get("date_to")
         if date_from:
-            qs = qs.filter(draw_date__gte=date_from)
+            try:
+                parsed_from = parse_date(date_from)
+            except (ValueError, TypeError):
+                parsed_from = None
+            if parsed_from is None:
+                return Response(make_response(code=1, msg="日期格式非法", error=f"date_from={date_from}"))
+            qs = qs.filter(draw_date__gte=parsed_from)
         if date_to:
-            qs = qs.filter(draw_date__lte=date_to)
+            try:
+                parsed_to = parse_date(date_to)
+            except (ValueError, TypeError):
+                parsed_to = None
+            if parsed_to is None:
+                return Response(make_response(code=1, msg="日期格式非法", error=f"date_to={date_to}"))
+            qs = qs.filter(draw_date__lte=parsed_to)
         page, page_size = parse_page_params(request.query_params)
         items, total = paginate(qs, page, page_size)
         return Response(make_response(data={

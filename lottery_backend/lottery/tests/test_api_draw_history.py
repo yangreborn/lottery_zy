@@ -48,3 +48,31 @@ def test_history_date_filter(client, ssq):
 def test_history_unknown_code(client, db):
     resp = client.get("/api/openapi/draw/history?code=nope")
     assert resp.json()["code"] == 1
+
+
+def test_history_invalid_date_from_returns_code1(client, ssq):
+    """非法 date_from 应返回 code=1，不得触发 500。"""
+    resp = client.get("/api/openapi/draw/history?code=ssq&date_from=abc")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["code"] == 1
+    assert "日期" in body.get("msg", "")
+
+
+def test_history_invalid_date_to_returns_code1(client, ssq):
+    """非法 date_to 应返回 code=1，不得触发 500。"""
+    resp = client.get("/api/openapi/draw/history?code=ssq&date_to=2026-13-99")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["code"] == 1
+    assert "日期" in body.get("msg", "")
+
+
+def test_history_valid_date_range_still_works(client, ssq):
+    """合法日期区间仍正常过滤，回归保证。"""
+    resp = client.get("/api/openapi/draw/history?code=ssq&date_from=2026-06-02&date_to=2026-06-03")
+    body = resp.json()
+    assert body["code"] == 0
+    issues = [r["issue"] for r in body["data"]["results"]]
+    assert "2026061" in issues
+    assert "2026062" in issues
