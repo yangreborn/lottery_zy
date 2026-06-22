@@ -12,3 +12,8 @@ def test_string_level_passthrough():
 
 def test_unknown_int_fallback():
     assert grade_label(99) == "99等奖"
+
+
+def test_bool_not_treated_as_int():
+    assert grade_label(True) == "True"
+    assert grade_label(False) == "False"
