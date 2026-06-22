@@ -1,0 +1,17 @@
+{
+  "value": {
+    "list": [
+      {
+        "lotteryDrawNum": "26073",
+        "lotteryDrawResult": "01 05 12 20 30 03 07",
+        "lotteryDrawTime": "2026-06-22",
+        "totalSaleAmount": "200000000",
+        "poolBalanceAfterdraw": "800000000",
+        "prizeLevelList": [
+          {"prizeLevel": "一等奖", "stakeCount": "3", "stakeAmount": "10000000"},
+          {"prizeLevel": "二等奖", "stakeCount": "50", "stakeAmount": "200000"}
+        ]
+      }
+    ]
+  }
+}
