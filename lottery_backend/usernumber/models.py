@@ -1,0 +1,27 @@
+from django.db import models
+from lottery.models import Lottery
+
+
+class UserNumber(models.Model):
+    """用户记录的号码。user_id 存 hash，不暴露真实 openid。"""
+    GEN_MANUAL = "manual"
+    GEN_RANDOM = "random"
+    GEN_DAN = "dan_random"
+    GEN_CHOICES = [(GEN_MANUAL, "手动"), (GEN_RANDOM, "机选"), (GEN_DAN, "定胆随机")]
+
+    user_id = models.CharField("用户哈希", max_length=64, db_index=True)
+    lottery = models.ForeignKey(Lottery, on_delete=models.CASCADE,
+                                related_name="user_numbers", verbose_name="彩种")
+    numbers = models.JSONField("号码", default=dict)
+    gen_type = models.CharField("生成方式", max_length=12, choices=GEN_CHOICES, default=GEN_MANUAL)
+    dan_numbers = models.JSONField("胆码", default=dict, blank=True)
+    note = models.CharField("备注", max_length=100, blank=True, default="")
+    target_issue = models.CharField("目标期号", max_length=20, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = verbose_name_plural = "用户号码"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user_id[:8]} {self.lottery.code}"
