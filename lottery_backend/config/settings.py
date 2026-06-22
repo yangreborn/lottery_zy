@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "common",
     "lottery",
     # common / lottery / crawler 在各自任务中追加
+    "crawler",
 ]
 
 MIDDLEWARE = [
