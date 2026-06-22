@@ -1,4 +1,5 @@
 import pytest
+from django.core.management import call_command
 from django.db import IntegrityError
 from lottery.models import Lottery
 
@@ -17,9 +18,6 @@ def test_create_lottery_and_unique_code():
             code="ssq", name="重复", category="福彩",
             rule_config={}, draw_days=[],
         )
-
-
-from django.core.management import call_command
 
 
 @pytest.mark.django_db

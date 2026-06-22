@@ -25,7 +25,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for s in SEEDS:
-            obj, created = Lottery.objects.update_or_create(
-                code=s["code"], defaults=s
-            )
+            defaults = {k: v for k, v in s.items() if k != "code"}
+            obj, created = Lottery.objects.update_or_create(code=s["code"], defaults=defaults)
             logger.info("seed lottery %s %s", s["code"], "created" if created else "updated")
