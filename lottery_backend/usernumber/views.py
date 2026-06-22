@@ -4,7 +4,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from common.utils import make_response
-from common.auth import code_to_openid, set_user_session
+from common.auth import code_to_openid, set_user_session, current_user_id
+from lottery.views import _get_active_lottery
+from lottery.validators import validate_numbers
+from usernumber.models import UserNumber
+from usernumber.generator import random_numbers, dan_random_numbers
+from usernumber.serializers import UserNumberSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -22,3 +27,39 @@ class LoginView(APIView):
             return Response(make_response(code=1, msg="登录失败", error="code 无效"))
         set_user_session(request, openid)
         return Response(make_response(data={"logged_in": True}))
+
+
+class NumberCreateView(APIView):
+    """POST /api/user/number/create —— 保存一注号码(手动/机选/定胆随机)。"""
+    authentication_classes = []
+
+    def post(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        code = request.data.get("code")
+        lottery = _get_active_lottery(code)
+        if lottery is None:
+            return Response(make_response(code=1, msg="未知彩种", error=f"code={code}"))
+        gen_type = request.data.get("gen_type", UserNumber.GEN_MANUAL)
+        dan_numbers = request.data.get("dan_numbers") or {}
+        if gen_type == UserNumber.GEN_RANDOM:
+            numbers = random_numbers(lottery.rule_config)
+        elif gen_type == UserNumber.GEN_DAN:
+            try:
+                numbers = dan_random_numbers(lottery.rule_config, dan_numbers)
+            except ValueError as e:
+                return Response(make_response(code=1, msg="胆码非法", error=str(e)))
+        else:
+            gen_type = UserNumber.GEN_MANUAL
+            numbers = request.data.get("numbers") or {}
+            errors = validate_numbers(lottery.rule_config, numbers)
+            if errors:
+                return Response(make_response(code=1, msg="号码非法", error="; ".join(errors)))
+        rec = UserNumber.objects.create(
+            user_id=uid, lottery=lottery, numbers=numbers, gen_type=gen_type,
+            dan_numbers=dan_numbers if gen_type == UserNumber.GEN_DAN else {},
+            note=request.data.get("note", "") or "",
+            target_issue=request.data.get("target_issue", "") or "",
+        )
+        return Response(make_response(data=UserNumberSerializer(rec).data))
