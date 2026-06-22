@@ -23,17 +23,25 @@ class SsqSpider(BaseSpider):
     def parse(self, raw):
         items = []
         for r in raw.get("result", []):
-            reds = [int(x) for x in r["red"].split(",")]
-            blues = [int(x) for x in r["blue"].split(",")]
-            items.append({
-                "issue": r["code"],
-                "draw_date": datetime.strptime(r["date"][:10], "%Y-%m-%d").date(),
-                "numbers": {"red": reds, "blue": blues},
-                "sales_amount": str(r.get("sales", "")),
-                "pool_amount": str(r.get("poolmoney", "")),
-                "prize_grades": [
-                    {"level": g["type"], "count": g["typenum"], "amount": g["typemoney"]}
-                    for g in r.get("prizegrades", [])
-                ],
-            })
+            try:
+                reds = [int(x) for x in r["red"].split(",")]
+                blues = [int(x) for x in r["blue"].split(",")]
+                items.append({
+                    "issue": r["code"],
+                    "draw_date": datetime.strptime(r["date"][:10], "%Y-%m-%d").date(),
+                    "numbers": {"red": reds, "blue": blues},
+                    "sales_amount": str(r.get("sales", "")),
+                    "pool_amount": str(r.get("poolmoney", "")),
+                    "prize_grades": [
+                        {"level": g["type"], "count": g["typenum"], "amount": g["typemoney"]}
+                        for g in r.get("prizegrades", [])
+                    ],
+                })
+            except Exception:
+                logger.error(
+                    "parse %s 记录解析失败, 跳过: %r",
+                    self.lottery_code, r.get("code", r),
+                    exc_info=True,
+                )
+                continue
         return items

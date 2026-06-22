@@ -24,16 +24,24 @@ class DltSpider(BaseSpider):
     def parse(self, raw):
         items = []
         for r in raw.get("value", {}).get("list", []):
-            nums = [int(x) for x in r["lotteryDrawResult"].split()]
-            items.append({
-                "issue": r["lotteryDrawNum"],
-                "draw_date": datetime.strptime(r["lotteryDrawTime"][:10], "%Y-%m-%d").date(),
-                "numbers": {"red": nums[:5], "blue": nums[5:7]},
-                "sales_amount": str(r.get("totalSaleAmount", "")),
-                "pool_amount": str(r.get("poolBalanceAfterdraw", "")),
-                "prize_grades": [
-                    {"level": g["prizeLevel"], "count": g["stakeCount"], "amount": g["stakeAmount"]}
-                    for g in r.get("prizeLevelList", [])
-                ],
-            })
+            try:
+                nums = [int(x) for x in r["lotteryDrawResult"].split()]
+                items.append({
+                    "issue": r["lotteryDrawNum"],
+                    "draw_date": datetime.strptime(r["lotteryDrawTime"][:10], "%Y-%m-%d").date(),
+                    "numbers": {"red": nums[:5], "blue": nums[5:7]},
+                    "sales_amount": str(r.get("totalSaleAmount", "")),
+                    "pool_amount": str(r.get("poolBalanceAfterdraw", "")),
+                    "prize_grades": [
+                        {"level": g["prizeLevel"], "count": g["stakeCount"], "amount": g["stakeAmount"]}
+                        for g in r.get("prizeLevelList", [])
+                    ],
+                })
+            except Exception:
+                logger.error(
+                    "parse %s 记录解析失败, 跳过: %r",
+                    self.lottery_code, r.get("lotteryDrawNum", r),
+                    exc_info=True,
+                )
+                continue
         return items
