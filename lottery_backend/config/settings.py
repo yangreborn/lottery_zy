@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "common",
     # common / lottery / crawler 在各自任务中追加
 ]
 
