@@ -17,8 +17,8 @@
 ## 1. 技术栈
 
 - **前端**：uni-app (Vue)，一套代码编译到 **微信小程序（主，优先）** + H5/PC。
-- **后端**：Django + DRF（爬虫用 Python 顺手；后台蹭 Django Admin 起步）。
-- **数据库**：PostgreSQL（JSONB 支持好）。
+- **后端**：Django 5.2 LTS（支持到 2028-04）+ DRF，Python 3.12（爬虫用 Python 顺手；后台蹭 Django Admin 起步）。
+- **数据库**：PostgreSQL 17（EOL 2030-11；JSONB 支持好）。不用快 EOL 的 PG14。
 - **管理后台**：Django Admin 起步，运营看板用 admin 自定义视图 / 简单页面。
 - API 返回格式统一 `{code, msg, data, error}`。
 - 日志用 `logging` 标准库（`logging.info/warning/error`，异常用 `exc_info=True`），不用 `print`。

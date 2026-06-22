@@ -6,11 +6,11 @@
 
 **Architecture:** Django + DRF 单体后端，PostgreSQL JSONB 存号码/奖级。彩种规则配置化（`rule_config`），号码校验、爬虫解析统一读这份配置。每个彩种一个独立 spider 类（不合并成分发器）。开奖数据 `draft → published` 两态，前端只查 published，脏数据不直面用户。M1 只做"灌库 + 维护"，不含对外查询 API（属 M2）。
 
-**Tech Stack:** Python 3.11 / Django 4.2 LTS / djangorestframework / PostgreSQL 14+ / psycopg2-binary / requests / pytest + pytest-django
+**Tech Stack:** Python 3.12 / Django 5.2 LTS / djangorestframework / PostgreSQL 17 / psycopg[binary] / requests / pytest + pytest-django
 
 ## Global Constraints
 
-- Python 3.11，Django 4.2 LTS，PostgreSQL 14+。
+- Python 3.12，Django 5.2 LTS（支持到 2028-04），PostgreSQL 17。
 - 日志用 `logging` 标准库（`logging.info/warning/error`），异常记录用 `logging.error(..., exc_info=True)`，**禁止 `print`**。
 - **不做收费会员 / 付费 / 支付**：不建 Membership/FeatureFlag 表，不写任何支付逻辑。
 - `user_id` 一律以 hash 形式存储与收发，不暴露真实 id（本里程碑暂不涉及用户表，后续遵守）。
@@ -41,14 +41,15 @@
 
 `requirements.txt`:
 ```
-Django==4.2.16
-djangorestframework==3.15.2
-psycopg2-binary==2.9.9
+Django==5.2.8
+djangorestframework==3.16.0
+psycopg[binary]==3.2.3
 requests==2.32.3
 python-dotenv==1.0.1
 pytest==8.3.3
 pytest-django==4.9.0
 ```
+> 用 psycopg 3（Django 5.x 推荐），ENGINE 仍为 `django.db.backends.postgresql`，无需改 settings 的 ENGINE。
 
 - [ ] **Step 2: 安装依赖并生成 Django 项目骨架**
 
