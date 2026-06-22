@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from common.utils import make_response
 from lottery.models import Lottery, DrawResult
 from lottery.serializers import LotterySerializer, DrawResultSerializer
+from lottery.pagination import parse_page_params, paginate
 
 logger = logging.getLogger(__name__)
 
@@ -38,3 +39,28 @@ class LotteryListView(APIView):
         qs = Lottery.objects.filter(is_active=True).order_by("code")
         data = LotterySerializer(qs, many=True).data
         return Response(make_response(data=data))
+
+
+class DrawHistoryView(APIView):
+    """GET /api/openapi/draw/history —— 历史开奖, 倒序, 分页, 可按日期区间筛选。"""
+
+    def get(self, request):
+        code = request.query_params.get("code")
+        lottery = _get_active_lottery(code)
+        if lottery is None:
+            return Response(make_response(code=1, msg="未知彩种", error=f"code={code}"))
+        qs = (DrawResult.objects
+              .filter(lottery=lottery, status=DrawResult.STATUS_PUBLISHED)
+              .order_by("-draw_date", "-issue"))
+        date_from = request.query_params.get("date_from")
+        date_to = request.query_params.get("date_to")
+        if date_from:
+            qs = qs.filter(draw_date__gte=date_from)
+        if date_to:
+            qs = qs.filter(draw_date__lte=date_to)
+        page, page_size = parse_page_params(request.query_params)
+        items, total = paginate(qs, page, page_size)
+        return Response(make_response(data={
+            "results": DrawResultSerializer(items, many=True).data,
+            "total": total, "page": page, "page_size": page_size,
+        }))
