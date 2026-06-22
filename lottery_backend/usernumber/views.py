@@ -63,3 +63,33 @@ class NumberCreateView(APIView):
             target_issue=request.data.get("target_issue", "") or "",
         )
         return Response(make_response(data=UserNumberSerializer(rec).data))
+
+
+class NumberListView(APIView):
+    """GET /api/user/number/list?code= —— 当前用户的号码记录。"""
+    authentication_classes = []
+
+    def get(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        qs = UserNumber.objects.filter(user_id=uid)
+        code = request.query_params.get("code")
+        if code:
+            qs = qs.filter(lottery__code=code)
+        return Response(make_response(data=UserNumberSerializer(qs, many=True).data))
+
+
+class NumberDeleteView(APIView):
+    """DELETE /api/user/number/<id> —— 删除自己的记录。"""
+    authentication_classes = []
+
+    def delete(self, request, pk):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        rec = UserNumber.objects.filter(id=pk, user_id=uid).first()
+        if rec is None:
+            return Response(make_response(code=1, msg="记录不存在"))
+        rec.delete()
+        return Response(make_response(data={"deleted": True}))

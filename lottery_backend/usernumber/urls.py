@@ -4,4 +4,6 @@ from usernumber import views
 urlpatterns = [
     path("login", views.LoginView.as_view(), name="user-login"),
     path("number/create", views.NumberCreateView.as_view(), name="user-number-create"),
+    path("number/list", views.NumberListView.as_view(), name="user-number-list"),
+    path("number/<int:pk>", views.NumberDeleteView.as_view(), name="user-number-delete"),
 ]
