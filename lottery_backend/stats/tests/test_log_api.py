@@ -28,3 +28,12 @@ def test_log_missing_path(db):
     resp = APIClient().post("/api/openapi/log", {}, format="json")
     assert resp.json()["code"] == 1
     assert AccessLog.objects.count() == 0
+
+
+def test_log_oversize_path_no_500(db):
+    """超长 path（>100 字符）不应触发 500，应返回 code=1 且 HTTP 200，不写入记录。"""
+    long_path = "x" * 200
+    resp = APIClient().post("/api/openapi/log", {"path": long_path}, format="json")
+    assert resp.status_code == 200, f"期望 HTTP 200，实际 {resp.status_code}"
+    assert resp.json()["code"] == 1
+    assert AccessLog.objects.count() == 0

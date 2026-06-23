@@ -27,7 +27,7 @@ def compute_dashboard(days=7):
         for r in (qs.exclude(lottery_code="")
                   .values("lottery_code")
                   .annotate(count=Count("id"))
-                  .order_by("-count"))
+                  .order_by("-count")[:10])
     ]
 
     actions = [

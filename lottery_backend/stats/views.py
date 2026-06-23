@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db import transaction
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,12 +22,17 @@ class LogCreateView(APIView):
         path = request.data.get("path")
         if not path:
             return Response(make_response(code=1, msg="缺少 path"))
-        AccessLog.objects.create(
-            user_id=current_user_id(request) or "",
-            path=path,
-            lottery_code=request.data.get("lottery_code", "") or "",
-            action=request.data.get("action", AccessLog.ACTION_VIEW) or AccessLog.ACTION_VIEW,
-        )
+        try:
+            with transaction.atomic():
+                AccessLog.objects.create(
+                    user_id=current_user_id(request) or "",
+                    path=path,
+                    lottery_code=request.data.get("lottery_code", "") or "",
+                    action=request.data.get("action", AccessLog.ACTION_VIEW) or AccessLog.ACTION_VIEW,
+                )
+        except Exception:
+            logger.error("埋点写入失败", exc_info=True)
+            return Response(make_response(code=1, msg="记录失败"))
         return Response(make_response(data={"logged": True}))
 
 
