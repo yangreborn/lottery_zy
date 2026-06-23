@@ -54,7 +54,7 @@ async function load() {
 }
 
 function onChange(code) { setCode(code); load() }
-function goPicker() { uni.navigateTo({ url: '/pages/mine/picker' }) }
+function goPicker() { uni.switchTab({ url: '/pages/mine/picker' }) }
 
 async function doCheck(id) {
   try {
