@@ -1,11 +1,16 @@
+import { authState } from '../store/auth.js'
+
 const BASE = import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
 
 export function request(path, { method = 'GET', data } = {}) {
+  const header = {}
+  if (authState.token) header['X-User-Id'] = authState.token
   return new Promise((resolve, reject) => {
     uni.request({
       url: BASE + path,
       method,
       data,
+      header,
       success: (res) => {
         if (res.statusCode !== 200) {
           reject({ code: -1, msg: `HTTP ${res.statusCode}` })
