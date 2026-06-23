@@ -6,6 +6,9 @@ def validate_numbers(rule_config, numbers):
         if rule is None:
             continue
         nums = numbers.get(zone, [])
+        if not isinstance(nums, list):
+            errors.append(f"{zone} 号码格式应为列表")
+            continue
         if len(nums) != rule["count"]:
             errors.append(f"{zone} 号码个数应为 {rule['count']}，实际 {len(nums)}")
         if len(set(nums)) != len(nums):

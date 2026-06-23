@@ -71,3 +71,13 @@ def test_create_unknown_code(auth_client):
         "code": "nope", "gen_type": "random",
     }, format="json")
     assert resp.json()["code"] == 1
+
+
+def test_create_dan_numbers_not_dict(ssq, auth_client):
+    """dan_numbers 传 list 而非 dict 时应返回 code=1 而非 HTTP 500。"""
+    resp = auth_client.post("/api/user/number/create", {
+        "code": "ssq", "gen_type": "dan_random",
+        "dan_numbers": [1, 2],
+    }, format="json")
+    assert resp.status_code == 200
+    assert resp.json()["code"] == 1

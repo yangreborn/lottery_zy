@@ -72,3 +72,10 @@ def test_check_record_not_own(ssq, auth_client):
 def test_check_unauthenticated(ssq):
     resp = APIClient().get("/api/user/number/check?id=1")
     assert resp.json()["code"] == 1
+
+
+def test_check_invalid_id(ssq, auth_client):
+    """传非整数 id 应返回 code=1 而非 HTTP 500。"""
+    resp = auth_client.get("/api/user/number/check?id=abc")
+    assert resp.status_code == 200
+    assert resp.json()["code"] == 1

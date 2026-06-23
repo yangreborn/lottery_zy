@@ -45,6 +45,8 @@ class NumberCreateView(APIView):
             return Response(make_response(code=1, msg="未知彩种", error=f"code={code}"))
         gen_type = request.data.get("gen_type", UserNumber.GEN_MANUAL)
         dan_numbers = request.data.get("dan_numbers") or {}
+        if not isinstance(dan_numbers, dict):
+            return Response(make_response(code=1, msg="胆码非法", error="dan_numbers 应为字典格式"))
         if gen_type == UserNumber.GEN_RANDOM:
             numbers = random_numbers(lottery.rule_config)
         elif gen_type == UserNumber.GEN_DAN:
@@ -105,7 +107,12 @@ class NumberCheckView(APIView):
         uid = current_user_id(request)
         if not uid:
             return Response(make_response(code=1, msg="未登录"))
-        rec = UserNumber.objects.filter(id=request.query_params.get("id"), user_id=uid).first()
+        raw_id = request.query_params.get("id")
+        try:
+            rec_id = int(raw_id)
+        except (TypeError, ValueError):
+            return Response(make_response(code=1, msg="参数非法", error=f"id={raw_id}"))
+        rec = UserNumber.objects.filter(id=rec_id, user_id=uid).first()
         if rec is None:
             return Response(make_response(code=1, msg="记录不存在"))
         if not rec.target_issue:
