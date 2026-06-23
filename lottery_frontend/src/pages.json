@@ -4,6 +4,8 @@
     { "path": "pages/draw/history", "style": { "navigationBarTitleText": "历史开奖" } },
     { "path": "pages/draw/detail", "style": { "navigationBarTitleText": "开奖详情" } },
     { "path": "pages/draw/stats", "style": { "navigationBarTitleText": "号码统计" } },
+    { "path": "pages/guide/index", "style": { "navigationBarTitleText": "玩法介绍" } },
+    { "path": "pages/guide/detail", "style": { "navigationBarTitleText": "详情" } },
     { "path": "pages/mine/index", "style": { "navigationBarTitleText": "我的号码" } },
     { "path": "pages/mine/picker", "style": { "navigationBarTitleText": "选号" } }
   ],
@@ -14,6 +16,7 @@
       { "pagePath": "pages/draw/latest", "text": "当期" },
       { "pagePath": "pages/draw/history", "text": "历史" },
       { "pagePath": "pages/draw/stats", "text": "统计" },
+      { "pagePath": "pages/guide/index", "text": "玩法" },
       { "pagePath": "pages/mine/index", "text": "我的" }
     ]
   },
