@@ -28,6 +28,7 @@ import { onShow } from '@dcloudio/uni-app'
 import Ball from '../../components/Ball.vue'
 import { lotteryStore } from '../../store/lottery.js'
 import { getHistory } from '../../api/lottery.js'
+import { reportAccess } from '../../utils/report.js'
 
 const items = ref([])
 const page = ref(1)
@@ -65,6 +66,7 @@ function goDetail(issue) {
 }
 
 onShow(() => {
+  reportAccess('draw/history', { lottery_code: lotteryStore.code })
   if (loadedCode !== lotteryStore.code) {
     loadedCode = lotteryStore.code
     fetchPage(true)

@@ -39,6 +39,7 @@ import { lotteryStore } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
 import { ensureLogin, createNumber } from '../../api/user.js'
 import { toggleBall, selectionComplete } from '../../utils/picker.js'
+import { reportAccess } from '../../utils/report.js'
 
 const rule = ref(null)
 const emptyMsg = ref('加载中…')
@@ -66,6 +67,7 @@ async function save(payload) {
     await ensureLogin()
     await createNumber({ code, note: note.value, target_issue: targetIssue.value, ...payload })
     uni.showToast({ title: '已保存', icon: 'success' })
+    reportAccess('mine/create', { lottery_code: code, action: 'save_number' })
     setTimeout(() => uni.navigateBack(), 600)
   } catch (e) {
     uni.showToast({ title: e.msg || '保存失败', icon: 'none' })

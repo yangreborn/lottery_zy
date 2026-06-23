@@ -25,6 +25,7 @@ import { onShow } from '@dcloudio/uni-app'
 import Heatmap from '../../components/Heatmap.vue'
 import { lotteryStore } from '../../store/lottery.js'
 import { getStats } from '../../api/lottery.js'
+import { reportAccess } from '../../utils/report.js'
 
 const periodOptions = [10, 30, 50, 100]
 const periods = ref(30)
@@ -49,7 +50,7 @@ function choose(p) {
   load()
 }
 
-onShow(load)
+onShow(() => { reportAccess('draw/stats', { lottery_code: lotteryStore.code }); load() })
 </script>
 
 <style scoped>

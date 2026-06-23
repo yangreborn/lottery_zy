@@ -31,11 +31,13 @@ import { onLoad } from '@dcloudio/uni-app'
 import Ball from '../../components/Ball.vue'
 import { getDetail } from '../../api/lottery.js'
 import { formatAmount } from '../../utils/format.js'
+import { reportAccess } from '../../utils/report.js'
 
 const draw = ref(null)
 const emptyMsg = ref('加载中…')
 
 onLoad(async (q) => {
+  reportAccess('draw/detail', { lottery_code: q.code })
   try {
     draw.value = await getDetail(q.code, q.issue)
   } catch (e) {

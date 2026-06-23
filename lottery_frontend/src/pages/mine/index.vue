@@ -31,6 +31,7 @@ import Ball from '../../components/Ball.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
 import { ensureLogin, listNumbers, deleteNumber, checkNumber } from '../../api/user.js'
+import { reportAccess } from '../../utils/report.js'
 
 const store = lotteryStore
 const lotteries = ref([])
@@ -58,6 +59,7 @@ function goPicker() { uni.navigateTo({ url: '/pages/mine/picker' }) }
 async function doCheck(id) {
   try {
     const r = await checkNumber(id)
+    reportAccess('mine/check', { lottery_code: store.code, action: 'check_number' })
     uni.showModal({
       title: '比对结果',
       content: `命中 红${r.red_hit} 蓝${r.blue_hit}，${r.label}`,
@@ -78,6 +80,7 @@ async function doDelete(id) {
 }
 
 onShow(async () => {
+  reportAccess('mine/index', { lottery_code: lotteryStore.code })
   if (!lotteries.value.length) {
     try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞列表 */ }
   }
