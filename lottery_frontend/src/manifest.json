@@ -1,7 +1,7 @@
 {
-    "name" : "",
+    "name" : "彩票查询",
     "appid" : "",
-    "description" : "",
+    "description" : "彩票开奖查询/号码记录/玩法介绍",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,
@@ -50,7 +50,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wx3b0f890a8af52a9c",
         "setting" : {
             "urlCheck" : false
         },
