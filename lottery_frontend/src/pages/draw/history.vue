@@ -40,6 +40,7 @@ async function fetchPage(reset) {
   if (loading.value) return
   loading.value = true
   if (reset) { page.value = 1; items.value = []; hasMore.value = true }
+  else { page.value += 1 }
   try {
     const res = await getHistory(lotteryStore.code, { page: page.value })
     const list = res.results || []
@@ -56,7 +57,6 @@ async function fetchPage(reset) {
 
 function loadMore() {
   if (!hasMore.value) return
-  page.value += 1
   fetchPage(false)
 }
 
