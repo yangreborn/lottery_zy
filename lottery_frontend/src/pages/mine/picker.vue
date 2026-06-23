@@ -1,35 +1,37 @@
 <template>
-  <view class="page" v-if="rule">
+  <view class="page">
     <TopBanner title="选号" />
-    <view class="zone">
-      <text class="zt">红球（选 {{ rule.red.count }}）</text>
-      <view class="grid">
-        <BallSelectable
-          v-for="n in redRange" :key="'r'+n" :value="n" zone="red"
-          :selected="sel.red.includes(n)" @toggle="toggle('red', $event)"
-        />
+    <template v-if="rule">
+      <view class="zone">
+        <text class="zt">红球（选 {{ rule.red.count }}）</text>
+        <view class="grid">
+          <BallSelectable
+            v-for="n in redRange" :key="'r'+n" :value="n" zone="red"
+            :selected="sel.red.includes(n)" @toggle="toggle('red', $event)"
+          />
+        </view>
       </view>
-    </view>
-    <view class="zone">
-      <text class="zt">蓝球（选 {{ rule.blue.count }}）</text>
-      <view class="grid">
-        <BallSelectable
-          v-for="n in blueRange" :key="'b'+n" :value="n" zone="blue"
-          :selected="sel.blue.includes(n)" @toggle="toggle('blue', $event)"
-        />
+      <view class="zone">
+        <text class="zt">蓝球（选 {{ rule.blue.count }}）</text>
+        <view class="grid">
+          <BallSelectable
+            v-for="n in blueRange" :key="'b'+n" :value="n" zone="blue"
+            :selected="sel.blue.includes(n)" @toggle="toggle('blue', $event)"
+          />
+        </view>
       </view>
-    </view>
-    <view class="fields">
-      <input class="ipt" v-model="note" placeholder="备注（可空）" />
-      <input class="ipt" v-model="targetIssue" placeholder="目标期号（可空，用于比对）" />
-    </view>
-    <view class="actions">
-      <button class="btn" @click="saveManual" :disabled="!canSaveManual">保存手选</button>
-      <button class="btn alt" @click="saveRandom">机选保存</button>
-      <button class="btn alt" @click="saveDan">定胆随机</button>
-    </view>
+      <view class="fields">
+        <input class="ipt" v-model="note" placeholder="备注（可空）" />
+        <input class="ipt" v-model="targetIssue" placeholder="目标期号（可空，用于比对）" />
+      </view>
+      <view class="actions">
+        <button class="btn" @click="saveManual" :disabled="!canSaveManual">保存手选</button>
+        <button class="btn alt" @click="saveRandom">机选保存</button>
+        <button class="btn alt" @click="saveDan">定胆随机</button>
+      </view>
+    </template>
+    <view v-else class="empty">{{ emptyMsg }}</view>
   </view>
-  <view v-else class="empty">{{ emptyMsg }}</view>
 </template>
 
 <script setup>
