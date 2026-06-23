@@ -3,7 +3,9 @@
     { "path": "pages/draw/latest", "style": { "navigationBarTitleText": "当期开奖" } },
     { "path": "pages/draw/history", "style": { "navigationBarTitleText": "历史开奖" } },
     { "path": "pages/draw/detail", "style": { "navigationBarTitleText": "开奖详情" } },
-    { "path": "pages/draw/stats", "style": { "navigationBarTitleText": "号码统计" } }
+    { "path": "pages/draw/stats", "style": { "navigationBarTitleText": "号码统计" } },
+    { "path": "pages/mine/index", "style": { "navigationBarTitleText": "我的号码" } },
+    { "path": "pages/mine/picker", "style": { "navigationBarTitleText": "选号" } }
   ],
   "tabBar": {
     "color": "#666",
@@ -11,7 +13,8 @@
     "list": [
       { "pagePath": "pages/draw/latest", "text": "当期" },
       { "pagePath": "pages/draw/history", "text": "历史" },
-      { "pagePath": "pages/draw/stats", "text": "统计" }
+      { "pagePath": "pages/draw/stats", "text": "统计" },
+      { "pagePath": "pages/mine/index", "text": "我的" }
     ]
   },
   "globalStyle": {
