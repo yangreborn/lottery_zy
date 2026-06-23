@@ -1,9 +1,13 @@
 <script>
-import { loadToken } from './store/auth.js'
+import { loadToken, authState } from './store/auth.js'
+import { ensureLogin } from './api/user.js'
 
 export default {
-  onLaunch: function () {
+  onLaunch: async function () {
     loadToken()
+    if (!authState.token) {
+      try { await ensureLogin() } catch (e) { /* 匿名登录失败不阻塞启动 */ }
+    }
   },
   onShow: function () {
   },
