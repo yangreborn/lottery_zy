@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+  <meta charset="utf-8">
+  <title>运营看板</title>
+  <style>
+    body { font-family: sans-serif; margin: 24px; }
+    table { border-collapse: collapse; margin: 12px 0; }
+    td, th { border: 1px solid #ddd; padding: 6px 14px; }
+    h2 { margin-top: 24px; }
+    .kpi { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h1>运营看板（近 {{ data.days }} 天）</h1>
+  <p class="kpi">PV：{{ data.pv }}　UV：{{ data.uv }}</p>
+
+  <h2>每日活跃用户（DAU）</h2>
+  <table>
+    <tr><th>日期</th><th>活跃用户</th></tr>
+    {% for r in data.dau %}<tr><td>{{ r.date }}</td><td>{{ r.count }}</td></tr>
+    {% empty %}<tr><td colspan="2">暂无数据</td></tr>{% endfor %}
+  </table>
+
+  <h2>热门彩种</h2>
+  <table>
+    <tr><th>彩种</th><th>访问次数</th></tr>
+    {% for r in data.top_lotteries %}<tr><td>{{ r.lottery_code }}</td><td>{{ r.count }}</td></tr>
+    {% empty %}<tr><td colspan="2">暂无数据</td></tr>{% endfor %}
+  </table>
+
+  <h2>功能使用分布</h2>
+  <table>
+    <tr><th>动作</th><th>次数</th></tr>
+    {% for r in data.actions %}<tr><td>{{ r.action }}</td><td>{{ r.count }}</td></tr>
+    {% empty %}<tr><td colspan="2">暂无数据</td></tr>{% endfor %}
+  </table>
+</body>
+</html>
