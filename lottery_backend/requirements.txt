@@ -1,1 +1,1 @@
-django-cors-headers
+django-cors-headers==4.9.0
