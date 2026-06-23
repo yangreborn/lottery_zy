@@ -5,3 +5,6 @@ __pycache__/
 db.sqlite3
 .pytest_cache/
 .superpowers/
+lottery_frontend/node_modules/
+lottery_frontend/dist/
+lottery_frontend/unpackage/
