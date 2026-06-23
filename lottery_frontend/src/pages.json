@@ -1,16 +1,23 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-app"
-			}
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	}
+  "pages": [
+    { "path": "pages/draw/latest", "style": { "navigationBarTitleText": "当期开奖" } },
+    { "path": "pages/draw/history", "style": { "navigationBarTitleText": "历史开奖" } },
+    { "path": "pages/draw/detail", "style": { "navigationBarTitleText": "开奖详情" } },
+    { "path": "pages/draw/stats", "style": { "navigationBarTitleText": "号码统计" } }
+  ],
+  "tabBar": {
+    "color": "#666",
+    "selectedColor": "#e53935",
+    "list": [
+      { "pagePath": "pages/draw/latest", "text": "当期" },
+      { "pagePath": "pages/draw/history", "text": "历史" },
+      { "pagePath": "pages/draw/stats", "text": "统计" }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "彩票查询",
+    "navigationBarBackgroundColor": "#fff",
+    "backgroundColor": "#f5f5f5"
+  }
 }
