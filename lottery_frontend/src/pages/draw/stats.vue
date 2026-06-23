@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <TopBanner title="号码统计" />
     <view class="periods">
       <view
         v-for="p in periodOptions"
@@ -22,6 +23,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import TopBanner from '../../components/TopBanner.vue'
 import Heatmap from '../../components/Heatmap.vue'
 import { lotteryStore } from '../../store/lottery.js'
 import { getStats } from '../../api/lottery.js'
@@ -55,8 +57,8 @@ onShow(() => { reportAccess('draw/stats', { lottery_code: lotteryStore.code }); 
 
 <style scoped>
 .periods { display: flex; padding: 20rpx; }
-.opt { padding: 12rpx 24rpx; margin-right: 16rpx; background: #fff; border-radius: 30rpx; color: #666; font-size: 26rpx; }
+.opt { padding: 12rpx 24rpx; margin-right: 16rpx; background: #fff; border-radius: 30rpx; color: #666; font-size: 30rpx; }
 .opt.active { background: #e53935; color: #fff; }
-.zone-title { padding: 16rpx 24rpx 0; color: #888; font-size: 26rpx; }
+.zone-title { padding: 16rpx 24rpx 0; color: #888; font-size: 30rpx; }
 .empty { text-align: center; color: #999; padding: 60rpx 0; }
 </style>

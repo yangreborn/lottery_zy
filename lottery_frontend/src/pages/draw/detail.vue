@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <TopBanner title="开奖详情" />
     <view v-if="draw" class="card">
       <view class="head">
         <text class="issue">第 {{ draw.issue }} 期</text>
@@ -28,6 +29,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import TopBanner from '../../components/TopBanner.vue'
 import Ball from '../../components/Ball.vue'
 import { getDetail } from '../../api/lottery.js'
 import { formatAmount } from '../../utils/format.js'
@@ -49,11 +51,11 @@ onLoad(async (q) => {
 
 <style scoped>
 .card { background: #fff; margin: 20rpx; padding: 30rpx; border-radius: 16rpx; }
-.head { display: flex; justify-content: space-between; color: #888; font-size: 26rpx; }
+.head { display: flex; justify-content: space-between; color: #888; font-size: 30rpx; }
 .balls { display: flex; flex-wrap: wrap; margin: 24rpx 0; }
-.pool { color: #e53935; font-size: 28rpx; margin-bottom: 16rpx; }
+.pool { color: #e53935; font-size: 34rpx; margin-bottom: 16rpx; }
 .grades { border-top: 1px solid #f0f0f0; padding-top: 16rpx; }
-.grade { display: flex; justify-content: space-between; padding: 10rpx 0; font-size: 26rpx; color: #555; }
+.grade { display: flex; justify-content: space-between; padding: 10rpx 0; font-size: 30rpx; color: #555; }
 .head-row { color: #999; font-weight: 600; }
 .empty { text-align: center; color: #999; padding: 80rpx 0; }
 </style>

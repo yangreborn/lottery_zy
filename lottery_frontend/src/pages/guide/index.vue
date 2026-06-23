@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <TopBanner title="玩法介绍" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="types">
       <view
@@ -21,6 +22,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import TopBanner from '../../components/TopBanner.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
@@ -65,10 +67,10 @@ onShow(async () => {
 
 <style scoped>
 .types { display: flex; padding: 16rpx 20rpx; }
-.type { padding: 10rpx 24rpx; margin-right: 14rpx; background: #fff; border-radius: 30rpx; color: #666; font-size: 26rpx; }
+.type { padding: 10rpx 24rpx; margin-right: 14rpx; background: #fff; border-radius: 30rpx; color: #666; font-size: 30rpx; }
 .type.active { background: #e53935; color: #fff; }
 .row { background: #fff; margin: 12rpx 20rpx; padding: 24rpx; border-radius: 12rpx; display: flex; justify-content: space-between; align-items: center; }
-.title { font-size: 28rpx; color: #333; }
+.title { font-size: 34rpx; color: #333; }
 .tag { font-size: 22rpx; color: #999; }
 .empty { text-align: center; color: #999; padding: 80rpx 0; }
 </style>

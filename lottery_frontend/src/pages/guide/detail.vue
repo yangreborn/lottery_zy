@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <TopBanner title="详情" />
     <view v-if="guide" class="card">
       <text class="title">{{ guide.title }}</text>
       <rich-text class="content" :nodes="guide.content"></rich-text>
@@ -11,6 +12,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import TopBanner from '../../components/TopBanner.vue'
 import { getGuideDetail } from '../../api/guide.js'
 import { reportAccess } from '../../utils/report.js'
 
@@ -30,7 +32,7 @@ onLoad(async (q) => {
 
 <style scoped>
 .card { background: #fff; margin: 20rpx; padding: 30rpx; border-radius: 16rpx; }
-.title { font-size: 32rpx; font-weight: 600; color: #333; display: block; margin-bottom: 20rpx; }
-.content { font-size: 28rpx; color: #555; line-height: 1.6; }
+.title { font-size: 34rpx; font-weight: 600; color: #333; display: block; margin-bottom: 20rpx; }
+.content { font-size: 30rpx; color: #555; line-height: 1.6; }
 .empty { text-align: center; color: #999; padding: 80rpx 0; }
 </style>

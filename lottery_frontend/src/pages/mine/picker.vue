@@ -1,5 +1,6 @@
 <template>
   <view class="page" v-if="rule">
+    <TopBanner title="选号" />
     <view class="zone">
       <text class="zt">红球（选 {{ rule.red.count }}）</text>
       <view class="grid">
@@ -34,6 +35,7 @@
 <script setup>
 import { ref, computed, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import TopBanner from '../../components/TopBanner.vue'
 import BallSelectable from '../../components/BallSelectable.vue'
 import { lotteryStore } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
@@ -99,12 +101,12 @@ onLoad(async () => {
 
 <style scoped>
 .zone { background: #fff; margin: 16rpx 20rpx; padding: 20rpx; border-radius: 12rpx; }
-.zt { font-size: 26rpx; color: #666; }
+.zt { font-size: 30rpx; color: #666; }
 .grid { display: flex; flex-wrap: wrap; margin-top: 12rpx; }
 .fields { margin: 0 20rpx; }
 .ipt { background: #fff; border-radius: 10rpx; padding: 18rpx; margin-top: 16rpx; font-size: 26rpx; }
 .actions { display: flex; flex-wrap: wrap; padding: 24rpx 20rpx; }
-.btn { flex: 1; margin: 8rpx; background: #e53935; color: #fff; font-size: 26rpx; }
+.btn { flex: 1; margin: 8rpx; background: #e53935; color: #fff; font-size: 30rpx; }
 .btn.alt { background: #1e88e5; }
 .empty { text-align: center; color: #999; padding: 80rpx 0; }
 </style>

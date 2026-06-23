@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <TopBanner title="历史开奖" />
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
       <view
         v-for="d in items"
@@ -25,6 +26,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import TopBanner from '../../components/TopBanner.vue'
 import Ball from '../../components/Ball.vue'
 import { lotteryStore } from '../../store/lottery.js'
 import { getHistory } from '../../api/lottery.js'
@@ -78,7 +80,7 @@ onShow(() => {
 .page { height: 100vh; }
 .list { height: 100vh; }
 .row { background: #fff; margin: 16rpx 20rpx; padding: 24rpx; border-radius: 12rpx; }
-.row-top { display: flex; justify-content: space-between; color: #888; font-size: 26rpx; }
+.row-top { display: flex; justify-content: space-between; color: #888; font-size: 30rpx; }
 .balls { display: flex; flex-wrap: wrap; margin-top: 14rpx; }
-.empty, .end { text-align: center; color: #999; padding: 40rpx 0; font-size: 26rpx; }
+.empty, .end { text-align: center; color: #999; padding: 40rpx 0; font-size: 30rpx; }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <view class="page">
+    <TopBanner title="我的号码" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="bar">
       <button class="go" size="mini" @click="goPicker">去选号</button>
@@ -26,6 +27,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import TopBanner from '../../components/TopBanner.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
 import Ball from '../../components/Ball.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
@@ -92,12 +94,12 @@ onShow(async () => {
 .bar { display: flex; justify-content: flex-end; padding: 16rpx 20rpx 0; }
 .go { background: #e53935; color: #fff; }
 .card { background: #fff; margin: 16rpx 20rpx; padding: 24rpx; border-radius: 12rpx; }
-.top { display: flex; justify-content: space-between; font-size: 24rpx; color: #888; }
+.top { display: flex; justify-content: space-between; font-size: 28rpx; color: #888; }
 .tag { color: #e53935; }
 .balls { display: flex; flex-wrap: wrap; margin: 14rpx 0; }
-.note { font-size: 24rpx; color: #999; }
+.note { font-size: 28rpx; color: #999; }
 .ops { display: flex; justify-content: flex-end; margin-top: 10rpx; }
-.op { margin-left: 28rpx; font-size: 26rpx; color: #1e88e5; }
+.op { margin-left: 28rpx; font-size: 30rpx; color: #1e88e5; }
 .op.del { color: #999; }
 .empty { text-align: center; color: #999; padding: 80rpx 0; }
 </style>
