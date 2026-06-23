@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
     "common",
     "lottery",
     # common / lottery / crawler 在各自任务中追加
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,3 +130,7 @@ LOGGING = {
 # 微信小程序登录（未注册主体前留空；留空时登录走开发态 mock）
 WECHAT_APPID = os.environ.get("WECHAT_APPID", "")
 WECHAT_SECRET = os.environ.get("WECHAT_SECRET", "")
+
+# H5 本地开发跨域；生产同域 nginx，不放开
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
