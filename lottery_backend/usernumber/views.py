@@ -27,8 +27,8 @@ class LoginView(APIView):
         openid = code_to_openid(code)
         if not openid:
             return Response(make_response(code=1, msg="登录失败", error="code 无效"))
-        set_user_session(request, openid)
-        return Response(make_response(data={"logged_in": True}))
+        uid = set_user_session(request, openid)
+        return Response(make_response(data={"logged_in": True, "token": uid}))
 
 
 class NumberCreateView(APIView):

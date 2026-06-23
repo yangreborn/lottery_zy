@@ -134,3 +134,5 @@ WECHAT_SECRET = os.environ.get("WECHAT_SECRET", "")
 # H5 本地开发跨域；生产同域 nginx，不放开
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
+    from corsheaders.defaults import default_headers
+    CORS_ALLOW_HEADERS = list(default_headers) + ["x-user-id"]

@@ -60,5 +60,5 @@ def set_user_session(request, openid):
 
 
 def current_user_id(request):
-    """从 session 读取当前用户 hash，未登录返回 None。"""
-    return request.session.get("uid")
+    """当前用户 hash：先读 session，再兜底读 X-User-Id 头；都没有返回 None。"""
+    return request.session.get("uid") or request.headers.get("X-User-Id")
