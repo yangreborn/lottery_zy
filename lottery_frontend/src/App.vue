@@ -1,6 +1,9 @@
 <script>
+import { loadToken } from './store/auth.js'
+
 export default {
   onLaunch: function () {
+    loadToken()
   },
   onShow: function () {
   },
