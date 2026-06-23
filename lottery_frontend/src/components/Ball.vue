@@ -23,5 +23,5 @@ const display = computed(() => String(props.value).padStart(2, '0'))
   display: inline-flex; align-items: center; justify-content: center;
   margin: 6rpx;
 }
-.num { color: #fff; font-size: 28rpx; font-weight: 600; }
+.num { color: #fff; font-size: 32rpx; font-weight: 600; }
 </style>

@@ -27,7 +27,7 @@ const display = computed(() => String(props.value).padStart(2, '0'))
 .sball {
   width: 64rpx; height: 64rpx; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  margin: 8rpx; font-size: 26rpx; border: 2rpx solid transparent;
+  margin: 8rpx; font-size: 32rpx; border: 2rpx solid transparent;
   background: #fff;
 }
 </style>
