@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from stats.views import LogCreateView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("api/openapi/log", LogCreateView.as_view(), name="openapi-log"),
     path("api/openapi/guide/", include("guide.urls")),
     path("api/openapi/", include("lottery.urls")),
     path("api/user/", include("usernumber.urls")),
