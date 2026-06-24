@@ -30,8 +30,8 @@ export async function ensureLogin() {
   return res.token
 }
 
-export function generateNumbers(code, count) {
-  return request('/api/user/number/generate', { method: 'POST', data: { code, count } })
+export function generateNumbers(code, count, picks) {
+  return request('/api/user/number/generate', { method: 'POST', data: { code, count, picks } })
 }
 
 export function setGroup(id, group_name) {

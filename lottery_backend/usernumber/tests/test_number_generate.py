@@ -54,3 +54,24 @@ def test_generate_unknown_code(auth_client):
 def test_generate_unauthenticated(ssq):
     assert APIClient().post("/api/user/number/generate",
                             {"code": "ssq", "count": 5}, format="json").json()["code"] == 1
+
+
+def test_generate_keno_uses_picks(db, client):
+    from lottery.models import Lottery
+    Lottery.objects.create(
+        code="kl8", name="快乐8", category="福彩",
+        rule_config={"play_type": "keno", "zones": [
+            {"key": "main", "label": "号码", "min": 1, "max": 80, "count": 20,
+             "pick_min": 1, "pick_max": 10}]},
+        draw_days=[1, 2, 3, 4, 5, 6, 7])
+    login = client.post("/api/user/login", {"code": "gen-keno"},
+                        content_type="application/json").json()
+    token = login["data"]["token"]
+    res = client.post("/api/user/number/generate",
+                      data={"code": "kl8", "count": 2, "picks": {"main": 5}},
+                      content_type="application/json",
+                      HTTP_X_USER_ID=token).json()
+    assert res["code"] == 0
+    sets = res["data"]["sets"]
+    assert len(sets) == 2
+    assert all(len(s["main"]) == 5 for s in sets)

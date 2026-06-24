@@ -154,7 +154,10 @@ class NumberGenerateView(APIView):
         except (TypeError, ValueError):
             count = 5
         count = max(1, min(count, 10))
-        sets = [random_numbers(lottery.rule_config) for _ in range(count)]
+        picks = request.data.get("picks")
+        if not isinstance(picks, dict):
+            picks = None
+        sets = [random_numbers(lottery.rule_config, picks) for _ in range(count)]
         return Response(make_response(data={"sets": sets}))
 
 
