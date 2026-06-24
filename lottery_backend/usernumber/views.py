@@ -124,3 +124,24 @@ class NumberCheckView(APIView):
             return Response(make_response(code=1, msg="目标期号暂未开奖"))
         result = judge_prize(rec.lottery.rule_config, draw.numbers, rec.numbers)
         return Response(make_response(data=result))
+
+
+class NumberGenerateView(APIView):
+    """POST /api/user/number/generate —— 机选预览(不写库)。"""
+    authentication_classes = []
+
+    def post(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        code = request.data.get("code")
+        lottery = _get_active_lottery(code)
+        if lottery is None:
+            return Response(make_response(code=1, msg="未知彩种", error=f"code={code}"))
+        try:
+            count = int(request.data.get("count", 5))
+        except (TypeError, ValueError):
+            count = 5
+        count = max(1, min(count, 10))
+        sets = [random_numbers(lottery.rule_config) for _ in range(count)]
+        return Response(make_response(data={"sets": sets}))
