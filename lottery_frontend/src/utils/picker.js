@@ -26,3 +26,7 @@ export function toggleIndex(set, i) {
   }
   return [...set, i].sort((a, b) => a - b)
 }
+
+export function digitsFilled(arr) {
+  return Array.isArray(arr) && arr.length > 0 && arr.every((v) => v !== null && v !== undefined)
+}

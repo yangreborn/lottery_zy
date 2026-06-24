@@ -11,10 +11,11 @@ import { ballColor } from '../utils/format.js'
 const props = defineProps({
   value: { type: [Number, String], required: true },
   zone: { type: String, default: 'red' },
+  pad: { type: Number, default: 2 },
 })
 
 const color = computed(() => ballColor(props.zone))
-const display = computed(() => String(props.value).padStart(2, '0'))
+const display = computed(() => String(props.value).padStart(props.pad, '0'))
 </script>
 
 <style scoped>

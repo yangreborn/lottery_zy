@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { toggleBall, selectionComplete, toggleIndex } from '../src/utils/picker.js'
+import { digitsFilled } from '../src/utils/picker.js'
 
 describe('toggleBall', () => {
   it('未选则加入并升序', () => {
@@ -46,5 +47,20 @@ describe('selectionComplete zones', () => {
   it('keno 按 picks 目标个数', () => {
     expect(selectionComplete({ main: [1, 2, 3, 4, 5] }, kenoRule, { main: 5 })).toBe(true)
     expect(selectionComplete({ main: [1, 2, 3] }, kenoRule, { main: 5 })).toBe(false)
+  })
+})
+
+describe('digitsFilled', () => {
+  it('全部填满 true', () => {
+    expect(digitsFilled([6, 9, 0])).toBe(true)
+    expect(digitsFilled([0, 0, 0])).toBe(true)
+  })
+  it('含 null/undefined false', () => {
+    expect(digitsFilled([6, null, 0])).toBe(false)
+    expect(digitsFilled([6, undefined, 0])).toBe(false)
+  })
+  it('空/非数组 false', () => {
+    expect(digitsFilled([])).toBe(false)
+    expect(digitsFilled(null)).toBe(false)
   })
 })
