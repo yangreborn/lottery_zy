@@ -7,6 +7,9 @@ describe('ballColor', () => {
     expect(ballColor('blue')).toBe('#1e88e5')
     expect(ballColor('x')).toBe('#9e9e9e')
   })
+  it('digits 绿', () => {
+    expect(ballColor('digits')).toBe('#43a047')
+  })
 })
 
 describe('formatAmount 千分位', () => {

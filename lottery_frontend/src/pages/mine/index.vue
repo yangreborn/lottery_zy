@@ -91,7 +91,7 @@ async function doCheck(id) {
     reportAccess('mine/check', { lottery_code: store.code, action: 'check_number' })
     uni.showModal({
       title: '比对结果',
-      content: `命中 红${r.red_hit} 蓝${r.blue_hit}，${r.label}`,
+      content: `${r.desc}，${r.label}`,
       showCancel: false,
     })
   } catch (e) {

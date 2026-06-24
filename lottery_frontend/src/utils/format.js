@@ -2,6 +2,7 @@ export function ballColor(zone) {
   if (zone === 'red') return '#e53935'
   if (zone === 'blue') return '#1e88e5'
   if (zone === 'main') return '#fb8c00'
+  if (zone === 'digits') return '#43a047'
   return '#9e9e9e'
 }
 
