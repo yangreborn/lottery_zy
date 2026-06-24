@@ -34,3 +34,17 @@ describe('toggleIndex', () => {
     expect(toggleIndex([0, 1, 2], 1)).toEqual([0, 2])
   })
 })
+
+describe('selectionComplete zones', () => {
+  const ssqRule = { red: { count: 6, min: 1, max: 33 }, blue: { count: 1, min: 1, max: 16 } }
+  const kenoRule = { zones: [{ key: 'main', min: 1, max: 80, count: 20, pick_min: 1, pick_max: 10 }] }
+
+  it('ssq 红6蓝1 完整', () => {
+    expect(selectionComplete({ red: [1, 2, 3, 4, 5, 6], blue: [7] }, ssqRule)).toBe(true)
+    expect(selectionComplete({ red: [1, 2, 3], blue: [7] }, ssqRule)).toBe(false)
+  })
+  it('keno 按 picks 目标个数', () => {
+    expect(selectionComplete({ main: [1, 2, 3, 4, 5] }, kenoRule, { main: 5 })).toBe(true)
+    expect(selectionComplete({ main: [1, 2, 3] }, kenoRule, { main: 5 })).toBe(false)
+  })
+})

@@ -1,3 +1,5 @@
+import { getZones } from './zones.js'
+
 export function toggleBall(selected, n, max) {
   if (selected.indexOf(n) >= 0) {
     return selected.filter((x) => x !== n)
@@ -8,11 +10,12 @@ export function toggleBall(selected, n, max) {
   return [...selected, n].sort((a, b) => a - b)
 }
 
-export function selectionComplete(numbers, rule) {
-  for (const zone of ['red', 'blue']) {
-    const r = rule[zone]
-    if (!r) continue
-    if ((numbers[zone] || []).length !== r.count) return false
+export function selectionComplete(numbers, rule, picks = {}) {
+  for (const zone of getZones(rule)) {
+    const len = (numbers[zone.key] || []).length
+    const variable = zone.pick_min !== undefined && zone.pick_max !== undefined
+    const target = variable ? (picks[zone.key] ?? zone.pick_max) : zone.count
+    if (len !== target) return false
   }
   return true
 }
