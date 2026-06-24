@@ -36,6 +36,7 @@ class SsqSpider(BaseSpider):
                         {"level": g["type"], "count": g["typenum"], "amount": g["typemoney"]}
                         for g in r.get("prizegrades", [])
                     ],
+                    "prize_area": r.get("content", ""),
                 })
             except Exception:
                 logger.error(

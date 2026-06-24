@@ -37,3 +37,23 @@ def test_parse_ssq_bad_record_skipped():
     items = SsqSpider().parse(raw)
     assert len(items) == 1
     assert items[0]["issue"] == "2026073"
+
+
+def test_ssq_parse_captures_prize_area():
+    raw = {"result": [{
+        "code": "2026071", "date": "2026-06-23(二)",
+        "red": "01,02,03,04,05,06", "blue": "07",
+        "content": "一等奖中奖情况：北京1注、广东3注，共4注",
+        "prizegrades": [],
+    }]}
+    items = SsqSpider().parse(raw)
+    assert items[0]["prize_area"] == "一等奖中奖情况：北京1注、广东3注，共4注"
+
+
+def test_ssq_parse_prize_area_missing_ok():
+    raw = {"result": [{
+        "code": "2026072", "date": "2026-06-25(四)",
+        "red": "01,02,03,04,05,06", "blue": "07", "prizegrades": [],
+    }]}
+    items = SsqSpider().parse(raw)
+    assert items[0]["prize_area"] == ""
