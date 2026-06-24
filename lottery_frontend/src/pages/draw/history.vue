@@ -13,8 +13,9 @@
           <text class="date">{{ d.draw_date }}</text>
         </view>
         <view class="balls">
-          <Ball v-for="(n, i) in d.numbers.red" :key="'r'+i" :value="n" zone="red" />
-          <Ball v-for="(n, i) in d.numbers.blue" :key="'b'+i" :value="n" zone="blue" />
+          <template v-for="(nums, key) in d.numbers">
+            <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" />
+          </template>
         </view>
       </view>
       <view v-if="!items.length" class="empty">{{ emptyMsg }}</view>

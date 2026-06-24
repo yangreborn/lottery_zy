@@ -8,8 +8,9 @@
         <text class="date">{{ draw.draw_date }}</text>
       </view>
       <view class="balls">
-        <Ball v-for="(n, i) in draw.numbers.red" :key="'r'+i" :value="n" zone="red" />
-        <Ball v-for="(n, i) in draw.numbers.blue" :key="'b'+i" :value="n" zone="blue" />
+        <template v-for="(nums, key) in draw.numbers">
+          <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" />
+        </template>
       </view>
       <view class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
       <view class="grades">
