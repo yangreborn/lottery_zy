@@ -13,8 +13,9 @@
           <text v-if="rec.target_issue" class="issue">目标 {{ rec.target_issue }}</text>
         </view>
         <view class="balls">
-          <Ball v-for="(n, i) in rec.numbers.red" :key="'r'+i" :value="n" zone="red" />
-          <Ball v-for="(n, i) in rec.numbers.blue" :key="'b'+i" :value="n" zone="blue" />
+          <template v-for="(nums, key) in rec.numbers">
+            <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" :pad="key === 'digits' ? 1 : 2" />
+          </template>
         </view>
         <view v-if="rec.note" class="note">{{ rec.note }}</view>
         <view class="time">{{ formatTime(rec.created_at) }}</view>

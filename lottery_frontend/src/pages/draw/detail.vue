@@ -8,7 +8,7 @@
       </view>
       <view class="balls">
         <template v-for="(nums, key) in draw.numbers">
-          <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" />
+          <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" :pad="key === 'digits' ? 1 : 2" />
         </template>
       </view>
       <view class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
