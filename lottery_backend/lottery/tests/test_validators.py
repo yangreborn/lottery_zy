@@ -39,3 +39,25 @@ def test_numbers_is_string_not_dict():
     """numbers 是字符串（而非字典）时不应抛 AttributeError，应返回非空错误列表。"""
     errs = validate_numbers(SSQ, "x")
     assert len(errs) > 0
+
+
+KENO_RC = {"zones": [{"key": "main", "label": "号码", "min": 1, "max": 80,
+                      "count": 20, "pick_min": 1, "pick_max": 10}], "play_type": "keno"}
+
+
+def test_keno_pick_within_range_ok():
+    assert validate_numbers(KENO_RC, {"main": [1, 2, 3, 4, 5]}, mode="pick") == []
+
+
+def test_keno_pick_too_many():
+    errs = validate_numbers(KENO_RC, {"main": list(range(1, 12))}, mode="pick")  # 11 个
+    assert errs != []
+
+
+def test_keno_draw_must_be_20():
+    assert validate_numbers(KENO_RC, {"main": list(range(1, 21))}, mode="draw") == []
+    assert validate_numbers(KENO_RC, {"main": [1, 2, 3]}, mode="draw") != []
+
+
+def test_keno_pick_out_of_value_range():
+    assert validate_numbers(KENO_RC, {"main": [99]}, mode="pick") != []

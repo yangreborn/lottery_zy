@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 def persist_draw(lottery, item):
     """校验 item 号码，合法则写 draft(crawler)，失败则不入库。返回 (obj|None, errors)。"""
-    errors = validate_numbers(lottery.rule_config, item.get("numbers", {}))
+    errors = validate_numbers(lottery.rule_config, item.get("numbers", {}), mode="draw")
     if errors:
         logger.warning("draw %s %s 校验失败，不入库: %s", lottery.code, item.get("issue"), errors)
         return None, errors
