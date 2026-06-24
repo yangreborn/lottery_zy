@@ -11,7 +11,7 @@ from usernumber.models import UserNumber
 from usernumber.generator import random_numbers, dan_random_numbers
 from usernumber.serializers import UserNumberSerializer
 from lottery.models import DrawResult
-from usernumber.judge import judge_prize, judge_keno
+from usernumber.judge import judge_prize, judge_keno, judge_digit
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +130,9 @@ class NumberCheckView(APIView):
         if draw is None:
             return Response(make_response(code=1, msg="目标期号暂未开奖"))
         rc = rec.lottery.rule_config
-        if rc.get("play_type") == "keno":
+        if rc.get("play_type") == "digit":
+            result = judge_digit(rc, draw.numbers, rec.numbers)
+        elif rc.get("play_type") == "keno":
             result = judge_keno(rc, draw.numbers, rec.numbers)
         else:
             result = judge_prize(rc, draw.numbers, rec.numbers)

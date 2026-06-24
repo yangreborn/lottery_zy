@@ -1,4 +1,4 @@
-from usernumber.judge import judge_prize, judge_keno
+from usernumber.judge import judge_prize, judge_keno, judge_digit
 
 SSQ_RULE = {
     "red": {"count": 6, "min": 1, "max": 33},
@@ -78,3 +78,33 @@ def test_prize_has_desc():
     r = judge_prize(rc, {"red": [1, 2, 3, 4, 5, 6], "blue": [7]},
                     {"red": [1, 2, 3, 4, 5, 6], "blue": [7]})
     assert r["level"] == 1 and r["desc"] == "命中 红6 蓝1"
+
+
+DIGIT_RC = {"play_type": "digit", "zones": [{"key": "digits", "min": 0, "max": 9, "count": 3}],
+            "prize_rules": [
+                {"type": "direct", "amount": 1040, "label": "直选"},
+                {"type": "group3", "amount": 346, "label": "组选三"},
+                {"type": "group6", "amount": 173, "label": "组选六"},
+            ]}
+
+
+def test_digit_direct():
+    r = judge_digit(DIGIT_RC, {"digits": [6, 9, 0]}, {"digits": [6, 9, 0]})
+    assert r["hit_type"] == "direct" and r["label"] == "直选" and r["amount"] == 1040
+
+
+def test_digit_group6():
+    # 开奖 690 全不同；用户 069 集合相同、顺序不同 → 组选六
+    r = judge_digit(DIGIT_RC, {"digits": [6, 9, 0]}, {"digits": [0, 6, 9]})
+    assert r["hit_type"] == "group6" and r["amount"] == 173
+
+
+def test_digit_group3():
+    # 开奖 559 有重复；用户 595 集合相同 → 组选三
+    r = judge_digit(DIGIT_RC, {"digits": [5, 5, 9]}, {"digits": [5, 9, 5]})
+    assert r["hit_type"] == "group3" and r["amount"] == 346
+
+
+def test_digit_no_win():
+    r = judge_digit(DIGIT_RC, {"digits": [6, 9, 0]}, {"digits": [1, 2, 3]})
+    assert r["hit_type"] is None and r["label"] == "未中奖"

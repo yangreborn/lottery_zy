@@ -33,3 +33,22 @@ def judge_keno(rule_config, draw_numbers, user_numbers):
     level = matched.get("level") if matched else None
     return {"hit": hit, "pick": pick, "level": level, "label": label, "amount": amount,
             "desc": f"选{pick}中{hit}"}
+
+
+def judge_digit(rule_config, draw_numbers, user_numbers):
+    """3D/排列三判奖：直选(完全一致)/组选(集合相同,开奖有重复=组三 否则组六)。"""
+    zones = rule_config.get("zones") or []
+    key = zones[0]["key"] if zones else "digits"
+    user = list(user_numbers.get(key, []))
+    drawn = list(draw_numbers.get(key, []))
+    rules = {r.get("type"): r for r in rule_config.get("prize_rules", [])}
+    matched = None
+    if user and user == drawn:
+        matched = rules.get("direct")
+    elif user and sorted(user) == sorted(drawn):
+        matched = rules.get("group3") if len(set(drawn)) < len(drawn) else rules.get("group6")
+    label = matched["label"] if matched else "未中奖"
+    amount = matched.get("amount", 0) if matched else 0
+    hit_type = matched.get("type") if matched else None
+    desc = f"{label}命中" if matched else "未中奖"
+    return {"hit_type": hit_type, "label": label, "amount": amount, "desc": desc}
