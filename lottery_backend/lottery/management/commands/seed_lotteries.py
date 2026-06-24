@@ -47,6 +47,15 @@ KENO_PRIZES = [
     {"pick": 10, "hit": 0, "amount": 2, "label": "选十中零"},
 ]
 
+DIGIT_PRIZES = [
+    {"type": "direct", "amount": 1040, "label": "直选"},
+    {"type": "group3", "amount": 346, "label": "组选三"},
+    {"type": "group6", "amount": 173, "label": "组选六"},
+]
+
+DIGIT_ZONE = {"key": "digits", "label": "数字", "min": 0, "max": 9, "count": 3,
+              "ordered": True, "allow_repeat": True, "color": "#43a047"}
+
 SEEDS = [
     {
         "code": "ssq", "name": "双色球", "category": "福彩",
@@ -94,6 +103,16 @@ SEEDS = [
             ],
             "prize_rules": KENO_PRIZES,
         },
+        "draw_days": [1, 2, 3, 4, 5, 6, 7],
+    },
+    {
+        "code": "3d", "name": "福彩3D", "category": "福彩",
+        "rule_config": {"play_type": "digit", "zones": [DIGIT_ZONE], "prize_rules": DIGIT_PRIZES},
+        "draw_days": [1, 2, 3, 4, 5, 6, 7],
+    },
+    {
+        "code": "pl3", "name": "排列三", "category": "体彩",
+        "rule_config": {"play_type": "digit", "zones": [DIGIT_ZONE], "prize_rules": DIGIT_PRIZES},
         "draw_days": [1, 2, 3, 4, 5, 6, 7],
     },
 ]

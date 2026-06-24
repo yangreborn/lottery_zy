@@ -25,7 +25,7 @@ def test_create_lottery_and_unique_code():
 def test_seed_lotteries_idempotent():
     call_command("seed_lotteries")
     call_command("seed_lotteries")  # 再跑一次不应重复
-    assert Lottery.objects.count() == 3
+    assert Lottery.objects.count() == 5
     dlt = Lottery.objects.get(code="dlt")
     blue_zone = next(z for z in get_zones(dlt.rule_config) if z["key"] == "blue")
     assert blue_zone["count"] == 2

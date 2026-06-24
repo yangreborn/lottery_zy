@@ -25,3 +25,15 @@ def test_kl8_seeded(seeded):
     assert z["pick_min"] == 1 and z["pick_max"] == 10
     # 选十中十在奖表里
     assert any(r["pick"] == 10 and r["hit"] == 10 for r in rc["prize_rules"])
+
+
+def test_digit_lotteries_seeded(seeded):
+    from lottery.zones import get_zones
+    for code in ("3d", "pl3"):
+        rc = Lottery.objects.get(code=code).rule_config
+        assert rc["play_type"] == "digit"
+        z = get_zones(rc)[0]
+        assert z["key"] == "digits" and z["count"] == 3 and z["max"] == 9
+        assert z.get("ordered") and z.get("allow_repeat")
+        types = {r["type"] for r in rc["prize_rules"]}
+        assert types == {"direct", "group3", "group6"}
