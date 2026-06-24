@@ -13,13 +13,7 @@
         </template>
       </view>
       <view class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
-      <view class="grades">
-        <view v-for="(g, i) in draw.prize_grades" :key="i" class="grade">
-          <text>{{ g.level_label || g.level }}</text>
-          <text>{{ g.count }} 注</text>
-          <text>{{ formatAmount(g.amount) }} 元</text>
-        </view>
-      </view>
+      <PrizeGrades :grades="draw.prize_grades" />
     </view>
     <view v-else class="empty">{{ emptyMsg }}</view>
   </view>
@@ -31,6 +25,7 @@ import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
 import Ball from '../../components/Ball.vue'
+import PrizeGrades from '../../components/PrizeGrades.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList, getLatest } from '../../api/lottery.js'
 import { formatAmount } from '../../utils/format.js'
@@ -73,7 +68,5 @@ onShow(() => { reportAccess('draw/latest', { lottery_code: lotteryStore.code });
 .head { display: flex; justify-content: space-between; color: #888; font-size: 30rpx; }
 .balls { display: flex; flex-wrap: wrap; margin: 24rpx 0; }
 .pool { color: #e53935; font-size: 34rpx; margin-bottom: 16rpx; }
-.grades { border-top: 1px solid #f0f0f0; padding-top: 16rpx; }
-.grade { display: flex; justify-content: space-between; padding: 10rpx 0; font-size: 30rpx; color: #555; }
 .empty { text-align: center; color: #999; padding: 80rpx 0; }
 </style>
