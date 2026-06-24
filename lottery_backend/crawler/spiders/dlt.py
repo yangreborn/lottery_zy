@@ -15,7 +15,12 @@ class DltSpider(BaseSpider):
         resp = requests.get(
             API,
             params={"gameNo": 85, "provinceId": 0, "pageSize": page_size, "isVerify": 1, "pageNo": 1},
-            headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.sporttery.cn/"},
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+                "Referer": "https://www.sporttery.cn/",
+                "Accept": "application/json, text/plain, */*",
+                "Origin": "https://www.sporttery.cn",
+            },
             timeout=10,
         )
         resp.raise_for_status()
