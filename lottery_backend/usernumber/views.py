@@ -155,6 +155,7 @@ class NumberGenerateView(APIView):
 
 
 class NumberGroupView(APIView):
+    """POST /api/user/number/group —— 给自己的记录设置/清除分组名。"""
     authentication_classes = []
 
     def post(self, request):

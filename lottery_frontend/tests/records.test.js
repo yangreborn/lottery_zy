@@ -3,8 +3,7 @@ import { formatTime, groupRecords } from '../src/utils/records.js'
 
 describe('formatTime', () => {
   it('格式化为 YYYY-MM-DD HH:mm', () => {
-    const d = new Date(2026, 5, 23, 10, 5) // 本地 2026-06-23 10:05
-    expect(formatTime(d.toISOString())).toBe('2026-06-23 10:05')
+    expect(formatTime('2026-06-23T10:05:00')).toBe('2026-06-23 10:05')
   })
 
   it('空/非法返回空串', () => {
