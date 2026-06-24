@@ -1,10 +1,20 @@
 <template>
   <view class="page">
     <TopBanner title="选号" />
-    <template v-if="rule">
+    <template v-if="zones.length">
       <view class="modes">
         <view class="mode" :class="{ active: mode === 'jixuan' }" @click="mode = 'jixuan'"><text>机选</text></view>
         <view class="mode" :class="{ active: mode === 'manual' }" @click="mode = 'manual'"><text>手动</text></view>
+      </view>
+
+      <view v-if="variableZone" class="play">
+        <text class="pt">玩法（选几个）</text>
+        <view class="play-opts">
+          <view
+            v-for="k in playOptions" :key="k"
+            class="popt" :class="{ active: k === pickCount }" @click="setPick(k)"
+          ><text>选{{ k }}</text></view>
+        </view>
       </view>
 
       <view v-if="mode === 'jixuan'">
@@ -19,29 +29,21 @@
         >
           <text class="chk">{{ selected.includes(i) ? '✓' : '○' }}</text>
           <view class="balls">
-            <Ball v-for="(n, ri) in s.red" :key="'r'+ri" :value="n" zone="red" />
-            <Ball v-for="(n, bi) in s.blue" :key="'b'+bi" :value="n" zone="blue" />
+            <template v-for="(nums, key) in s">
+              <Ball v-for="(n, bi) in nums" :key="key + bi" :value="n" :zone="key" />
+            </template>
           </view>
         </view>
         <view v-if="!sets.length" class="hint">点上面"机选5注/10注"先生成，再勾选要保存的。</view>
       </view>
 
       <view v-else>
-        <view class="zone">
-          <text class="zt">红球（选 {{ rule.red.count }}）</text>
+        <view v-for="zone in zones" :key="zone.key" class="zone">
+          <text class="zt">{{ zone.label }}（选 {{ targetOf(zone) }}）</text>
           <view class="grid">
             <BallSelectable
-              v-for="n in redRange" :key="'r'+n" :value="n" zone="red"
-              :selected="sel.red.includes(n)" @toggle="toggle('red', $event)"
-            />
-          </view>
-        </view>
-        <view class="zone">
-          <text class="zt">蓝球（选 {{ rule.blue.count }}）</text>
-          <view class="grid">
-            <BallSelectable
-              v-for="n in blueRange" :key="'b'+n" :value="n" zone="blue"
-              :selected="sel.blue.includes(n)" @toggle="toggle('blue', $event)"
+              v-for="n in rangeOf(zone)" :key="zone.key + n" :value="n" :zone="zone.key"
+              :selected="(sel[zone.key] || []).includes(n)" @toggle="toggle(zone, $event)"
             />
           </view>
         </view>
@@ -72,6 +74,7 @@ import { lotteryStore } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
 import { ensureLogin, createNumber, generateNumbers } from '../../api/user.js'
 import { toggleBall, selectionComplete, toggleIndex } from '../../utils/picker.js'
+import { getZones } from '../../utils/zones.js'
 import { reportAccess } from '../../utils/report.js'
 
 const rule = ref(null)
@@ -79,18 +82,42 @@ const emptyMsg = ref('加载中…')
 const mode = ref('jixuan')
 const code = lotteryStore.code
 
-const sel = reactive({ red: [], blue: [] })
-function range(r) {
+const zones = computed(() => getZones(rule.value))
+const variableZone = computed(
+  () => zones.value.find((z) => z.pick_min !== undefined && z.pick_max !== undefined) || null
+)
+const playOptions = computed(() => {
+  const z = variableZone.value
+  if (!z) return []
   const arr = []
-  for (let i = r.min; i <= r.max; i++) arr.push(i)
+  for (let k = z.pick_min; k <= z.pick_max; k++) arr.push(k)
+  return arr
+})
+const pickCount = ref(0)
+const picksObj = computed(() => (variableZone.value ? { [variableZone.value.key]: pickCount.value } : undefined))
+
+const sel = reactive({})
+
+function rangeOf(zone) {
+  const arr = []
+  for (let i = zone.min; i <= zone.max; i++) arr.push(i)
   return arr
 }
-const redRange = computed(() => (rule.value ? range(rule.value.red) : []))
-const blueRange = computed(() => (rule.value ? range(rule.value.blue) : []))
-const canSaveManual = computed(() => rule.value && selectionComplete(sel, rule.value))
-function toggle(zone, n) {
-  sel[zone] = toggleBall(sel[zone], n, rule.value[zone].count)
+function targetOf(zone) {
+  if (zone.pick_min !== undefined && zone.pick_max !== undefined) return pickCount.value
+  return zone.count
 }
+function toggle(zone, n) {
+  sel[zone.key] = toggleBall(sel[zone.key] || [], n, targetOf(zone))
+}
+function setPick(k) {
+  pickCount.value = k
+  if (variableZone.value) sel[variableZone.value.key] = []
+  sets.value = []
+  selected.value = []
+}
+
+const canSaveManual = computed(() => rule.value && selectionComplete(sel, rule.value, picksObj.value || {}))
 
 const sets = ref([])
 const selected = ref([])
@@ -100,7 +127,7 @@ async function doGenerate(n) {
   lastCount.value = n
   try {
     await ensureLogin()
-    const res = await generateNumbers(code, n)
+    const res = await generateNumbers(code, n, picksObj.value)
     sets.value = res.sets || []
     selected.value = sets.value.map((_, i) => i)
   } catch (e) {
@@ -121,7 +148,7 @@ async function saveOne(numbers, genType) {
 async function saveManual() {
   if (!canSaveManual.value) return
   try {
-    await saveOne({ red: sel.red, blue: sel.blue }, 'manual')
+    await saveOne({ ...sel }, 'manual')
     uni.showToast({ title: '已保存', icon: 'success' })
     reportAccess('mine/create', { lottery_code: code, action: 'save_number' })
     setTimeout(() => uni.switchTab({ url: '/pages/mine/index' }), 600)
@@ -149,8 +176,13 @@ onLoad(async () => {
   try {
     const list = await getLotteryList()
     const found = list.find((l) => l.code === code)
-    if (found) rule.value = found.rule_config
-    else emptyMsg.value = '彩种不存在'
+    if (found) {
+      rule.value = found.rule_config
+      for (const z of zones.value) sel[z.key] = []
+      if (variableZone.value) pickCount.value = variableZone.value.pick_min
+    } else {
+      emptyMsg.value = '彩种不存在'
+    }
   } catch (e) {
     emptyMsg.value = e.msg || '加载失败'
   }
@@ -161,6 +193,11 @@ onLoad(async () => {
 .modes { display: flex; margin: 16rpx 20rpx; background: #fff; border-radius: 12rpx; overflow: hidden; }
 .mode { flex: 1; text-align: center; padding: 20rpx 0; color: #666; font-size: 30rpx; }
 .mode.active { background: #e53935; color: #fff; font-weight: 600; }
+.play { background: #fff; margin: 0 20rpx 12rpx; padding: 16rpx 20rpx; border-radius: 12rpx; }
+.pt { font-size: 28rpx; color: #888; }
+.play-opts { display: flex; flex-wrap: wrap; margin-top: 10rpx; }
+.popt { padding: 10rpx 22rpx; margin: 6rpx 14rpx 6rpx 0; background: #f5f5f5; border-radius: 28rpx; color: #666; font-size: 28rpx; }
+.popt.active { background: #fb8c00; color: #fff; }
 .gen-bar { display: flex; flex-wrap: wrap; padding: 12rpx 20rpx; }
 .setrow { display: flex; align-items: center; background: #fff; margin: 12rpx 20rpx; padding: 18rpx; border-radius: 12rpx; border: 2rpx solid transparent; }
 .setrow.sel { border-color: #e53935; }
