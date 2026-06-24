@@ -1,5 +1,7 @@
 def validate_numbers(rule_config, numbers):
     """按 rule_config 校验 numbers，返回错误信息列表，空列表=合法。"""
+    if not isinstance(numbers, dict):
+        return ["号码格式应为字典"]
     errors = []
     for zone in ("red", "blue"):
         rule = rule_config.get(zone)

@@ -72,6 +72,7 @@ import { lotteryStore } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
 import { ensureLogin, createNumber, generateNumbers } from '../../api/user.js'
 import { toggleBall, selectionComplete, toggleIndex } from '../../utils/picker.js'
+import { reportAccess } from '../../utils/report.js'
 
 const rule = ref(null)
 const emptyMsg = ref('加载中…')
@@ -122,6 +123,7 @@ async function saveManual() {
   try {
     await saveOne({ red: sel.red, blue: sel.blue }, 'manual')
     uni.showToast({ title: '已保存', icon: 'success' })
+    reportAccess('mine/create', { lottery_code: code, action: 'save_number' })
     setTimeout(() => uni.switchTab({ url: '/pages/mine/index' }), 600)
   } catch (e) {
     uni.showToast({ title: e.msg || '保存失败', icon: 'none' })
@@ -139,6 +141,7 @@ async function saveBatch() {
     try { await saveOne(sets.value[i], 'random'); ok += 1 } catch (e) { fail += 1 }
   }
   uni.showToast({ title: fail ? `成功${ok}注 失败${fail}注` : `已保存${ok}注`, icon: fail ? 'none' : 'success' })
+  if (ok > 0) reportAccess('mine/create', { lottery_code: code, action: 'save_number' })
   if (ok && !fail) setTimeout(() => uni.switchTab({ url: '/pages/mine/index' }), 700)
 }
 

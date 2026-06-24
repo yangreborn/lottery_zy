@@ -27,3 +27,15 @@ def test_numbers_zone_not_list():
     """numbers[zone] 为非列表（如 int）时不应抛异常，应返回错误列表。"""
     errs = validate_numbers(SSQ, {"red": 5, "blue": [7]})
     assert len(errs) > 0
+
+
+def test_numbers_is_list_not_dict():
+    """numbers 是列表（而非字典）时不应抛 AttributeError，应返回非空错误列表。"""
+    errs = validate_numbers(SSQ, [1, 2, 3])
+    assert len(errs) > 0
+
+
+def test_numbers_is_string_not_dict():
+    """numbers 是字符串（而非字典）时不应抛 AttributeError，应返回非空错误列表。"""
+    errs = validate_numbers(SSQ, "x")
+    assert len(errs) > 0
