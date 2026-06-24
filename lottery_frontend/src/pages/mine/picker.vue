@@ -30,7 +30,7 @@
           <text class="chk">{{ selected.includes(i) ? '✓' : '○' }}</text>
           <view class="balls">
             <template v-for="(nums, key) in s">
-              <Ball v-for="(n, bi) in nums" :key="key + bi" :value="n" :zone="key" />
+              <Ball v-for="(n, bi) in nums" :key="key + bi" :value="n" :zone="key" :pad="key === 'digits' ? 1 : 2" />
             </template>
           </view>
         </view>
@@ -38,15 +38,28 @@
       </view>
 
       <view v-else>
-        <view v-for="zone in zones" :key="zone.key" class="zone">
-          <text class="zt">{{ zone.label }}（选 {{ targetOf(zone) }}）</text>
-          <view class="grid">
-            <BallSelectable
-              v-for="n in rangeOf(zone)" :key="zone.key + n" :value="n" :zone="zone.key"
-              :selected="(sel[zone.key] || []).includes(n)" @toggle="toggle(zone, $event)"
-            />
+        <template v-if="digitZone">
+          <view v-for="pos in digitZone.count" :key="pos" class="zone">
+            <text class="zt">第 {{ pos }} 位（{{ digitAt(pos - 1) }}）</text>
+            <view class="grid">
+              <view
+                v-for="d in digitRange" :key="d"
+                class="dbtn" :class="{ active: digitAt(pos - 1) === d }" @click="setDigit(pos - 1, d)"
+              ><text>{{ d }}</text></view>
+            </view>
           </view>
-        </view>
+        </template>
+        <template v-else>
+          <view v-for="zone in zones" :key="zone.key" class="zone">
+            <text class="zt">{{ zone.label }}（选 {{ targetOf(zone) }}）</text>
+            <view class="grid">
+              <BallSelectable
+                v-for="n in rangeOf(zone)" :key="zone.key + n" :value="n" :zone="zone.key"
+                :selected="(sel[zone.key] || []).includes(n)" @toggle="toggle(zone, $event)"
+              />
+            </view>
+          </view>
+        </template>
       </view>
 
       <view class="fields">
@@ -73,7 +86,7 @@ import BallSelectable from '../../components/BallSelectable.vue'
 import { lotteryStore } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
 import { ensureLogin, createNumber, generateNumbers } from '../../api/user.js'
-import { toggleBall, selectionComplete, toggleIndex } from '../../utils/picker.js'
+import { toggleBall, selectionComplete, toggleIndex, digitsFilled } from '../../utils/picker.js'
 import { getZones } from '../../utils/zones.js'
 import { reportAccess } from '../../utils/report.js'
 
@@ -86,6 +99,8 @@ const zones = computed(() => getZones(rule.value))
 const variableZone = computed(
   () => zones.value.find((z) => z.pick_min !== undefined && z.pick_max !== undefined) || null
 )
+const digitZone = computed(() => zones.value.find((z) => z.ordered && z.allow_repeat) || null)
+const digitRange = computed(() => (digitZone.value ? rangeOf(digitZone.value) : []))
 const playOptions = computed(() => {
   const z = variableZone.value
   if (!z) return []
@@ -116,8 +131,20 @@ function setPick(k) {
   sets.value = []
   selected.value = []
 }
+function digitAt(i) {
+  const a = digitZone.value ? sel[digitZone.value.key] : null
+  return a && a[i] !== null && a[i] !== undefined ? a[i] : '?'
+}
+function setDigit(pos, d) {
+  const key = digitZone.value.key
+  sel[key] = sel[key].map((v, i) => (i === pos ? d : v))
+}
 
-const canSaveManual = computed(() => rule.value && selectionComplete(sel, rule.value, picksObj.value || {}))
+const canSaveManual = computed(() => {
+  if (!rule.value) return false
+  if (digitZone.value) return digitsFilled(sel[digitZone.value.key])
+  return selectionComplete(sel, rule.value, picksObj.value || {})
+})
 
 const sets = ref([])
 const selected = ref([])
@@ -178,7 +205,9 @@ onLoad(async () => {
     const found = list.find((l) => l.code === code)
     if (found) {
       rule.value = found.rule_config
-      for (const z of zones.value) sel[z.key] = []
+      for (const z of zones.value) {
+        sel[z.key] = z.ordered && z.allow_repeat ? new Array(z.count).fill(null) : []
+      }
       if (variableZone.value) pickCount.value = variableZone.value.pick_min
     } else {
       emptyMsg.value = '彩种不存在'
@@ -207,6 +236,8 @@ onLoad(async () => {
 .zone { background: #fff; margin: 16rpx 20rpx; padding: 20rpx; border-radius: 12rpx; }
 .zt { font-size: 30rpx; color: #666; }
 .grid { display: flex; flex-wrap: wrap; margin-top: 12rpx; }
+.dbtn { width: 64rpx; height: 64rpx; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 8rpx; font-size: 32rpx; border: 2rpx solid #43a047; color: #43a047; }
+.dbtn.active { background: #43a047; color: #fff; }
 .fields { margin: 0 20rpx; }
 .ipt { background: #fff; border-radius: 10rpx; padding: 18rpx; margin-top: 16rpx; font-size: 28rpx; }
 .actions { padding: 24rpx 20rpx; }
