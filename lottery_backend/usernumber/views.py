@@ -152,3 +152,24 @@ class NumberGenerateView(APIView):
         count = max(1, min(count, 10))
         sets = [random_numbers(lottery.rule_config) for _ in range(count)]
         return Response(make_response(data={"sets": sets}))
+
+
+class NumberGroupView(APIView):
+    authentication_classes = []
+
+    def post(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        raw_id = request.data.get("id")
+        try:
+            rec_id = int(raw_id)
+        except (TypeError, ValueError):
+            return Response(make_response(code=1, msg="参数非法", error=f"id={raw_id}"))
+        rec = UserNumber.objects.filter(id=rec_id, user_id=uid).first()
+        if rec is None:
+            return Response(make_response(code=1, msg="记录不存在"))
+        group_name = str(request.data.get("group_name") or "").strip()[:50]
+        rec.group_name = group_name
+        rec.save(update_fields=["group_name"])
+        return Response(make_response(data=UserNumberSerializer(rec).data))

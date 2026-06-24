@@ -17,6 +17,7 @@ class UserNumber(models.Model):
     dan_numbers = models.JSONField("胆码", default=dict, blank=True)
     note = models.CharField("备注", max_length=100, blank=True, default="")
     target_issue = models.CharField("目标期号", max_length=20, blank=True, default="")
+    group_name = models.CharField("分组", max_length=50, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

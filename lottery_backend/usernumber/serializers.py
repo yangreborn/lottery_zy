@@ -8,4 +8,4 @@ class UserNumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserNumber
         fields = ["id", "code", "numbers", "gen_type", "dan_numbers",
-                  "note", "target_issue", "created_at"]
+                  "note", "target_issue", "group_name", "created_at"]
