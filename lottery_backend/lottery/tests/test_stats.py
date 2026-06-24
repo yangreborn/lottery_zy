@@ -70,3 +70,22 @@ def test_zone_missing_max_only_skipped():
     res = compute_number_stats(rule_missing_max, [{"red": [1, 2, 3, 4, 5, 6], "blue": [1]}])
     assert "red" in res
     assert "blue" not in res
+
+
+def test_stats_keno_single_zone():
+    rc = {"zones": [{"key": "main", "min": 1, "max": 80, "count": 20}], "play_type": "keno"}
+    draws = [{"main": [1, 2, 3]}, {"main": [1, 5, 80]}]
+    res = compute_number_stats(rc, draws)
+    assert "main" in res and "red" not in res
+    cells = {c["number"]: c for c in res["main"]}
+    assert cells[1]["count"] == 2   # 两期都有 1
+    assert cells[1]["miss"] == 0    # 最新一期(idx0)出现
+    assert cells[80]["count"] == 1
+    assert len(res["main"]) == 80
+
+
+def test_stats_ssq_legacy_unchanged():
+    rc = {"red": {"min": 1, "max": 33, "count": 6}, "blue": {"min": 1, "max": 16, "count": 1}}
+    res = compute_number_stats(rc, [{"red": [1, 2, 3, 4, 5, 6], "blue": [7]}])
+    assert "red" in res and "blue" in res
+    assert len(res["red"]) == 33 and len(res["blue"]) == 16
