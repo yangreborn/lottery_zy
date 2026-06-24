@@ -19,6 +19,7 @@ def persist_draw(lottery, item):
             "sales_amount": item.get("sales_amount", ""),
             "pool_amount": item.get("pool_amount", ""),
             "prize_grades": item.get("prize_grades", []),
+            "prize_area": item.get("prize_area", ""),
             "source": DrawResult.SOURCE_CRAWLER,
             "status": DrawResult.STATUS_DRAFT,
         },

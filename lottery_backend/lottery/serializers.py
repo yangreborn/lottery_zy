@@ -13,7 +13,7 @@ class DrawResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = DrawResult
         fields = ("issue", "draw_date", "numbers", "sales_amount",
-                  "pool_amount", "prize_grades")
+                  "pool_amount", "prize_grades", "prize_area")
 
 
 class DrawDetailSerializer(DrawResultSerializer):

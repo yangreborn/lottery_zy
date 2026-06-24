@@ -37,6 +37,7 @@ class DrawResult(models.Model):
     sales_amount = models.CharField("销售额", max_length=30, blank=True, default="")
     pool_amount = models.CharField("奖池金额", max_length=30, blank=True, default="")
     prize_grades = models.JSONField("各奖级", default=list)
+    prize_area = models.TextField("一等奖分省", blank=True, default="")
     source = models.CharField("来源", max_length=10, choices=SOURCE_CHOICES, default=SOURCE_CRAWLER)
     status = models.CharField("状态", max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT)
     updated_by = models.CharField("最后修改人", max_length=50, blank=True, default="")
