@@ -61,3 +61,20 @@ def test_keno_draw_must_be_20():
 
 def test_keno_pick_out_of_value_range():
     assert validate_numbers(KENO_RC, {"main": [99]}, mode="pick") != []
+
+
+DIGIT_RC = {"play_type": "digit", "zones": [
+    {"key": "digits", "label": "数字", "min": 0, "max": 9, "count": 3,
+     "ordered": True, "allow_repeat": True}]}
+
+
+def test_digit_allows_repeat():
+    assert validate_numbers(DIGIT_RC, {"digits": [5, 5, 3]}, mode="pick") == []
+
+
+def test_digit_count_must_be_3():
+    assert validate_numbers(DIGIT_RC, {"digits": [1, 2]}, mode="pick") != []
+
+
+def test_digit_out_of_range():
+    assert validate_numbers(DIGIT_RC, {"digits": [1, 2, 10]}, mode="pick") != []

@@ -18,7 +18,7 @@ def validate_numbers(rule_config, numbers, mode="pick"):
                 errors.append(f"{key} 选号个数应为 {zone['pick_min']}-{zone['pick_max']}，实际 {len(nums)}")
         elif len(nums) != zone["count"]:
             errors.append(f"{key} 号码个数应为 {zone['count']}，实际 {len(nums)}")
-        if len(set(nums)) != len(nums):
+        if not zone.get("allow_repeat") and len(set(nums)) != len(nums):
             errors.append(f"{key} 号码有重复")
         for n in nums:
             if not (zone["min"] <= n <= zone["max"]):

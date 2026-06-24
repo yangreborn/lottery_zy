@@ -59,3 +59,30 @@ def test_random_ssq_legacy_unchanged():
     rc = {"red": {"count": 6, "min": 1, "max": 33}, "blue": {"count": 1, "min": 1, "max": 16}}
     r = random_numbers(rc)
     assert len(r["red"]) == 6 and len(r["blue"]) == 1
+
+
+DIGIT_RC = {"play_type": "digit", "zones": [
+    {"key": "digits", "min": 0, "max": 9, "count": 3, "ordered": True, "allow_repeat": True}]}
+
+
+def test_random_digit_length_and_range():
+    r = random_numbers(DIGIT_RC)
+    assert len(r["digits"]) == 3
+    assert all(0 <= d <= 9 for d in r["digits"])
+
+
+def test_random_digit_not_forced_sorted():
+    # 有序区不强制升序：多次抽样应出现至少一次非升序(可重复+乱序)
+    seen_unsorted = False
+    for _ in range(50):
+        d = random_numbers(DIGIT_RC)["digits"]
+        if d != sorted(d):
+            seen_unsorted = True
+            break
+    assert seen_unsorted
+
+
+def test_random_ssq_still_sorted_unique():
+    rc = {"red": {"count": 6, "min": 1, "max": 33}, "blue": {"count": 1, "min": 1, "max": 16}}
+    r = random_numbers(rc)
+    assert r["red"] == sorted(r["red"]) and len(set(r["red"])) == 6

@@ -10,12 +10,17 @@ def _pick_count(zone, picks):
 
 
 def random_numbers(rule_config, picks=None):
-    """按 rule_config 机选，每区取若干不重复号码升序返回。
-    picks: 可选 {zone_key: n}，指定可变区(pick_min/pick_max)选几;缺省取 pick_max。固定区用 count。"""
+    """按 rule_config 机选。picks={zone_key:n} 指定可变区选几(缺省 pick_max)。
+    allow_repeat 区可重复(choices)否则不重复(sample)；ordered 区不排序否则升序。"""
     result = {}
     for zone in get_zones(rule_config):
         n = _pick_count(zone, picks)
-        result[zone["key"]] = sorted(random.sample(range(zone["min"], zone["max"] + 1), n))
+        pool = list(range(zone["min"], zone["max"] + 1))
+        if zone.get("allow_repeat"):
+            nums = random.choices(pool, k=n)
+        else:
+            nums = random.sample(pool, n)
+        result[zone["key"]] = nums if zone.get("ordered") else sorted(nums)
     return result
 
 
