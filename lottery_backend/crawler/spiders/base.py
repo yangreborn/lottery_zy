@@ -13,5 +13,5 @@ class BaseSpider(ABC):
     def parse(self, raw):
         """解析为统一结构 list[dict]。"""
 
-    def run(self):
-        return self.parse(self.fetch())
+    def run(self, count=1):
+        return self.parse(self.fetch(count))
