@@ -16,3 +16,10 @@ export function selectionComplete(numbers, rule) {
   }
   return true
 }
+
+export function toggleIndex(set, i) {
+  if (set.indexOf(i) >= 0) {
+    return set.filter((x) => x !== i)
+  }
+  return [...set, i].sort((a, b) => a - b)
+}

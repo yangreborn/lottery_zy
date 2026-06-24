@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { toggleBall, selectionComplete } from '../src/utils/picker.js'
+import { toggleBall, selectionComplete, toggleIndex } from '../src/utils/picker.js'
 
 describe('toggleBall', () => {
   it('未选则加入并升序', () => {
@@ -23,5 +23,14 @@ describe('selectionComplete', () => {
   })
   it('蓝区缺 false', () => {
     expect(selectionComplete({ red: [1, 2, 3, 4, 5, 6], blue: [] }, rule)).toBe(false)
+  })
+})
+
+describe('toggleIndex', () => {
+  it('未选则加入并升序', () => {
+    expect(toggleIndex([2, 0], 1)).toEqual([0, 1, 2])
+  })
+  it('已选则移除', () => {
+    expect(toggleIndex([0, 1, 2], 1)).toEqual([0, 2])
   })
 })
