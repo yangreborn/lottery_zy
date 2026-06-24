@@ -17,11 +17,11 @@
         <text>{{ s.label }}</text>
       </view>
     </view>
-    <view class="zone-title">红球</view>
-    <Heatmap :cells="redSorted" />
-    <view class="zone-title">蓝球</view>
-    <Heatmap :cells="blueSorted" />
-    <view v-if="!redCells.length" class="empty">{{ emptyMsg }}</view>
+    <view v-for="z in zoneKeys" :key="z" class="zone-block">
+      <view class="zone-title">{{ zoneLabel(z) }}</view>
+      <Heatmap :cells="sortedOf(z)" />
+    </view>
+    <view v-if="!zoneKeys.length" class="empty">{{ emptyMsg }}</view>
   </view>
 </template>
 
@@ -34,6 +34,7 @@ import { lotteryStore } from '../../store/lottery.js'
 import { getStats } from '../../api/lottery.js'
 import { reportAccess } from '../../utils/report.js'
 import { sortCells } from '../../utils/statsort.js'
+import { zoneLabel } from '../../utils/zones.js'
 
 const periodOptions = [10, 30, 50, 100]
 const periods = ref(30)
@@ -43,19 +44,19 @@ const sortOptions = [
   { key: 'least', label: '出现最少' },
 ]
 const sortMode = ref('number')
-const redCells = ref([])
-const blueCells = ref([])
+const statsData = ref({})
 const emptyMsg = ref('加载中…')
 
-const redSorted = computed(() => sortCells(redCells.value, sortMode.value))
-const blueSorted = computed(() => sortCells(blueCells.value, sortMode.value))
+const zoneKeys = computed(() => Object.keys(statsData.value).filter((k) => k !== 'periods'))
+function sortedOf(z) {
+  return sortCells(statsData.value[z] || [], sortMode.value)
+}
 
 async function load() {
   try {
     const res = await getStats(lotteryStore.code, periods.value)
-    redCells.value = res.red || []
-    blueCells.value = res.blue || []
-    if (!redCells.value.length) emptyMsg.value = '暂无数据'
+    statsData.value = res || {}
+    if (!zoneKeys.value.length) emptyMsg.value = '暂无数据'
   } catch (e) {
     emptyMsg.value = e.msg || '加载失败'
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
