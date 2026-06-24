@@ -81,3 +81,28 @@ def test_create_dan_numbers_not_dict(ssq, auth_client):
     }, format="json")
     assert resp.status_code == 200
     assert resp.json()["code"] == 1
+
+
+def test_create_random_with_numbers_uses_provided(ssq, auth_client):
+    nums = {"red": [1, 2, 3, 4, 5, 6], "blue": [7]}
+    body = auth_client.post("/api/user/number/create", {
+        "code": "ssq", "gen_type": "random", "numbers": nums,
+    }, format="json").json()
+    assert body["code"] == 0
+    assert body["data"]["gen_type"] == "random"
+    assert body["data"]["numbers"] == nums
+
+
+def test_create_random_with_invalid_numbers(ssq, auth_client):
+    bad = {"red": [1, 2, 3], "blue": [7]}
+    assert auth_client.post("/api/user/number/create", {
+        "code": "ssq", "gen_type": "random", "numbers": bad,
+    }, format="json").json()["code"] == 1
+
+
+def test_create_random_without_numbers_generates(ssq, auth_client):
+    body = auth_client.post("/api/user/number/create", {
+        "code": "ssq", "gen_type": "random",
+    }, format="json").json()
+    assert body["code"] == 0
+    assert len(body["data"]["numbers"]["red"]) == 6

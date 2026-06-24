@@ -48,7 +48,14 @@ class NumberCreateView(APIView):
         if not isinstance(dan_numbers, dict):
             return Response(make_response(code=1, msg="胆码非法", error="dan_numbers 应为字典格式"))
         if gen_type == UserNumber.GEN_RANDOM:
-            numbers = random_numbers(lottery.rule_config)
+            provided = request.data.get("numbers")
+            if provided:
+                numbers = provided
+                errors = validate_numbers(lottery.rule_config, numbers)
+                if errors:
+                    return Response(make_response(code=1, msg="号码非法", error="; ".join(errors)))
+            else:
+                numbers = random_numbers(lottery.rule_config)
         elif gen_type == UserNumber.GEN_DAN:
             try:
                 numbers = dan_random_numbers(lottery.rule_config, dan_numbers)
