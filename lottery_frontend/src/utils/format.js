@@ -7,7 +7,7 @@ export function ballColor(zone) {
 
 export function formatAmount(raw) {
   if (raw === null || raw === undefined || raw === '') return '—'
-  const n = Number(raw)
+  const n = Number(String(raw).replace(/,/g, ''))
   if (!Number.isFinite(n)) return '—'
   return n.toLocaleString('en-US')
 }
