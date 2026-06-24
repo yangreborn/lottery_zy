@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="我的号码" />
+    <TopBanner title="我的号码" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="bar">
       <button class="go" size="mini" @click="goPicker">去选号</button>

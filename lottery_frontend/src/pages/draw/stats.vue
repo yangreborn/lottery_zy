@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="号码统计" />
+    <TopBanner title="号码统计" :back="true" />
     <view class="periods">
       <view
         v-for="p in periodOptions" :key="p"

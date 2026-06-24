@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="选号" />
+    <TopBanner title="选号" :back="true" />
     <template v-if="zones.length">
       <view class="modes">
         <view class="mode" :class="{ active: mode === 'jixuan' }" @click="mode = 'jixuan'"><text>机选</text></view>
