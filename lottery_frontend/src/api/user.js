@@ -33,3 +33,7 @@ export async function ensureLogin() {
 export function generateNumbers(code, count) {
   return request('/api/user/number/generate', { method: 'POST', data: { code, count } })
 }
+
+export function setGroup(id, group_name) {
+  return request('/api/user/number/group', { method: 'POST', data: { id, group_name } })
+}
