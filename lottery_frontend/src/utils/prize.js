@@ -33,3 +33,8 @@ export function normalizePrizes(grades) {
     .map((pick) => ({ pick, label: `选${pick}`, rows: map.get(pick) }))
   return { grouped: true, groups }
 }
+
+export function stripAreaPrefix(text) {
+  if (!text) return ''
+  return String(text).replace(/^[^：:]*[：:]/, '')
+}

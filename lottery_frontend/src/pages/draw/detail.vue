@@ -12,7 +12,7 @@
         </template>
       </view>
       <view class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
-      <PrizeGrades :grades="draw.prize_grades" />
+      <PrizeGrades :grades="draw.prize_grades" :area="draw.prize_area" />
     </view>
     <view v-else class="empty">{{ emptyMsg }}</view>
   </view>

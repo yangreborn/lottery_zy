@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { normalizePrizes } from '../src/utils/prize.js'
+import { stripAreaPrefix } from '../src/utils/prize.js'
 
 describe('normalizePrizes', () => {
   it('双色球：过滤空行 + 数字 level 转中文', () => {
@@ -36,5 +37,18 @@ describe('normalizePrizes', () => {
   it('空数组安全', () => {
     expect(normalizePrizes([])).toEqual({ grouped: false, flat: [] })
     expect(normalizePrizes(null)).toEqual({ grouped: false, flat: [] })
+  })
+})
+
+describe('stripAreaPrefix', () => {
+  it('去掉中文冒号前缀', () => {
+    expect(stripAreaPrefix('一等奖中奖情况：北京1注、广东3注，共4注')).toBe('北京1注、广东3注，共4注')
+  })
+  it('无冒号原样', () => {
+    expect(stripAreaPrefix('北京1注')).toBe('北京1注')
+  })
+  it('空安全', () => {
+    expect(stripAreaPrefix('')).toBe('')
+    expect(stripAreaPrefix(null)).toBe('')
   })
 })
