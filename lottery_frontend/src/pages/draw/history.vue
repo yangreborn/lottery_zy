@@ -1,6 +1,7 @@
 <template>
   <view class="page">
     <TopBanner title="历史开奖" />
+    <LotteryTabs :list="lotteries" :active="lotteryStore.code" @change="onChange" />
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
       <view
         v-for="d in items"
@@ -29,10 +30,12 @@ import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
 import Ball from '../../components/Ball.vue'
-import { lotteryStore } from '../../store/lottery.js'
-import { getHistory } from '../../api/lottery.js'
+import LotteryTabs from '../../components/LotteryTabs.vue'
+import { lotteryStore, setCode } from '../../store/lottery.js'
+import { getHistory, getLotteryList } from '../../api/lottery.js'
 import { reportAccess } from '../../utils/report.js'
 
+const lotteries = ref([])
 const items = ref([])
 const page = ref(1)
 const hasMore = ref(true)
@@ -59,6 +62,12 @@ async function fetchPage(reset) {
   }
 }
 
+function onChange(code) {
+  setCode(code)
+  loadedCode = code
+  fetchPage(true)
+}
+
 function loadMore() {
   if (!hasMore.value) return
   fetchPage(false)
@@ -69,6 +78,9 @@ function goDetail(issue) {
 }
 
 onShow(() => {
+  if (!lotteries.value.length) {
+    getLotteryList().then((l) => { lotteries.value = l }).catch(() => {})
+  }
   reportAccess('draw/history', { lottery_code: lotteryStore.code })
   if (loadedCode !== lotteryStore.code) {
     loadedCode = lotteryStore.code
