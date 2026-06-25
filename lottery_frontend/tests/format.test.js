@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { ballColor, formatAmount, statsTier } from '../src/utils/format.js'
+import { ballColor, formatAmount, statsTier, hasPool } from '../src/utils/format.js'
 
 describe('ballColor', () => {
   it('红蓝灰', () => {
@@ -24,6 +24,21 @@ describe('formatAmount 千分位', () => {
     expect(formatAmount('')).toBe('—')
     expect(formatAmount(null)).toBe('—')
     expect(formatAmount('abc')).toBe('—')
+  })
+})
+
+describe('hasPool', () => {
+  it('空/0 为 false', () => {
+    expect(hasPool('')).toBe(false)
+    expect(hasPool(null)).toBe(false)
+    expect(hasPool(undefined)).toBe(false)
+    expect(hasPool('0')).toBe(false)
+    expect(hasPool(0)).toBe(false)
+  })
+  it('正数为 true（含千分位）', () => {
+    expect(hasPool('1234')).toBe(true)
+    expect(hasPool(1234)).toBe(true)
+    expect(hasPool('1,234,567')).toBe(true)
   })
 })
 

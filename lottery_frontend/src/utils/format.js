@@ -13,6 +13,12 @@ export function formatAmount(raw) {
   return n.toLocaleString('en-US')
 }
 
+export function hasPool(raw) {
+  if (raw === null || raw === undefined || raw === '') return false
+  const n = Number(String(raw).replace(/,/g, ''))
+  return Number.isFinite(n) && n > 0
+}
+
 export function statsTier(count, max) {
   if (!max || max <= 0) return 0
   const ratio = count / max
