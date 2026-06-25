@@ -14,13 +14,11 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
 import { getGuideDetail } from '../../api/guide.js'
-import { reportAccess } from '../../utils/report.js'
 
 const guide = ref(null)
 const emptyMsg = ref('加载中…')
 
 onLoad(async (q) => {
-  reportAccess('guide/detail')
   try {
     guide.value = await getGuideDetail(q.id)
   } catch (e) {

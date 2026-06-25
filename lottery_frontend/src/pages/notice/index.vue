@@ -23,7 +23,6 @@ import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
 import { getGuideList } from '../../api/guide.js'
-import { reportAccess } from '../../utils/report.js'
 
 const items = ref([])
 const emptyMsg = ref('加载中…')
@@ -49,7 +48,6 @@ function chooseType(k) { curType.value = k; load() }
 function goDetail(id) { uni.navigateTo({ url: `/pages/guide/detail?id=${id}` }) }
 
 onShow(() => {
-  reportAccess('notice/index', {})
   load()
 })
 </script>

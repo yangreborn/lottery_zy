@@ -29,7 +29,6 @@ import PrizeGrades from '../../components/PrizeGrades.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList, getLatest } from '../../api/lottery.js'
 import { formatAmount, hasPool } from '../../utils/format.js'
-import { reportAccess } from '../../utils/report.js'
 
 const store = lotteryStore
 const lotteries = ref([])
@@ -59,7 +58,7 @@ onMounted(async () => {
     uni.showToast({ title: e.msg || '彩种加载失败', icon: 'none' })
   }
 })
-onShow(() => { reportAccess('draw/latest', { lottery_code: lotteryStore.code }); load() })
+onShow(() => { load() })
 </script>
 
 <style scoped>

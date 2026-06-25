@@ -33,7 +33,6 @@ import Ball from '../../components/Ball.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getHistory, getLotteryList } from '../../api/lottery.js'
-import { reportAccess } from '../../utils/report.js'
 
 const lotteries = ref([])
 const items = ref([])
@@ -81,7 +80,6 @@ onShow(() => {
   if (!lotteries.value.length) {
     getLotteryList().then((l) => { lotteries.value = l }).catch(() => {})
   }
-  reportAccess('draw/history', { lottery_code: lotteryStore.code })
   if (loadedCode !== lotteryStore.code) {
     loadedCode = lotteryStore.code
     fetchPage(true)

@@ -46,6 +46,7 @@ function editNickname() {
       try {
         const p = await setProfile((res.content || '').trim())
         nickname.value = p.nickname || ''
+        reportAccess('mine/nickname', { action: 'set_nickname' })
         uni.showToast({ title: '已保存', icon: 'success' })
       } catch (e) {
         uni.showToast({ title: e.msg || '保存失败', icon: 'none' })
@@ -70,6 +71,7 @@ function finishWechatLogin(nickName) {
       try {
         const res = await wechatLogin(r.code)
         setToken(res.token, true)
+        reportAccess('login', { action: 'login' })
         if (nickName) { try { await setProfile(nickName) } catch (e) { /* 昵称写入失败不阻塞登录 */ } }
         uni.showToast({ title: '登录成功', icon: 'success' })
         loadProfile()
@@ -88,7 +90,6 @@ function doLogout() {
 }
 
 onShow(async () => {
-  reportAccess('mine/index', {})
   await ensureLogin()
   loadProfile()
 })

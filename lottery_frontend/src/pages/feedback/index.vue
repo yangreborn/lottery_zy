@@ -13,6 +13,7 @@
 import { ref } from 'vue'
 import TopBanner from '../../components/TopBanner.vue'
 import { submitFeedback } from '../../api/user.js'
+import { reportAccess } from '../../utils/report.js'
 
 const content = ref('')
 const contact = ref('')
@@ -23,6 +24,7 @@ async function submit() {
   submitting.value = true
   try {
     await submitFeedback({ content: content.value.trim(), contact: contact.value.trim() })
+    reportAccess('feedback', { action: 'feedback' })
     uni.showToast({ title: '已收到，谢谢反馈', icon: 'success' })
     setTimeout(() => uni.navigateBack(), 600)
   } catch (e) {

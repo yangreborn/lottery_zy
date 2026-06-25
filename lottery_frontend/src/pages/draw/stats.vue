@@ -34,7 +34,6 @@ import LotteryTabs from '../../components/LotteryTabs.vue'
 import Heatmap from '../../components/Heatmap.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getStats, getLotteryList } from '../../api/lottery.js'
-import { reportAccess } from '../../utils/report.js'
 import { sortCells } from '../../utils/statsort.js'
 import { zoneLabel } from '../../utils/zones.js'
 
@@ -75,7 +74,6 @@ function choose(p) {
 function onChange(code) { setCode(code); load() }
 
 onShow(async () => {
-  reportAccess('draw/stats', { lottery_code: store.code })
   if (!lotteries.value.length) {
     try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞统计 */ }
   }

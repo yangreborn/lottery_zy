@@ -139,6 +139,7 @@ async function onPickPurchase(rec, e) {
   if (!sel) { uni.showToast({ title: '暂无可选期次', icon: 'none' }); return }
   try {
     await purchaseCreate({ code: store.code, issue: sel.issue, numbers: rec.numbers, bet_count: 1, purchase_date: todayStr() })
+    reportAccess('mine/purchase', { action: 'mark_purchased', lottery_code: store.code })
     uni.showToast({ title: '已记录购买', icon: 'success' })
   } catch (err) {
     uni.showToast({ title: err.msg || '记录失败', icon: 'none' })
@@ -194,7 +195,6 @@ function doDelete(id) {
 }
 
 onShow(async () => {
-  reportAccess('mine/numbers', { lottery_code: lotteryStore.code })
   if (!lotteries.value.length) {
     try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞列表 */ }
   }

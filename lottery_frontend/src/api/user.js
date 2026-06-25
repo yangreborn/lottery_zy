@@ -1,6 +1,7 @@
 import { request } from './request.js'
 import { authState, setToken } from '../store/auth.js'
 import { getOrCreateDeviceCode } from '../utils/device.js'
+import { reportAccess } from '../utils/report.js'
 
 export function login(code) {
   return request('/api/user/login', { method: 'POST', data: { code } })
@@ -31,6 +32,7 @@ export async function ensureLogin() {
   const code = getOrCreateDeviceCode()
   const res = await login(code)
   setToken(res.token)
+  reportAccess('login', { action: 'login' })
   return res.token
 }
 

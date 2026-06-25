@@ -18,7 +18,6 @@ import LotteryTabs from '../../components/LotteryTabs.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
 import { getGuideList } from '../../api/guide.js'
-import { reportAccess } from '../../utils/report.js'
 
 const store = lotteryStore
 const lotteries = ref([])
@@ -40,7 +39,6 @@ function onChange(code) { setCode(code); load() }
 function goDetail(id) { uni.navigateTo({ url: `/pages/guide/detail?id=${id}` }) }
 
 onShow(async () => {
-  reportAccess('guide/index', { lottery_code: lotteryStore.code })
   if (!lotteries.value.length) {
     try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞列表 */ }
   }

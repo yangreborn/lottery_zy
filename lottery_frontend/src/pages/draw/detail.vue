@@ -26,13 +26,11 @@ import Ball from '../../components/Ball.vue'
 import PrizeGrades from '../../components/PrizeGrades.vue'
 import { getDetail } from '../../api/lottery.js'
 import { formatAmount, hasPool } from '../../utils/format.js'
-import { reportAccess } from '../../utils/report.js'
 
 const draw = ref(null)
 const emptyMsg = ref('加载中…')
 
 onLoad(async (q) => {
-  reportAccess('draw/detail', { lottery_code: q.code })
   try {
     draw.value = await getDetail(q.code, q.issue)
   } catch (e) {
