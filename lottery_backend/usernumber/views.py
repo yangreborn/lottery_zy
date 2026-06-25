@@ -2,6 +2,7 @@ import logging
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 
@@ -316,6 +317,9 @@ class WechatLoginView(APIView):
         code = request.data.get("code")
         if not code:
             return Response(make_response(code=1, msg="缺少 code"))
+        if not settings.WECHAT_APPID or not settings.WECHAT_SECRET:
+            return Response(make_response(code=1, msg="微信登录未配置",
+                                          error="后端缺少 WECHAT_APPID/WECHAT_SECRET"))
         openid = wechat_code_to_openid(code)
         if not openid:
             return Response(make_response(code=1, msg="微信登录失败", error="code 无效或已过期"))

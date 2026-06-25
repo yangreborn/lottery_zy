@@ -1,7 +1,9 @@
 from rest_framework.test import APIClient
 
 
-def test_wechat_login_success(db, monkeypatch):
+def test_wechat_login_success(db, monkeypatch, settings):
+    settings.WECHAT_APPID = "appid"
+    settings.WECHAT_SECRET = "secret"
     monkeypatch.setattr("usernumber.views.wechat_code_to_openid", lambda code: "wx-openid-123")
     c = APIClient()
     resp = c.post("/api/user/login/wechat", {"code": "wxcode"}, format="json")
@@ -12,17 +14,28 @@ def test_wechat_login_success(db, monkeypatch):
     assert c.session.get("uid")
 
 
-def test_wechat_login_failure(db, monkeypatch):
+def test_wechat_login_failure(db, monkeypatch, settings):
+    settings.WECHAT_APPID = "appid"
+    settings.WECHAT_SECRET = "secret"
     monkeypatch.setattr("usernumber.views.wechat_code_to_openid", lambda code: None)
     resp = APIClient().post("/api/user/login/wechat", {"code": "badcode"}, format="json")
     body = resp.json()
     assert body["code"] == 1
+    assert body["msg"] == "微信登录失败"
     assert body["error"]
 
 
 def test_wechat_login_missing_code(db):
     resp = APIClient().post("/api/user/login/wechat", {}, format="json")
     assert resp.json()["code"] == 1
+
+
+def test_wechat_login_not_configured(db, settings):
+    settings.WECHAT_APPID = ""
+    settings.WECHAT_SECRET = ""
+    body = APIClient().post("/api/user/login/wechat", {"code": "wxcode"}, format="json").json()
+    assert body["code"] == 1
+    assert body["msg"] == "微信登录未配置"
 
 
 def test_anonymous_login_uses_mock(db):
