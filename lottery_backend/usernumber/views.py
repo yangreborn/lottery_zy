@@ -197,5 +197,9 @@ class FeedbackCreateView(APIView):
         if len(content) > 500:
             return Response(make_response(code=1, msg="反馈内容过长"))
         contact = (request.data.get("contact") or "").strip()
-        rec = Feedback.objects.create(user_id=uid, content=content, contact=contact)
+        try:
+            rec = Feedback.objects.create(user_id=uid, content=content, contact=contact)
+        except Exception:
+            logger.error("Feedback 创建失败", exc_info=True)
+            return Response(make_response(code=1, msg="提交失败，请稍后再试"))
         return Response(make_response(data={"id": rec.id}))

@@ -13,7 +13,7 @@ def test_feedback_create_anonymous(db, api_client):
     assert resp.status_code == 200
     body = resp.json()
     assert body["code"] == 0
-    assert body["data"]["id"]
+    assert isinstance(body["data"]["id"], int) and body["data"]["id"] > 0
     rec = Feedback.objects.get(id=body["data"]["id"])
     assert rec.user_id == ""
     assert rec.content == "界面建议调大字体"
