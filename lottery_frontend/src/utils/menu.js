@@ -4,9 +4,7 @@ export const HOME_MENU = [
   { key: 'stats', title: '号码统计', icon: '📊', path: '/pages/draw/stats', nav: 'switchTab' },
   { key: 'picker', title: '选号', icon: '✏️', path: '/pages/mine/picker', nav: 'switchTab' },
   { key: 'guide', title: '玩法说明', icon: '📖', path: '/pages/guide/index', nav: 'navigateTo' },
-  { key: 'mine', title: '我的号码', icon: '⭐', path: '/pages/mine/index', nav: 'switchTab' },
-  { key: 'feedback', title: '我要反馈', icon: '💬', path: '/pages/feedback/index', nav: 'navigateTo' },
-  { key: 'purchase', title: '购买记录', icon: '🛒', path: '/pages/purchase/index', nav: 'navigateTo' },
+  { key: 'notice', title: '通知活动', icon: '📢', path: '/pages/notice/index', nav: 'navigateTo' },
   { key: 'poster', title: '开奖海报', icon: '🖼️', path: '/pages/poster/index', nav: 'navigateTo' },
 ]
 

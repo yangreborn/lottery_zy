@@ -31,7 +31,7 @@ const menu = HOME_MENU
 const topNotice = ref(null)
 function go(m) { goMenu(m) }
 function openDoc(type) { uni.navigateTo({ url: `/pages/legal/doc?type=${type}` }) }
-function goNotices() { uni.navigateTo({ url: '/pages/guide/index' }) }
+function goNotices() { uni.navigateTo({ url: '/pages/notice/index' }) }
 
 onShow(async () => {
   try {

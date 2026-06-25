@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="玩法说明" />
+    <TopBanner title="通知活动" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="types">
       <view
@@ -34,11 +34,11 @@ const lotteries = ref([])
 const items = ref([])
 const emptyMsg = ref('加载中…')
 const types = [
-  { key: 'intro,rule', label: '全部' },
-  { key: 'intro', label: '玩法说明' },
-  { key: 'rule', label: '奖级规则' },
+  { key: 'activity,notice', label: '全部' },
+  { key: 'activity', label: '活动' },
+  { key: 'notice', label: '通知' },
 ]
-const curType = ref('intro,rule')
+const curType = ref('activity,notice')
 
 async function load() {
   emptyMsg.value = '加载中…'
@@ -56,7 +56,7 @@ function chooseType(k) { curType.value = k; load() }
 function goDetail(id) { uni.navigateTo({ url: `/pages/guide/detail?id=${id}` }) }
 
 onShow(async () => {
-  reportAccess('guide/index', { lottery_code: lotteryStore.code })
+  reportAccess('notice/index', { lottery_code: lotteryStore.code })
   if (!lotteries.value.length) {
     try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞列表 */ }
   }
