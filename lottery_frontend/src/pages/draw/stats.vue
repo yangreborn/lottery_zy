@@ -1,6 +1,7 @@
 <template>
   <view class="page">
     <TopBanner title="号码统计" :back="true" />
+    <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="periods">
       <view
         v-for="p in periodOptions" :key="p"
@@ -29,13 +30,16 @@
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
+import LotteryTabs from '../../components/LotteryTabs.vue'
 import Heatmap from '../../components/Heatmap.vue'
-import { lotteryStore } from '../../store/lottery.js'
-import { getStats } from '../../api/lottery.js'
+import { lotteryStore, setCode } from '../../store/lottery.js'
+import { getStats, getLotteryList } from '../../api/lottery.js'
 import { reportAccess } from '../../utils/report.js'
 import { sortCells } from '../../utils/statsort.js'
 import { zoneLabel } from '../../utils/zones.js'
 
+const store = lotteryStore
+const lotteries = ref([])
 const periodOptions = [10, 30, 50, 100]
 const periods = ref(30)
 const sortOptions = [
@@ -68,8 +72,13 @@ function choose(p) {
   load()
 }
 
-onShow(() => {
+function onChange(code) { setCode(code); load() }
+
+onShow(async () => {
   reportAccess('draw/stats', { lottery_code: lotteryStore.code })
+  if (!lotteries.value.length) {
+    try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞统计 */ }
+  }
   load()
 })
 </script>
