@@ -35,6 +35,31 @@ class LoginView(APIView):
         return Response(make_response(data={"logged_in": True, "token": uid}))
 
 
+class ProfileView(APIView):
+    """GET/POST /api/user/profile —— 读取/设置当前用户昵称。"""
+    authentication_classes = []
+
+    def get(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        user = AppUser.objects.filter(user_id=uid).first()
+        nickname = user.nickname if user else ""
+        return Response(make_response(data={"nickname": nickname, "short_id": uid[:8]}))
+
+    def post(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        nickname = (request.data.get("nickname") or "").strip()
+        if len(nickname) > 30:
+            return Response(make_response(code=1, msg="昵称过长", error="昵称不超过 30 字符"))
+        user = get_or_create_app_user(uid, uid)
+        user.nickname = nickname
+        user.save(update_fields=["nickname", "updated_at"])
+        return Response(make_response(data={"nickname": user.nickname, "short_id": user.short_id}))
+
+
 class NumberCreateView(APIView):
     """POST /api/user/number/create —— 保存一注号码(手动/机选/定胆随机)。"""
     authentication_classes = []
