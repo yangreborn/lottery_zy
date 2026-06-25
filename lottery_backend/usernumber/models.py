@@ -26,3 +26,18 @@ class UserNumber(models.Model):
 
     def __str__(self):
         return f"{self.user_id[:8]} {self.lottery.code}"
+
+
+class Feedback(models.Model):
+    """用户反馈。user_id 存 hash，匿名时为空串。"""
+    user_id = models.CharField("用户哈希", max_length=64, blank=True, default="", db_index=True)
+    content = models.TextField("反馈内容")
+    contact = models.CharField("联系方式", max_length=100, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = verbose_name_plural = "用户反馈"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user_id[:8] or '匿名'} {self.content[:20]}"

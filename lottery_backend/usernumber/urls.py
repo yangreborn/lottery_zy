@@ -3,6 +3,7 @@ from usernumber import views
 
 urlpatterns = [
     path("login", views.LoginView.as_view(), name="user-login"),
+    path("feedback", views.FeedbackCreateView.as_view(), name="user-feedback"),
     path("number/create", views.NumberCreateView.as_view(), name="user-number-create"),
     path("number/list", views.NumberListView.as_view(), name="user-number-list"),
     path("number/check", views.NumberCheckView.as_view(), name="user-number-check"),

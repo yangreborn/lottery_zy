@@ -7,7 +7,7 @@ from common.utils import make_response
 from common.auth import code_to_openid, set_user_session, current_user_id
 from lottery.views import _get_active_lottery
 from lottery.validators import validate_numbers
-from usernumber.models import UserNumber
+from usernumber.models import UserNumber, Feedback
 from usernumber.generator import random_numbers, dan_random_numbers
 from usernumber.serializers import UserNumberSerializer
 from lottery.models import DrawResult
@@ -183,3 +183,19 @@ class NumberGroupView(APIView):
         rec.group_name = group_name
         rec.save(update_fields=["group_name"])
         return Response(make_response(data=UserNumberSerializer(rec).data))
+
+
+class FeedbackCreateView(APIView):
+    """POST /api/user/feedback —— 提交用户反馈(匿名可提交)。"""
+    authentication_classes = []
+
+    def post(self, request):
+        uid = current_user_id(request) or ""
+        content = (request.data.get("content") or "").strip()
+        if not content:
+            return Response(make_response(code=1, msg="请填写反馈内容"))
+        if len(content) > 500:
+            return Response(make_response(code=1, msg="反馈内容过长"))
+        contact = (request.data.get("contact") or "").strip()
+        rec = Feedback.objects.create(user_id=uid, content=content, contact=contact)
+        return Response(make_response(data={"id": rec.id}))
