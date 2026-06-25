@@ -5,6 +5,11 @@
       <text class="astate">{{ auth.isWechat ? '已微信登录' : '匿名使用中' }}</text>
       <text class="abtn" @click="auth.isWechat ? doLogout() : doWechatLogin()">{{ auth.isWechat ? '退出' : '微信登录' }}</text>
     </view>
+    <view class="profile" @click="editNickname">
+      <text class="plabel">昵称</text>
+      <text class="pval">{{ nickname || '点击设置' }}</text>
+      <text class="arr">›</text>
+    </view>
     <view class="menu">
       <view class="entry" @click="go('/pages/mine/numbers')">
         <text class="ic">⭐</text><text class="tx">我的号码</text><text class="arr">›</text>
@@ -20,14 +25,39 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
-import { ensureLogin, wechatLogin } from '../../api/user.js'
+import { ensureLogin, wechatLogin, getProfile, setProfile } from '../../api/user.js'
 import { authState, setToken } from '../../store/auth.js'
 import { reportAccess } from '../../utils/report.js'
 
 const auth = authState
+const nickname = ref('')
 function go(url) { uni.navigateTo({ url }) }
+
+async function loadProfile() {
+  try { const p = await getProfile(); nickname.value = p.nickname || '' } catch (e) { /* 容错: 资料拉取失败不阻塞 */ }
+}
+
+function editNickname() {
+  uni.showModal({
+    title: '设置昵称',
+    editable: true,
+    placeholderText: '输入昵称(≤30字)',
+    content: nickname.value,
+    success: async (res) => {
+      if (!res.confirm) return
+      try {
+        const p = await setProfile((res.content || '').trim())
+        nickname.value = p.nickname || ''
+        uni.showToast({ title: '已保存', icon: 'success' })
+      } catch (e) {
+        uni.showToast({ title: e.msg || '保存失败', icon: 'none' })
+      }
+    },
+  })
+}
 
 function doWechatLogin() {
   uni.login({
@@ -37,6 +67,7 @@ function doWechatLogin() {
         const res = await wechatLogin(r.code)
         setToken(res.token, true)
         uni.showToast({ title: '登录成功', icon: 'success' })
+        loadProfile()
       } catch (e) {
         uni.showToast({ title: e.msg || '登录失败', icon: 'none' })
       }
@@ -48,11 +79,13 @@ function doWechatLogin() {
 function doLogout() {
   setToken('', false)
   uni.showToast({ title: '已退出', icon: 'none' })
+  loadProfile()
 }
 
-onShow(() => {
+onShow(async () => {
   reportAccess('mine/index', {})
-  ensureLogin()
+  await ensureLogin()
+  loadProfile()
 })
 </script>
 
@@ -60,6 +93,9 @@ onShow(() => {
 .authbar { display: flex; justify-content: space-between; align-items: center; padding: 24rpx; }
 .astate { font-size: 28rpx; color: #888; }
 .abtn { font-size: 28rpx; color: #e53935; }
+.profile { display: flex; align-items: center; margin: 0 20rpx 12rpx; background: #fff; border-radius: 16rpx; padding: 28rpx; }
+.plabel { color: #888; font-size: 30rpx; margin-right: 24rpx; }
+.pval { flex: 1; color: #333; font-size: 30rpx; }
 .menu { margin: 12rpx 20rpx; background: #fff; border-radius: 16rpx; overflow: hidden; }
 .entry { display: flex; align-items: center; padding: 32rpx 28rpx; border-bottom: 1rpx solid #f3f3f3; }
 .entry:last-child { border-bottom: none; }

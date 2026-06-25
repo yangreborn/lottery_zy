@@ -65,3 +65,11 @@ export function purchaseList(code) {
 export function purchaseDelete(id) {
   return request(`/api/user/purchase/${id}`, { method: 'DELETE' })
 }
+
+export function getProfile() {
+  return request('/api/user/profile')
+}
+
+export function setProfile(nickname) {
+  return request('/api/user/profile', { method: 'POST', data: { nickname } })
+}
