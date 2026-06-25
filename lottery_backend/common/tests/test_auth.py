@@ -46,3 +46,40 @@ def test_session_roundtrip():
 def test_current_user_id_none_when_not_logged_in():
     req = _request_with_session()
     assert auth.current_user_id(req) is None
+
+
+class _Resp:
+    def __init__(self, payload):
+        import json as _json
+        self._p = _json.dumps(payload).encode()
+
+    def read(self):
+        return self._p
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+
+def test_session_parses_openid_unionid(monkeypatch):
+    monkeypatch.setattr(auth.urllib.request, "urlopen", lambda url, timeout=5: _Resp({"openid": "o1", "unionid": "u1"}))
+    assert auth.wechat_code_to_session("c") == {"openid": "o1", "unionid": "u1"}
+
+
+def test_session_unionid_absent_is_blank(monkeypatch):
+    monkeypatch.setattr(auth.urllib.request, "urlopen", lambda url, timeout=5: _Resp({"openid": "o2"}))
+    assert auth.wechat_code_to_session("c") == {"openid": "o2", "unionid": ""}
+
+
+def test_session_no_openid_returns_none(monkeypatch):
+    monkeypatch.setattr(auth.urllib.request, "urlopen", lambda url, timeout=5: _Resp({"errcode": 40029}))
+    assert auth.wechat_code_to_session("c") is None
+
+
+def test_wechat_code_to_openid_reuses_session(monkeypatch):
+    monkeypatch.setattr(auth, "wechat_code_to_session", lambda code: {"openid": "ox", "unionid": ""})
+    assert auth.wechat_code_to_openid("c") == "ox"
+    monkeypatch.setattr(auth, "wechat_code_to_session", lambda code: None)
+    assert auth.wechat_code_to_openid("c") is None

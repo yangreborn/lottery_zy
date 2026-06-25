@@ -24,8 +24,8 @@ def mock_code_to_openid(code):
     return code
 
 
-def wechat_code_to_openid(code):
-    """真实微信 code2session，换取 openid；失败返回 None。"""
+def wechat_code_to_session(code):
+    """真实微信 code2session，返回 {openid, unionid}；失败返回 None。"""
     params = urllib.parse.urlencode({
         "appid": settings.WECHAT_APPID,
         "secret": settings.WECHAT_SECRET,
@@ -42,7 +42,14 @@ def wechat_code_to_openid(code):
     openid = data.get("openid")
     if not openid:
         logger.warning("微信 code2session 未返回 openid: %s", data)
-    return openid
+        return None
+    return {"openid": openid, "unionid": data.get("unionid", "") or ""}
+
+
+def wechat_code_to_openid(code):
+    """真实微信 code2session，换取 openid；失败返回 None。"""
+    session = wechat_code_to_session(code)
+    return session["openid"] if session else None
 
 
 def code_to_openid(code):
