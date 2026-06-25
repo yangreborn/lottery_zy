@@ -38,6 +38,9 @@ function roundRect(ctx, x, y, w, h, r) {
 
 export function drawPoster(ctx, data, theme, scale = 1) {
   const W = 600, H = 840
+  // save/restore 包裹变换：createCanvasContext 在 H5 复用底层 context，
+  // 不还原会让每次 redraw 的 scale 累积(scale²)，海报逐次缩小并再次截断。
+  ctx.save()
   ctx.scale(scale, scale)
 
   // 背景渐变
@@ -126,5 +129,6 @@ export function drawPoster(ctx, data, theme, scale = 1) {
   ctx.setFontSize(20)
   ctx.fillText('彩票工具', W / 2, H - 26)
 
+  ctx.restore()
   ctx.draw()
 }
