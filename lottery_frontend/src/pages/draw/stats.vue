@@ -58,7 +58,7 @@ function sortedOf(z) {
 
 async function load() {
   try {
-    const res = await getStats(lotteryStore.code, periods.value)
+    const res = await getStats(store.code, periods.value)
     statsData.value = res || {}
     if (!zoneKeys.value.length) emptyMsg.value = '暂无数据'
   } catch (e) {
@@ -75,7 +75,7 @@ function choose(p) {
 function onChange(code) { setCode(code); load() }
 
 onShow(async () => {
-  reportAccess('draw/stats', { lottery_code: lotteryStore.code })
+  reportAccess('draw/stats', { lottery_code: store.code })
   if (!lotteries.value.length) {
     try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞统计 */ }
   }
