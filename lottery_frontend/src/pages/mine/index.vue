@@ -55,12 +55,22 @@ function editNickname() {
 }
 
 function doWechatLogin() {
+  // 先在点击手势内弹授权取微信昵称（非微信环境会 fail，则置空继续）
+  uni.getUserProfile({
+    desc: '用于完善个人资料',
+    success: (p) => finishWechatLogin(p.userInfo && p.userInfo.nickName),
+    fail: () => finishWechatLogin(''),
+  })
+}
+
+function finishWechatLogin(nickName) {
   uni.login({
     success: async (r) => {
       if (!r.code) { uni.showToast({ title: '请在微信小程序中使用', icon: 'none' }); return }
       try {
         const res = await wechatLogin(r.code)
         setToken(res.token, true)
+        if (nickName) { try { await setProfile(nickName) } catch (e) { /* 昵称写入失败不阻塞登录 */ } }
         uni.showToast({ title: '登录成功', icon: 'success' })
         loadProfile()
       } catch (e) {
