@@ -12,8 +12,8 @@
           <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" :pad="key === 'digits' ? 1 : 2" />
         </template>
       </view>
-      <view class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
-      <PrizeGrades :grades="draw.prize_grades" :area="draw.prize_area" />
+      <view v-if="hasPool(draw.pool_amount)" class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
+      <PrizeGrades :grades="draw.prize_grades" />
     </view>
     <view v-else class="empty">{{ emptyMsg }}</view>
   </view>
@@ -28,7 +28,7 @@ import Ball from '../../components/Ball.vue'
 import PrizeGrades from '../../components/PrizeGrades.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList, getLatest } from '../../api/lottery.js'
-import { formatAmount } from '../../utils/format.js'
+import { formatAmount, hasPool } from '../../utils/format.js'
 import { reportAccess } from '../../utils/report.js'
 
 const store = lotteryStore
