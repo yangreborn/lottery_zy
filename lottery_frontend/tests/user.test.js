@@ -4,7 +4,7 @@ vi.mock('../src/api/request.js', () => ({
   request: vi.fn(() => Promise.resolve({ token: 'T' })),
 }))
 import { request } from '../src/api/request.js'
-import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers, submitFeedback } from '../src/api/user.js'
+import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers, submitFeedback, batchDelete, batchGroup } from '../src/api/user.js'
 
 describe('user api', () => {
   beforeEach(() => { request.mockClear() })
@@ -40,5 +40,13 @@ describe('user api', () => {
   it('submitFeedback', async () => {
     await submitFeedback({ content: '建议', contact: 'wx123' })
     expect(request).toHaveBeenCalledWith('/api/user/feedback', { method: 'POST', data: { content: '建议', contact: 'wx123' } })
+  })
+  it('batchDelete', async () => {
+    await batchDelete([1, 2])
+    expect(request).toHaveBeenCalledWith('/api/user/number/batch_delete', { method: 'POST', data: { ids: [1, 2] } })
+  })
+  it('batchGroup', async () => {
+    await batchGroup([1, 2], 'A')
+    expect(request).toHaveBeenCalledWith('/api/user/number/batch_group', { method: 'POST', data: { ids: [1, 2], group_name: 'A' } })
   })
 })

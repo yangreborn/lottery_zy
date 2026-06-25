@@ -41,3 +41,11 @@ export function setGroup(id, group_name) {
 export function submitFeedback({ content, contact }) {
   return request('/api/user/feedback', { method: 'POST', data: { content, contact } })
 }
+
+export function batchDelete(ids) {
+  return request('/api/user/number/batch_delete', { method: 'POST', data: { ids } })
+}
+
+export function batchGroup(ids, group_name) {
+  return request('/api/user/number/batch_group', { method: 'POST', data: { ids, group_name } })
+}
