@@ -1,6 +1,7 @@
 <template>
   <view class="page">
     <TopBanner title="选号" :back="true" />
+    <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <template v-if="zones.length">
       <view class="modes">
         <view class="mode" :class="{ active: mode === 'jixuan' }" @click="mode = 'jixuan'"><text>机选</text></view>
@@ -82,9 +83,10 @@
 import { ref, computed, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
+import LotteryTabs from '../../components/LotteryTabs.vue'
 import Ball from '../../components/Ball.vue'
 import BallSelectable from '../../components/BallSelectable.vue'
-import { lotteryStore } from '../../store/lottery.js'
+import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
 import { ensureLogin, createNumber, generateNumbers } from '../../api/user.js'
 import { toggleBall, selectionComplete, toggleIndex, digitsFilled } from '../../utils/picker.js'
@@ -94,7 +96,8 @@ import { reportAccess } from '../../utils/report.js'
 const rule = ref(null)
 const emptyMsg = ref('加载中…')
 const mode = ref('jixuan')
-const code = lotteryStore.code
+const store = lotteryStore
+const lotteries = ref([])
 
 const zones = computed(() => getZones(rule.value))
 const variableZone = computed(
@@ -155,7 +158,7 @@ async function doGenerate(n) {
   lastCount.value = n
   try {
     await ensureLogin()
-    const res = await generateNumbers(code, n, picksObj.value)
+    const res = await generateNumbers(store.code, n, picksObj.value)
     sets.value = res.sets || []
     selected.value = sets.value.map((_, i) => i)
   } catch (e) {
@@ -170,7 +173,7 @@ const targetIssue = ref('')
 
 async function saveOne(numbers, genType) {
   await ensureLogin()
-  return createNumber({ code, gen_type: genType, numbers, note: note.value, target_issue: targetIssue.value })
+  return createNumber({ code: store.code, gen_type: genType, numbers, note: note.value, target_issue: targetIssue.value })
 }
 
 async function saveManual() {
@@ -178,7 +181,7 @@ async function saveManual() {
   try {
     await saveOne({ ...sel }, 'manual')
     uni.showToast({ title: '已保存', icon: 'success' })
-    reportAccess('mine/create', { lottery_code: code, action: 'save_number' })
+    reportAccess('mine/create', { lottery_code: store.code, action: 'save_number' })
     setTimeout(() => uni.switchTab({ url: '/pages/mine/index' }), 600)
   } catch (e) {
     uni.showToast({ title: e.msg || '保存失败', icon: 'none' })
@@ -196,23 +199,32 @@ async function saveBatch() {
     try { await saveOne(sets.value[i], 'random'); ok += 1 } catch (e) { fail += 1 }
   }
   uni.showToast({ title: fail ? `成功${ok}注 失败${fail}注` : `已保存${ok}注`, icon: fail ? 'none' : 'success' })
-  if (ok > 0) reportAccess('mine/create', { lottery_code: code, action: 'save_number' })
+  if (ok > 0) reportAccess('mine/create', { lottery_code: store.code, action: 'save_number' })
   if (ok && !fail) setTimeout(() => uni.switchTab({ url: '/pages/mine/index' }), 700)
 }
 
+function initRule() {
+  const found = lotteries.value.find((l) => l.code === store.code)
+  if (!found) { rule.value = null; emptyMsg.value = '彩种不存在'; return }
+  rule.value = found.rule_config
+  // 切换彩种：清空旧选号上下文，按新 zones 重建
+  for (const k of Object.keys(sel)) delete sel[k]
+  for (const z of zones.value) {
+    sel[z.key] = z.ordered && z.allow_repeat ? new Array(z.count).fill(null) : []
+  }
+  pickCount.value = variableZone.value ? variableZone.value.pick_min : 0
+  sets.value = []
+  selected.value = []
+  note.value = ''
+  targetIssue.value = ''
+}
+
+function onChange(c) { setCode(c); initRule() }
+
 onLoad(async () => {
   try {
-    const list = await getLotteryList()
-    const found = list.find((l) => l.code === code)
-    if (found) {
-      rule.value = found.rule_config
-      for (const z of zones.value) {
-        sel[z.key] = z.ordered && z.allow_repeat ? new Array(z.count).fill(null) : []
-      }
-      if (variableZone.value) pickCount.value = variableZone.value.pick_min
-    } else {
-      emptyMsg.value = '彩种不存在'
-    }
+    lotteries.value = await getLotteryList()
+    initRule()
   } catch (e) {
     emptyMsg.value = e.msg || '加载失败'
   }
