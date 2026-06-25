@@ -62,3 +62,24 @@ def test_detail_missing(ssq):
 
 def test_detail_invalid_id(ssq):
     assert APIClient().get("/api/openapi/guide/detail?id=abc").json()["code"] == 1
+
+
+def test_list_important_filter(ssq):
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="重要通知", is_important=True)
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="普通通知", is_important=False)
+    titles = [g["title"] for g in APIClient().get("/api/openapi/guide/list?code=ssq&important=1").json()["data"]]
+    assert "重要通知" in titles
+    assert "普通通知" not in titles
+
+
+def test_list_serializer_has_is_important(ssq):
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="通知", is_important=True)
+    data = APIClient().get("/api/openapi/guide/list?code=ssq").json()["data"]
+    assert data[0]["is_important"] is True
+
+
+def test_list_notice_type_filter(ssq):
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="通知一")
+    PlayGuide.objects.create(lottery=ssq, type="intro", title="玩法一")
+    titles = [g["title"] for g in APIClient().get("/api/openapi/guide/list?code=ssq&type=notice").json()["data"]]
+    assert titles == ["通知一"]

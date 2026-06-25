@@ -30,6 +30,8 @@ class GuideListView(APIView):
         gtype = request.query_params.get("type")
         if gtype:
             qs = qs.filter(type=gtype)
+        if request.query_params.get("important"):
+            qs = qs.filter(is_important=True)
         return Response(make_response(data=GuideListSerializer(qs, many=True).data))
 
 

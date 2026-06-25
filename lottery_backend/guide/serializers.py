@@ -7,7 +7,7 @@ class GuideListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PlayGuide
-        fields = ["id", "type", "type_label", "title", "sort", "publish_at"]
+        fields = ["id", "type", "type_label", "title", "sort", "publish_at", "is_important"]
 
 
 class GuideDetailSerializer(serializers.ModelSerializer):
@@ -15,4 +15,4 @@ class GuideDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PlayGuide
-        fields = ["id", "type", "type_label", "title", "content", "sort", "publish_at"]
+        fields = ["id", "type", "type_label", "title", "content", "sort", "publish_at", "is_important"]

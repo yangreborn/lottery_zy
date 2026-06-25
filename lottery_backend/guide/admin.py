@@ -4,7 +4,7 @@ from guide.models import PlayGuide
 
 @admin.register(PlayGuide)
 class PlayGuideAdmin(admin.ModelAdmin):
-    list_display = ("title", "type", "lottery", "is_active", "sort", "publish_at")
-    list_filter = ("type", "is_active", "lottery")
+    list_display = ("title", "type", "lottery", "is_active", "is_important", "sort", "publish_at")
+    list_filter = ("type", "is_active", "is_important", "lottery")
     search_fields = ("title", "content")
-    list_editable = ("is_active", "sort")
+    list_editable = ("is_active", "is_important", "sort")
