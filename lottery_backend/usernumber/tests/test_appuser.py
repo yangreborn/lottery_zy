@@ -12,6 +12,12 @@ def test_get_or_create_app_user_idempotent():
 
 
 @pytest.mark.django_db
+def test_appuser_unionid_default_blank():
+    u = get_or_create_app_user("hashu", "openidu")
+    assert u.unionid == ""
+
+
+@pytest.mark.django_db
 def test_short_id_and_str():
     u = get_or_create_app_user("abcdef0123456789", "openid-x")
     u.nickname = "小明"

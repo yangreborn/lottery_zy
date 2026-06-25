@@ -66,6 +66,7 @@ class AppUser(models.Model):
     """登录用户档案。user_id 是 openid 的 hash(对外标识)，openid 仅后台留存。"""
     user_id = models.CharField("用户哈希", max_length=64, unique=True, db_index=True)
     openid = models.CharField("openid", max_length=128, unique=True)
+    unionid = models.CharField("unionid", max_length=128, blank=True, default="", db_index=True)
     nickname = models.CharField("昵称", max_length=30, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
