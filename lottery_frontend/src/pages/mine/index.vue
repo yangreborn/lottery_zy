@@ -2,13 +2,8 @@
   <view class="page">
     <TopBanner title="我的" />
     <view class="authbar">
-      <text class="astate">{{ auth.isWechat ? '已微信登录' : '匿名使用中' }}</text>
+      <text class="uname" @click="editNickname">{{ nickname || '点击设置昵称' }}</text>
       <text class="abtn" @click="auth.isWechat ? doLogout() : doWechatLogin()">{{ auth.isWechat ? '退出' : '微信登录' }}</text>
-    </view>
-    <view class="profile" @click="editNickname">
-      <text class="plabel">昵称</text>
-      <text class="pval">{{ nickname || '点击设置' }}</text>
-      <text class="arr">›</text>
     </view>
     <view class="menu">
       <view class="entry" @click="go('/pages/mine/numbers')">
@@ -90,12 +85,9 @@ onShow(async () => {
 </script>
 
 <style scoped>
-.authbar { display: flex; justify-content: space-between; align-items: center; padding: 24rpx; }
-.astate { font-size: 28rpx; color: #888; }
+.authbar { display: flex; justify-content: space-between; align-items: center; padding: 32rpx 24rpx; }
+.uname { font-size: 34rpx; color: #333; font-weight: 600; }
 .abtn { font-size: 28rpx; color: #e53935; }
-.profile { display: flex; align-items: center; margin: 0 20rpx 12rpx; background: #fff; border-radius: 16rpx; padding: 28rpx; }
-.plabel { color: #888; font-size: 30rpx; margin-right: 24rpx; }
-.pval { flex: 1; color: #333; font-size: 30rpx; }
 .menu { margin: 12rpx 20rpx; background: #fff; border-radius: 16rpx; overflow: hidden; }
 .entry { display: flex; align-items: center; padding: 32rpx 28rpx; border-bottom: 1rpx solid #f3f3f3; }
 .entry:last-child { border-bottom: none; }
