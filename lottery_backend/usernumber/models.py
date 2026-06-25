@@ -60,3 +60,28 @@ class PurchaseRecord(models.Model):
 
     def __str__(self):
         return f"{self.user_id[:8]} {self.lottery.code} {self.issue}"
+
+
+class AppUser(models.Model):
+    """登录用户档案。user_id 是 openid 的 hash(对外标识)，openid 仅后台留存。"""
+    user_id = models.CharField("用户哈希", max_length=64, unique=True, db_index=True)
+    openid = models.CharField("openid", max_length=128, unique=True)
+    nickname = models.CharField("昵称", max_length=30, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = verbose_name_plural = "用户"
+        ordering = ["-created_at"]
+
+    @property
+    def short_id(self):
+        return self.user_id[:8]
+
+    def __str__(self):
+        return f"#{self.id} {self.nickname or self.short_id}"
+
+
+def get_or_create_app_user(user_id, openid):
+    user, _ = AppUser.objects.get_or_create(user_id=user_id, defaults={"openid": openid})
+    return user
