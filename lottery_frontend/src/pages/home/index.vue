@@ -1,6 +1,7 @@
 <template>
   <view class="home">
     <view class="banner"><text class="bt">彩票查询</text></view>
+    <NoticeBar :notice="topNotice" @tap="goNotices" />
     <view class="grid">
       <view v-for="m in menu" :key="m.key" class="mcard" @click="go(m)">
         <text class="ic">{{ m.icon }}</text>
@@ -19,11 +20,27 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+import NoticeBar from '../../components/NoticeBar.vue'
 import { HOME_MENU, goMenu } from '../../utils/menu.js'
+import { getNotices } from '../../api/guide.js'
+import { lotteryStore } from '../../store/lottery.js'
 
 const menu = HOME_MENU
+const topNotice = ref(null)
 function go(m) { goMenu(m) }
 function openDoc(type) { uni.navigateTo({ url: `/pages/legal/doc?type=${type}` }) }
+function goNotices() { uni.navigateTo({ url: '/pages/guide/index' }) }
+
+onShow(async () => {
+  try {
+    const list = await getNotices(lotteryStore.code)
+    topNotice.value = (list && list.length) ? list[0] : null
+  } catch (e) {
+    topNotice.value = null
+  }
+})
 </script>
 
 <style scoped>

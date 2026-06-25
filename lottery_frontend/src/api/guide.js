@@ -10,3 +10,9 @@ export function getGuideList(code, type) {
 export function getGuideDetail(id) {
   return request('/api/openapi/guide/detail', { data: { id } })
 }
+
+export function getNotices(code) {
+  const data = { important: 1 }
+  if (code) data.code = code
+  return request('/api/openapi/guide/list', { data })
+}
