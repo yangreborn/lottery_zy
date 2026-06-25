@@ -21,3 +21,9 @@ export function groupRecords(items) {
   if (map.has('未分组')) result.push({ name: '未分组', records: map.get('未分组') })
   return result
 }
+
+export function todayStr() {
+  const d = new Date()
+  const p = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}

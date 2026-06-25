@@ -11,7 +11,8 @@
     { "path": "pages/mine/picker", "style": { "navigationBarTitleText": "选号" } },
     { "path": "pages/legal/doc", "style": { "navigationBarTitleText": "协议" } },
     { "path": "pages/feedback/index", "style": { "navigationBarTitleText": "我要反馈" } },
-    { "path": "pages/purchase/index", "style": { "navigationBarTitleText": "购买记录" } }
+    { "path": "pages/purchase/index", "style": { "navigationBarTitleText": "购买记录" } },
+    { "path": "pages/purchase/create", "style": { "navigationBarTitleText": "新增购买" } }
   ],
   "tabBar": {
     "color": "#666",

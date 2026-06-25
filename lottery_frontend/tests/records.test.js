@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatTime, groupRecords } from '../src/utils/records.js'
+import { formatTime, groupRecords, todayStr } from '../src/utils/records.js'
 
 describe('formatTime', () => {
   it('格式化为 YYYY-MM-DD HH:mm', () => {
@@ -10,6 +10,12 @@ describe('formatTime', () => {
     expect(formatTime('')).toBe('')
     expect(formatTime(null)).toBe('')
     expect(formatTime('not-a-date')).toBe('')
+  })
+})
+
+describe('todayStr', () => {
+  it('返回 YYYY-MM-DD 格式', () => {
+    expect(todayStr()).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 })
 
