@@ -25,3 +25,10 @@ def test_nickname_too_long(db):
     _login(c)
     r = c.post("/api/user/profile", {"nickname": "x" * 31}, format="json").json()
     assert r["code"] == 1
+
+
+def test_set_nickname_without_appuser_record(db):
+    # 持有合法 uid(头)但从未登录建档 → profile 不建档，拒绝
+    body = APIClient().post("/api/user/profile", {"nickname": "x"},
+                            HTTP_X_USER_ID="ab" * 32, format="json").json()
+    assert body["code"] == 1

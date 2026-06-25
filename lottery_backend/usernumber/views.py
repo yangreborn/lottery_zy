@@ -54,7 +54,10 @@ class ProfileView(APIView):
         nickname = (request.data.get("nickname") or "").strip()
         if len(nickname) > 30:
             return Response(make_response(code=1, msg="昵称过长", error="昵称不超过 30 字符"))
-        user = get_or_create_app_user(uid, uid)
+        # 不在此建档：档案只在登录时创建，避免写入以 hash 兜底的脏 openid
+        user = AppUser.objects.filter(user_id=uid).first()
+        if user is None:
+            return Response(make_response(code=1, msg="请先登录", error="用户档案不存在"))
         user.nickname = nickname
         user.save(update_fields=["nickname", "updated_at"])
         return Response(make_response(data={"nickname": user.nickname, "short_id": user.short_id}))
