@@ -23,6 +23,7 @@
           <button class="btn" size="mini" @click="doGenerate(10)">机选10注</button>
           <button class="btn alt" size="mini" :disabled="!sets.length" @click="reroll">换一批</button>
         </view>
+        <view class="rand-tip">机选号码为系统纯随机生成，不含任何预测或分析成分</view>
         <view
           v-for="(s, i) in sets" :key="i"
           class="setrow" :class="{ sel: selected.includes(i) }" @click="toggleSel(i)"
@@ -228,6 +229,7 @@ onLoad(async () => {
 .popt { padding: 10rpx 22rpx; margin: 6rpx 14rpx 6rpx 0; background: #f5f5f5; border-radius: 28rpx; color: #666; font-size: 28rpx; }
 .popt.active { background: #fb8c00; color: #fff; }
 .gen-bar { display: flex; flex-wrap: wrap; padding: 12rpx 20rpx; }
+.rand-tip { padding: 0 20rpx 10rpx; color: #999; font-size: 24rpx; }
 .setrow { display: flex; align-items: center; background: #fff; margin: 12rpx 20rpx; padding: 18rpx; border-radius: 12rpx; border: 2rpx solid transparent; }
 .setrow.sel { border-color: #e53935; }
 .chk { font-size: 34rpx; color: #e53935; width: 48rpx; }

@@ -99,13 +99,20 @@ async function doCheck(id) {
   }
 }
 
-async function doDelete(id) {
-  try {
-    await deleteNumber(id)
-    load()
-  } catch (e) {
-    uni.showToast({ title: e.msg || '删除失败', icon: 'none' })
-  }
+function doDelete(id) {
+  uni.showModal({
+    title: '确认删除',
+    content: '删除后不可恢复，确定删除这条号码？',
+    success: async (res) => {
+      if (!res.confirm) return
+      try {
+        await deleteNumber(id)
+        load()
+      } catch (e) {
+        uni.showToast({ title: e.msg || '删除失败', icon: 'none' })
+      }
+    },
+  })
 }
 
 onShow(async () => {
