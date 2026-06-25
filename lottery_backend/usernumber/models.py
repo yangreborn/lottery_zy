@@ -41,3 +41,22 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.user_id[:8] or '匿名'} {self.content[:20]}"
+
+
+class PurchaseRecord(models.Model):
+    """用户实际购买记录，独立于 UserNumber(只选不买)。"""
+    user_id = models.CharField("用户哈希", max_length=64, db_index=True)
+    lottery = models.ForeignKey(Lottery, on_delete=models.CASCADE,
+                                related_name="purchases", verbose_name="彩种")
+    issue = models.CharField("期号", max_length=20)
+    numbers = models.JSONField("号码", default=dict)
+    bet_count = models.PositiveIntegerField("注数", default=1)
+    purchase_date = models.DateField("购买日期")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = verbose_name_plural = "购买记录"
+        ordering = ["-purchase_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.user_id[:8]} {self.lottery.code} {self.issue}"

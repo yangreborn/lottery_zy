@@ -2,14 +2,16 @@ import logging
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.utils import timezone
+from django.utils.dateparse import parse_date
 
 from common.utils import make_response
 from common.auth import code_to_openid, set_user_session, current_user_id
 from lottery.views import _get_active_lottery
 from lottery.validators import validate_numbers
-from usernumber.models import UserNumber, Feedback
+from usernumber.models import UserNumber, Feedback, PurchaseRecord
 from usernumber.generator import random_numbers, dan_random_numbers
-from usernumber.serializers import UserNumberSerializer
+from usernumber.serializers import UserNumberSerializer, PurchaseRecordSerializer
 from lottery.models import DrawResult
 from usernumber.judge import judge_prize, judge_keno, judge_digit
 
@@ -234,3 +236,73 @@ class BatchGroupView(APIView):
         group_name = str(request.data.get("group_name") or "").strip()[:50]
         n = UserNumber.objects.filter(id__in=ids, user_id=uid).update(group_name=group_name)
         return Response(make_response(data={"updated": n}))
+
+
+class PurchaseCreateView(APIView):
+    """POST /api/user/purchase/create —— 记录一条实际购买。"""
+    authentication_classes = []
+
+    def post(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        code = request.data.get("code")
+        lottery = _get_active_lottery(code)
+        if lottery is None:
+            return Response(make_response(code=1, msg="未知彩种", error=f"code={code}"))
+        issue = str(request.data.get("issue") or "").strip()
+        if not issue:
+            return Response(make_response(code=1, msg="请填写期号"))
+        numbers = request.data.get("numbers") or {}
+        errors = validate_numbers(lottery.rule_config, numbers)
+        if errors:
+            return Response(make_response(code=1, msg="号码非法", error="; ".join(errors)))
+        try:
+            bet_count = int(request.data.get("bet_count", 1))
+        except (TypeError, ValueError):
+            bet_count = 1
+        if bet_count < 1:
+            bet_count = 1
+        raw_date = request.data.get("purchase_date")
+        if raw_date:
+            parsed = parse_date(str(raw_date))
+            if parsed is None:
+                return Response(make_response(code=1, msg="购买日期非法"))
+            purchase_date = parsed
+        else:
+            purchase_date = timezone.now().date()
+        rec = PurchaseRecord.objects.create(
+            user_id=uid, lottery=lottery, issue=issue, numbers=numbers,
+            bet_count=bet_count, purchase_date=purchase_date,
+        )
+        return Response(make_response(data=PurchaseRecordSerializer(rec).data))
+
+
+class PurchaseListView(APIView):
+    """GET /api/user/purchase/list?code= —— 当前用户购买记录。"""
+    authentication_classes = []
+
+    def get(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        qs = PurchaseRecord.objects.filter(user_id=uid)
+        code = request.query_params.get("code")
+        if code:
+            qs = qs.filter(lottery__code=code)
+        return Response(make_response(data=PurchaseRecordSerializer(qs, many=True).data))
+
+
+class PurchaseDeleteView(APIView):
+    """DELETE /api/user/purchase/<id> —— 删除自己的购买记录。"""
+    authentication_classes = []
+
+    def delete(self, request, pk):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        rec = PurchaseRecord.objects.filter(id=pk, user_id=uid).first()
+        if rec is None:
+            return Response(make_response(code=1, msg="记录不存在"))
+        rec.delete()
+        return Response(make_response(data={"deleted": True}))

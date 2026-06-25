@@ -12,4 +12,7 @@ urlpatterns = [
     path("number/batch_delete", views.BatchDeleteView.as_view(), name="user-number-batch-delete"),
     path("number/batch_group", views.BatchGroupView.as_view(), name="user-number-batch-group"),
     path("number/<int:pk>", views.NumberDeleteView.as_view(), name="user-number-delete"),
+    path("purchase/create", views.PurchaseCreateView.as_view(), name="user-purchase-create"),
+    path("purchase/list", views.PurchaseListView.as_view(), name="user-purchase-list"),
+    path("purchase/<int:pk>", views.PurchaseDeleteView.as_view(), name="user-purchase-delete"),
 ]

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from usernumber.models import UserNumber, Feedback
+from usernumber.models import UserNumber, Feedback, PurchaseRecord
 
 
 @admin.register(Feedback)
@@ -19,3 +19,10 @@ class UserNumberAdmin(admin.ModelAdmin):
     list_display = ("id", "user_id", "lottery", "gen_type", "group_name", "created_at")
     list_filter = ("gen_type", "lottery")
     search_fields = ("user_id", "note")
+
+
+@admin.register(PurchaseRecord)
+class PurchaseRecordAdmin(admin.ModelAdmin):
+    list_display = ("id", "user_id", "lottery", "issue", "bet_count", "purchase_date", "created_at")
+    list_filter = ("lottery",)
+    search_fields = ("user_id", "issue")
