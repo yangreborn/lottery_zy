@@ -14,7 +14,7 @@
         <text class="sep">·</text>
         <text class="lk" @click="openDoc('privacy')">隐私协议</text>
       </view>
-      <text class="src">数据来源：中国福彩网 cwl.gov.cn · 中国体彩网 sporttery.cn</text>
+      <text class="src">cwl.gov.cn · sporttery.cn</text>
     </view>
   </view>
 </template>
@@ -53,7 +53,7 @@ onShow(async () => {
 .tx { font-size: 32rpx; font-weight: 600; color: #333; display: block; margin-top: 14rpx; }
 .footer { padding: 20rpx 28rpx 40rpx; text-align: center; }
 .links { margin-bottom: 12rpx; }
-.lk { color: #e53935; font-size: 26rpx; }
+.lk { color: #bbb; font-size: 26rpx; }
 .sep { color: #bbb; font-size: 26rpx; margin: 0 12rpx; }
 .src { color: #999; font-size: 22rpx; display: block; line-height: 1.6; }
 </style>
