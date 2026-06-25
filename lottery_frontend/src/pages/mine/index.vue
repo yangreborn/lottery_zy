@@ -28,6 +28,7 @@
         <view v-if="rec.note" class="note">{{ rec.note }}</view>
         <view class="time">{{ formatTime(rec.created_at) }}</view>
         <view v-if="!manageMode" class="ops">
+          <text class="op" @click="doMarkPurchased(rec)">标为已购</text>
           <text class="op" @click="doGroup(rec)">归组</text>
           <text v-if="rec.target_issue" class="op" @click="doCheck(rec.id)">比对</text>
           <text class="op del" @click="doDelete(rec.id)">删除</text>
@@ -51,9 +52,9 @@ import LotteryTabs from '../../components/LotteryTabs.vue'
 import Ball from '../../components/Ball.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
-import { ensureLogin, listNumbers, deleteNumber, checkNumber, setGroup, batchDelete, batchGroup } from '../../api/user.js'
+import { ensureLogin, listNumbers, deleteNumber, checkNumber, setGroup, batchDelete, batchGroup, purchaseCreate } from '../../api/user.js'
 import { reportAccess } from '../../utils/report.js'
-import { formatTime, groupRecords } from '../../utils/records.js'
+import { formatTime, groupRecords, todayStr } from '../../utils/records.js'
 import { toggleIndex } from '../../utils/picker.js'
 
 const store = lotteryStore
@@ -119,6 +120,25 @@ function doBatchGroup() {
       if (!res.confirm) return
       try { await batchGroup(ids, (res.content || '').trim()); exitManage(); load() }
       catch (e) { uni.showToast({ title: e.msg || '归组失败', icon: 'none' }) }
+    },
+  })
+}
+
+function doMarkPurchased(rec) {
+  uni.showModal({
+    title: '标为已购',
+    editable: true,
+    placeholderText: '输入购买期号',
+    success: async (res) => {
+      if (!res.confirm) return
+      const issue = (res.content || '').trim()
+      if (!issue) { uni.showToast({ title: '请填期号', icon: 'none' }); return }
+      try {
+        await purchaseCreate({ code: store.code, issue, numbers: rec.numbers, bet_count: 1, purchase_date: todayStr() })
+        uni.showToast({ title: '已记录购买', icon: 'success' })
+      } catch (e) {
+        uni.showToast({ title: e.msg || '记录失败', icon: 'none' })
+      }
     },
   })
 }
