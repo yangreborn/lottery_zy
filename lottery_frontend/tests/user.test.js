@@ -4,7 +4,7 @@ vi.mock('../src/api/request.js', () => ({
   request: vi.fn(() => Promise.resolve({ token: 'T' })),
 }))
 import { request } from '../src/api/request.js'
-import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers, submitFeedback, batchDelete, batchGroup } from '../src/api/user.js'
+import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers, submitFeedback, batchDelete, batchGroup, purchaseCreate, purchaseList, purchaseDelete } from '../src/api/user.js'
 
 describe('user api', () => {
   beforeEach(() => { request.mockClear() })
@@ -48,5 +48,21 @@ describe('user api', () => {
   it('batchGroup', async () => {
     await batchGroup([1, 2], 'A')
     expect(request).toHaveBeenCalledWith('/api/user/number/batch_group', { method: 'POST', data: { ids: [1, 2], group_name: 'A' } })
+  })
+  it('purchaseCreate', async () => {
+    await purchaseCreate({ code: 'ssq', issue: '2026073', numbers: { red: [1] }, bet_count: 2, purchase_date: '2026-06-20' })
+    expect(request).toHaveBeenCalledWith('/api/user/purchase/create', { method: 'POST', data: { code: 'ssq', issue: '2026073', numbers: { red: [1] }, bet_count: 2, purchase_date: '2026-06-20' } })
+  })
+  it('purchaseList 带 code', async () => {
+    await purchaseList('ssq')
+    expect(request).toHaveBeenCalledWith('/api/user/purchase/list', { data: { code: 'ssq' } })
+  })
+  it('purchaseList 无 code', async () => {
+    await purchaseList('')
+    expect(request).toHaveBeenCalledWith('/api/user/purchase/list', { data: {} })
+  })
+  it('purchaseDelete', async () => {
+    await purchaseDelete(5)
+    expect(request).toHaveBeenCalledWith('/api/user/purchase/5', { method: 'DELETE' })
   })
 })

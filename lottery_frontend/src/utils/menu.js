@@ -6,6 +6,7 @@ export const HOME_MENU = [
   { key: 'guide', title: '玩法介绍', icon: '📖', path: '/pages/guide/index', nav: 'navigateTo' },
   { key: 'mine', title: '我的号码', icon: '⭐', path: '/pages/mine/index', nav: 'switchTab' },
   { key: 'feedback', title: '我要反馈', icon: '💬', path: '/pages/feedback/index', nav: 'navigateTo' },
+  { key: 'purchase', title: '购买记录', icon: '🛒', path: '/pages/purchase/index', nav: 'navigateTo' },
 ]
 
 export function goMenu(item) {
