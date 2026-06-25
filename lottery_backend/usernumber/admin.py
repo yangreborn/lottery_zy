@@ -5,9 +5,9 @@ from usernumber.models import UserNumber, Feedback, PurchaseRecord, AppUser
 
 @admin.register(AppUser)
 class AppUserAdmin(admin.ModelAdmin):
-    list_display = ("id", "nickname", "short_id", "openid", "created_at")
-    search_fields = ("nickname", "user_id", "openid")
-    readonly_fields = ("user_id", "openid", "created_at", "updated_at")
+    list_display = ("id", "nickname", "short_id", "openid", "unionid", "created_at")
+    search_fields = ("nickname", "user_id", "openid", "unionid")
+    readonly_fields = ("user_id", "openid", "unionid", "created_at", "updated_at")
 
     def short_id(self, obj):
         return obj.short_id
