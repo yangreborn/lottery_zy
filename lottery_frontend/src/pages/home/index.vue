@@ -7,6 +7,14 @@
         <text class="tx">{{ m.title }}</text>
       </view>
     </view>
+    <view class="footer">
+      <view class="links">
+        <text class="lk" @click="openDoc('agreement')">用户协议</text>
+        <text class="sep">·</text>
+        <text class="lk" @click="openDoc('privacy')">隐私协议</text>
+      </view>
+      <text class="src">数据来源：中国福彩网 cwl.gov.cn · 中国体彩网 sporttery.cn</text>
+    </view>
   </view>
 </template>
 
@@ -15,6 +23,7 @@ import { HOME_MENU, goMenu } from '../../utils/menu.js'
 
 const menu = HOME_MENU
 function go(m) { goMenu(m) }
+function openDoc(type) { uni.navigateTo({ url: `/pages/legal/doc?type=${type}` }) }
 </script>
 
 <style scoped>
@@ -25,4 +34,9 @@ function go(m) { goMenu(m) }
 .mcard { background: #fff; border-radius: 20rpx; padding: 44rpx 0; text-align: center; box-shadow: 0 4rpx 16rpx rgba(229, 57, 53, 0.10); }
 .ic { font-size: 56rpx; display: block; }
 .tx { font-size: 32rpx; font-weight: 600; color: #333; display: block; margin-top: 14rpx; }
+.footer { padding: 20rpx 28rpx 40rpx; text-align: center; }
+.links { margin-bottom: 12rpx; }
+.lk { color: #e53935; font-size: 26rpx; }
+.sep { color: #bbb; font-size: 26rpx; margin: 0 12rpx; }
+.src { color: #999; font-size: 22rpx; display: block; line-height: 1.6; }
 </style>
