@@ -32,22 +32,27 @@ export function drawPoster(ctx, data, theme) {
 
   let y = 340
   const r = 38
+  const gap = 92
+  const perRow = Math.max(1, Math.floor(W / gap))
   for (const zone of data.zones) {
     const nums = zone.nums || []
-    const gap = 92
-    let x = (W - nums.length * gap) / 2 + gap / 2
-    for (const num of nums) {
-      ctx.beginPath()
-      ctx.arc(x, y, r, 0, 2 * Math.PI)
-      ctx.setFillStyle(ballColor(zone.key))
-      ctx.fill()
-      ctx.setFillStyle('#ffffff')
-      ctx.setFontSize(34)
-      const pad = zone.key === 'digits' ? 1 : 2
-      ctx.fillText(String(num).padStart(pad, '0'), x, y + 12)
-      x += gap
+    const pad = zone.key === 'digits' ? 1 : 2
+    for (let i = 0; i < nums.length; i += perRow) {
+      const rowNums = nums.slice(i, i + perRow)
+      let x = (W - rowNums.length * gap) / 2 + gap / 2
+      for (const num of rowNums) {
+        ctx.beginPath()
+        ctx.arc(x, y, r, 0, 2 * Math.PI)
+        ctx.setFillStyle(ballColor(zone.key))
+        ctx.fill()
+        ctx.setFillStyle('#ffffff')
+        ctx.setFontSize(34)
+        ctx.fillText(String(num).padStart(pad, '0'), x, y + 12)
+        x += gap
+      }
+      y += 100
     }
-    y += 116
+    y += 16
   }
 
   ctx.setFillStyle(theme.subColor)
