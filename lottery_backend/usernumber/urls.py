@@ -9,5 +9,7 @@ urlpatterns = [
     path("number/check", views.NumberCheckView.as_view(), name="user-number-check"),
     path("number/generate", views.NumberGenerateView.as_view(), name="user-number-generate"),
     path("number/group", views.NumberGroupView.as_view(), name="user-number-group"),
+    path("number/batch_delete", views.BatchDeleteView.as_view(), name="user-number-batch-delete"),
+    path("number/batch_group", views.BatchGroupView.as_view(), name="user-number-batch-group"),
     path("number/<int:pk>", views.NumberDeleteView.as_view(), name="user-number-delete"),
 ]

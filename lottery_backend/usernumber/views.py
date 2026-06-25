@@ -203,3 +203,34 @@ class FeedbackCreateView(APIView):
             logger.error("Feedback 创建失败", exc_info=True)
             return Response(make_response(code=1, msg="提交失败，请稍后再试"))
         return Response(make_response(data={"id": rec.id}))
+
+
+class BatchDeleteView(APIView):
+    """POST /api/user/number/batch_delete —— 批量删除自己的记录。"""
+    authentication_classes = []
+
+    def post(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        ids = request.data.get("ids")
+        if not isinstance(ids, list) or not ids:
+            return Response(make_response(code=1, msg="请选择记录"))
+        n, _ = UserNumber.objects.filter(id__in=ids, user_id=uid).delete()
+        return Response(make_response(data={"deleted": n}))
+
+
+class BatchGroupView(APIView):
+    """POST /api/user/number/batch_group —— 批量设置/清除分组。"""
+    authentication_classes = []
+
+    def post(self, request):
+        uid = current_user_id(request)
+        if not uid:
+            return Response(make_response(code=1, msg="未登录"))
+        ids = request.data.get("ids")
+        if not isinstance(ids, list) or not ids:
+            return Response(make_response(code=1, msg="请选择记录"))
+        group_name = str(request.data.get("group_name") or "").strip()[:50]
+        n = UserNumber.objects.filter(id__in=ids, user_id=uid).update(group_name=group_name)
+        return Response(make_response(data={"updated": n}))
