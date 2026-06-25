@@ -6,6 +6,10 @@ export function login(code) {
   return request('/api/user/login', { method: 'POST', data: { code } })
 }
 
+export function wechatLogin(code) {
+  return request('/api/user/login/wechat', { method: 'POST', data: { code } })
+}
+
 export function createNumber(payload) {
   return request('/api/user/number/create', { method: 'POST', data: payload })
 }

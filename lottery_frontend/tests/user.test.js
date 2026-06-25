@@ -4,7 +4,7 @@ vi.mock('../src/api/request.js', () => ({
   request: vi.fn(() => Promise.resolve({ token: 'T' })),
 }))
 import { request } from '../src/api/request.js'
-import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers, submitFeedback, batchDelete, batchGroup, purchaseCreate, purchaseList, purchaseDelete } from '../src/api/user.js'
+import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers, submitFeedback, batchDelete, batchGroup, purchaseCreate, purchaseList, purchaseDelete, wechatLogin } from '../src/api/user.js'
 
 describe('user api', () => {
   beforeEach(() => { request.mockClear() })
@@ -64,5 +64,9 @@ describe('user api', () => {
   it('purchaseDelete', async () => {
     await purchaseDelete(5)
     expect(request).toHaveBeenCalledWith('/api/user/purchase/5', { method: 'DELETE' })
+  })
+  it('wechatLogin', async () => {
+    await wechatLogin('wxcode')
+    expect(request).toHaveBeenCalledWith('/api/user/login/wechat', { method: 'POST', data: { code: 'wxcode' } })
   })
 })

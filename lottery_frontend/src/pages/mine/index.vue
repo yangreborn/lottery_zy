@@ -2,6 +2,10 @@
   <view class="page" :class="{ 'has-batch': manageMode }">
     <TopBanner title="我的号码" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
+    <view class="authbar">
+      <text class="astate">{{ auth.isWechat ? '已微信登录' : '匿名使用中' }}</text>
+      <text class="abtn" @click="auth.isWechat ? doLogout() : doWechatLogin()">{{ auth.isWechat ? '退出' : '微信登录' }}</text>
+    </view>
     <view class="bar">
       <button v-if="items.length" class="manage" size="mini" @click="toggleManage">{{ manageMode ? '完成' : '管理' }}</button>
       <button class="go" size="mini" @click="goPicker">去选号</button>
@@ -52,12 +56,14 @@ import LotteryTabs from '../../components/LotteryTabs.vue'
 import Ball from '../../components/Ball.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList } from '../../api/lottery.js'
-import { ensureLogin, listNumbers, deleteNumber, checkNumber, setGroup, batchDelete, batchGroup, purchaseCreate } from '../../api/user.js'
+import { ensureLogin, listNumbers, deleteNumber, checkNumber, setGroup, batchDelete, batchGroup, purchaseCreate, wechatLogin } from '../../api/user.js'
+import { authState, setToken } from '../../store/auth.js'
 import { reportAccess } from '../../utils/report.js'
 import { formatTime, groupRecords, todayStr } from '../../utils/records.js'
 import { toggleIndex } from '../../utils/picker.js'
 
 const store = lotteryStore
+const auth = authState
 const lotteries = ref([])
 const items = ref([])
 const emptyMsg = ref('加载中…')
@@ -86,6 +92,29 @@ async function load() {
 
 function onChange(code) { exitManage(); setCode(code); load() }
 function goPicker() { uni.switchTab({ url: '/pages/mine/picker' }) }
+
+function doWechatLogin() {
+  uni.login({
+    success: async (r) => {
+      if (!r.code) { uni.showToast({ title: '请在微信小程序中使用', icon: 'none' }); return }
+      try {
+        const res = await wechatLogin(r.code)
+        setToken(res.token, true)
+        uni.showToast({ title: '登录成功', icon: 'success' })
+        load()
+      } catch (e) {
+        uni.showToast({ title: e.msg || '登录失败', icon: 'none' })
+      }
+    },
+    fail: () => { uni.showToast({ title: '请在微信小程序中使用', icon: 'none' }) },
+  })
+}
+
+function doLogout() {
+  setToken('', false)
+  uni.showToast({ title: '已退出', icon: 'none' })
+  load()
+}
 
 function toggleManage() {
   manageMode.value = !manageMode.value
@@ -202,6 +231,9 @@ onShow(async () => {
 
 <style scoped>
 .page.has-batch { padding-bottom: 120rpx; }
+.authbar { display: flex; justify-content: space-between; align-items: center; padding: 16rpx 24rpx 0; }
+.astate { font-size: 28rpx; color: #888; }
+.abtn { font-size: 28rpx; color: #e53935; }
 .bar { display: flex; justify-content: flex-end; padding: 16rpx 20rpx 0; }
 .manage { background: #fff; color: #e53935; border: 1rpx solid #e53935; margin-right: 16rpx; }
 .go { background: #e53935; color: #fff; }

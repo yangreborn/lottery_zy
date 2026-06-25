@@ -26,4 +26,19 @@ describe('auth store', () => {
     expect(authState.token).toBe('')
     expect(loadToken()).toBe('')
   })
+
+  it('setToken 带 isWechat 标记并持久化', () => {
+    setToken('WXTOK', true)
+    expect(authState.isWechat).toBe(true)
+    authState.isWechat = false
+    loadToken()
+    expect(authState.isWechat).toBe(true)
+  })
+
+  it('退出清除 isWechat', () => {
+    setToken('WXTOK', true)
+    setToken('')
+    expect(authState.isWechat).toBe(false)
+    expect(loadToken()).toBe('')
+  })
 })
