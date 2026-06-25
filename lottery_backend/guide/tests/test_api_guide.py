@@ -70,6 +70,8 @@ def test_list_important_filter(ssq):
     titles = [g["title"] for g in APIClient().get("/api/openapi/guide/list?code=ssq&important=1").json()["data"]]
     assert "重要通知" in titles
     assert "普通通知" not in titles
+    all_titles = [g["title"] for g in APIClient().get("/api/openapi/guide/list?code=ssq").json()["data"]]
+    assert "普通通知" in all_titles
 
 
 def test_list_serializer_has_is_important(ssq):
