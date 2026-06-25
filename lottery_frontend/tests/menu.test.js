@@ -3,7 +3,7 @@ import { HOME_MENU, goMenu } from '../src/utils/menu.js'
 
 describe('HOME_MENU', () => {
   it('6 项且字段完整', () => {
-    expect(HOME_MENU.length).toBe(6)
+    expect(HOME_MENU.length).toBe(7)
     for (const m of HOME_MENU) {
       expect(typeof m.key).toBe('string')
       expect(typeof m.title).toBe('string')
@@ -21,6 +21,7 @@ describe('HOME_MENU', () => {
     expect(byKey.latest.nav).toBe('navigateTo')
     expect(byKey.history.nav).toBe('navigateTo')
     expect(byKey.guide.nav).toBe('navigateTo')
+    expect(byKey.feedback.nav).toBe('navigateTo')
   })
 })
 

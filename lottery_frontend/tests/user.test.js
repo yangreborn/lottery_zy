@@ -4,7 +4,7 @@ vi.mock('../src/api/request.js', () => ({
   request: vi.fn(() => Promise.resolve({ token: 'T' })),
 }))
 import { request } from '../src/api/request.js'
-import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers } from '../src/api/user.js'
+import { login, createNumber, listNumbers, deleteNumber, checkNumber, generateNumbers, submitFeedback } from '../src/api/user.js'
 
 describe('user api', () => {
   beforeEach(() => { request.mockClear() })
@@ -36,5 +36,9 @@ describe('user api', () => {
   it('generateNumbers', async () => {
     await generateNumbers('ssq', 5)
     expect(request).toHaveBeenCalledWith('/api/user/number/generate', { method: 'POST', data: { code: 'ssq', count: 5 } })
+  })
+  it('submitFeedback', async () => {
+    await submitFeedback({ content: '建议', contact: 'wx123' })
+    expect(request).toHaveBeenCalledWith('/api/user/feedback', { method: 'POST', data: { content: '建议', contact: 'wx123' } })
   })
 })

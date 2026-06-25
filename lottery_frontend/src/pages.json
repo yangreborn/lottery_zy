@@ -9,7 +9,8 @@
     { "path": "pages/guide/detail", "style": { "navigationBarTitleText": "详情" } },
     { "path": "pages/mine/index", "style": { "navigationBarTitleText": "我的号码" } },
     { "path": "pages/mine/picker", "style": { "navigationBarTitleText": "选号" } },
-    { "path": "pages/legal/doc", "style": { "navigationBarTitleText": "协议" } }
+    { "path": "pages/legal/doc", "style": { "navigationBarTitleText": "协议" } },
+    { "path": "pages/feedback/index", "style": { "navigationBarTitleText": "我要反馈" } }
   ],
   "tabBar": {
     "color": "#666",

@@ -37,3 +37,7 @@ export function generateNumbers(code, count, picks) {
 export function setGroup(id, group_name) {
   return request('/api/user/number/group', { method: 'POST', data: { id, group_name } })
 }
+
+export function submitFeedback({ content, contact }) {
+  return request('/api/user/feedback', { method: 'POST', data: { content, contact } })
+}
