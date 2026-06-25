@@ -1,7 +1,6 @@
 <template>
   <view class="page">
     <TopBanner title="通知活动" :back="true" />
-    <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="types">
       <view
         v-for="t in types" :key="t.key"
@@ -23,14 +22,9 @@
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
-import LotteryTabs from '../../components/LotteryTabs.vue'
-import { lotteryStore, setCode } from '../../store/lottery.js'
-import { getLotteryList } from '../../api/lottery.js'
 import { getGuideList } from '../../api/guide.js'
 import { reportAccess } from '../../utils/report.js'
 
-const store = lotteryStore
-const lotteries = ref([])
 const items = ref([])
 const emptyMsg = ref('加载中…')
 const types = [
@@ -43,7 +37,7 @@ const curType = ref('activity,notice')
 async function load() {
   emptyMsg.value = '加载中…'
   try {
-    items.value = await getGuideList(store.code, curType.value)
+    items.value = await getGuideList('', curType.value)
     if (!items.value.length) emptyMsg.value = '暂无内容'
   } catch (e) {
     emptyMsg.value = e.msg || '加载失败'
@@ -51,15 +45,11 @@ async function load() {
   }
 }
 
-function onChange(code) { setCode(code); load() }
 function chooseType(k) { curType.value = k; load() }
 function goDetail(id) { uni.navigateTo({ url: `/pages/guide/detail?id=${id}` }) }
 
-onShow(async () => {
-  reportAccess('notice/index', { lottery_code: lotteryStore.code })
-  if (!lotteries.value.length) {
-    try { lotteries.value = await getLotteryList() } catch (e) { /* 容错: 彩种拉取失败不阻塞列表 */ }
-  }
+onShow(() => {
+  reportAccess('notice/index', {})
   load()
 })
 </script>
