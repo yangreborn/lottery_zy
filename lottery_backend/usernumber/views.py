@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class LoginView(APIView):
-    """POST /api/user/login —— 微信 code 换 session。"""
+    """POST /api/user/login —— 匿名登录（device code 当 openid，不走 code2session）。"""
     authentication_classes = []
 
     def post(self, request):

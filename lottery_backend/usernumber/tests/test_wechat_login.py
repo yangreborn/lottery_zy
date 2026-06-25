@@ -15,7 +15,9 @@ def test_wechat_login_success(db, monkeypatch):
 def test_wechat_login_failure(db, monkeypatch):
     monkeypatch.setattr("usernumber.views.wechat_code_to_openid", lambda code: None)
     resp = APIClient().post("/api/user/login/wechat", {"code": "badcode"}, format="json")
-    assert resp.json()["code"] == 1
+    body = resp.json()
+    assert body["code"] == 1
+    assert body["error"]
 
 
 def test_wechat_login_missing_code(db):
