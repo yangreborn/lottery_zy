@@ -44,13 +44,11 @@ const themeKey = ref('red')
 let posterData = null
 
 function curTheme() { return themes.find((t) => t.key === themeKey.value) || themes[0] }
-function curCategory() {
-  const l = lotteries.value.find((x) => x.code === store.code)
-  return l ? l.category : '福彩'
-}
-function curName() {
-  const l = lotteries.value.find((x) => x.code === store.code)
-  return l ? l.name : store.code
+function curLottery() {
+  return (
+    lotteries.value.find((x) => x.code === store.code) ||
+    { name: store.code, category: '福彩', rule_config: { zones: [] } }
+  )
 }
 
 async function loadIssues() {
@@ -67,7 +65,7 @@ async function loadIssues() {
 async function chooseIssue(it) {
   try {
     const detail = await getDetail(store.code, it.issue)
-    posterData = buildPosterData(detail, curName(), curCategory())
+    posterData = buildPosterData(detail, curLottery())
     curIssue.value = it.issue
     redraw()
   } catch (e) {
@@ -80,13 +78,18 @@ function chooseTheme(k) { themeKey.value = k; redraw() }
 function redraw() {
   if (!posterData) return
   const ctx = uni.createCanvasContext('poster')
-  drawPoster(ctx, posterData, curTheme())
+  const scale = uni.upx2px(600) / 600
+  drawPoster(ctx, posterData, curTheme(), scale)
 }
 
 function save() {
   if (!curIssue.value) { uni.showToast({ title: '请先选择期次', icon: 'none' }); return }
   uni.canvasToTempFilePath({
     canvasId: 'poster',
+    width: uni.upx2px(600),
+    height: uni.upx2px(840),
+    destWidth: 1200,
+    destHeight: 1680,
     success: (r) => {
       uni.saveImageToPhotosAlbum({
         filePath: r.tempFilePath,
