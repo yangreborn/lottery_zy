@@ -28,7 +28,9 @@
         <view v-if="rec.note" class="note">{{ rec.note }}</view>
         <view class="time">{{ formatTime(rec.created_at) }}</view>
         <view v-if="!manageMode" class="ops">
-          <text class="op" @click="doMarkPurchased(rec)">标为已购</text>
+          <picker mode="selector" :range="issueLabels" :disabled="!issues.length" @change="onPickPurchase(rec, $event)">
+            <text class="op">标为已购</text>
+          </picker>
           <text class="op" @click="doGroup(rec)">归组</text>
           <text v-if="rec.target_issue" class="op" @click="doCheck(rec.id)">比对</text>
           <text class="op del" @click="doDelete(rec.id)">删除</text>
@@ -51,15 +53,17 @@ import TopBanner from '../../components/TopBanner.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
 import Ball from '../../components/Ball.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
-import { getLotteryList } from '../../api/lottery.js'
+import { getLotteryList, getHistory } from '../../api/lottery.js'
 import { ensureLogin, listNumbers, deleteNumber, checkNumber, setGroup, batchDelete, batchGroup, purchaseCreate } from '../../api/user.js'
 import { reportAccess } from '../../utils/report.js'
-import { formatTime, groupRecords, todayStr } from '../../utils/records.js'
+import { formatTime, groupRecords, todayStr, issueLabel } from '../../utils/records.js'
 import { toggleIndex } from '../../utils/picker.js'
 
 const store = lotteryStore
 const lotteries = ref([])
 const items = ref([])
+const issues = ref([])
+const issueLabels = computed(() => issues.value.map(issueLabel))
 const emptyMsg = ref('加载中…')
 
 const manageMode = ref(false)
@@ -78,6 +82,7 @@ async function load() {
     await ensureLogin()
     items.value = await listNumbers(store.code)
     if (!items.value.length) emptyMsg.value = '还没有记录，去选号吧'
+    loadIssues()
   } catch (e) {
     emptyMsg.value = e.msg || '加载失败'
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
@@ -124,23 +129,20 @@ function doBatchGroup() {
   })
 }
 
-function doMarkPurchased(rec) {
-  uni.showModal({
-    title: '标为已购',
-    editable: true,
-    placeholderText: '输入购买期号',
-    success: async (res) => {
-      if (!res.confirm) return
-      const issue = (res.content || '').trim()
-      if (!issue) { uni.showToast({ title: '请填期号', icon: 'none' }); return }
-      try {
-        await purchaseCreate({ code: store.code, issue, numbers: rec.numbers, bet_count: 1, purchase_date: todayStr() })
-        uni.showToast({ title: '已记录购买', icon: 'success' })
-      } catch (e) {
-        uni.showToast({ title: e.msg || '记录失败', icon: 'none' })
-      }
-    },
-  })
+async function loadIssues() {
+  try { const res = await getHistory(store.code, { page: 1 }); issues.value = res.results || [] }
+  catch (e) { issues.value = [] }
+}
+
+async function onPickPurchase(rec, e) {
+  const sel = issues.value[Number(e.detail.value)]
+  if (!sel) { uni.showToast({ title: '暂无可选期次', icon: 'none' }); return }
+  try {
+    await purchaseCreate({ code: store.code, issue: sel.issue, numbers: rec.numbers, bet_count: 1, purchase_date: todayStr() })
+    uni.showToast({ title: '已记录购买', icon: 'success' })
+  } catch (err) {
+    uni.showToast({ title: err.msg || '记录失败', icon: 'none' })
+  }
 }
 
 function doGroup(rec) {
