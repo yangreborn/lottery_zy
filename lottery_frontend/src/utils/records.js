@@ -27,3 +27,8 @@ export function todayStr() {
   const p = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
 }
+
+export function issueLabel(item) {
+  if (!item) return ''
+  return item.draw_date ? `${item.issue}期 ${item.draw_date}` : `${item.issue}期`
+}
