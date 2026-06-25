@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_date
 
 from common.utils import make_response
-from common.auth import code_to_openid, set_user_session, current_user_id
+from common.auth import mock_code_to_openid, wechat_code_to_openid, set_user_session, current_user_id
 from lottery.views import _get_active_lottery
 from lottery.validators import validate_numbers
 from usernumber.models import UserNumber, Feedback, PurchaseRecord
@@ -26,7 +26,7 @@ class LoginView(APIView):
         code = request.data.get("code")
         if not code:
             return Response(make_response(code=1, msg="缺少 code"))
-        openid = code_to_openid(code)
+        openid = mock_code_to_openid(code)
         if not openid:
             return Response(make_response(code=1, msg="登录失败", error="code 无效"))
         uid = set_user_session(request, openid)
@@ -306,3 +306,18 @@ class PurchaseDeleteView(APIView):
             return Response(make_response(code=1, msg="记录不存在"))
         rec.delete()
         return Response(make_response(data={"deleted": True}))
+
+
+class WechatLoginView(APIView):
+    """POST /api/user/login/wechat —— 真实微信 code2session 登录。"""
+    authentication_classes = []
+
+    def post(self, request):
+        code = request.data.get("code")
+        if not code:
+            return Response(make_response(code=1, msg="缺少 code"))
+        openid = wechat_code_to_openid(code)
+        if not openid:
+            return Response(make_response(code=1, msg="微信登录失败", error="code 无效或已过期"))
+        uid = set_user_session(request, openid)
+        return Response(make_response(data={"logged_in": True, "token": uid}))
