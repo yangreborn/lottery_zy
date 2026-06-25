@@ -18,7 +18,7 @@ function goBack() {
 </script>
 
 <style scoped>
-.top-banner { position: relative; background: linear-gradient(180deg, #e53935 0%, #ff6f61 100%); padding: 28rpx 0; text-align: center; }
+.top-banner { position: relative; background: linear-gradient(180deg, #e53935 0%, #ff6f61 100%); padding: calc(28rpx + var(--status-bar-height, 0px)) 0 28rpx; text-align: center; }
 .tb-back { position: absolute; left: 24rpx; top: 50%; transform: translateY(-50%); color: #fff; font-size: 30rpx; }
 .tb-title { color: #fff; font-size: 34rpx; font-weight: 700; letter-spacing: 4rpx; }
 </style>

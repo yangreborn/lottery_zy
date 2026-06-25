@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="历史开奖" />
+    <TopBanner title="历史开奖" :back="true" />
     <LotteryTabs :list="lotteries" :active="lotteryStore.code" @change="onChange" />
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
       <view

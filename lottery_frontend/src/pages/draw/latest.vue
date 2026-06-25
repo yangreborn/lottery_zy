@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="当期开奖" />
+    <TopBanner title="当期开奖" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view v-if="draw" class="card">
       <view class="head">

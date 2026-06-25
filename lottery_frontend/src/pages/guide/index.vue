@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="玩法说明" />
+    <TopBanner title="玩法说明" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="types">
       <view

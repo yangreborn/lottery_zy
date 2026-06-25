@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="详情" />
+    <TopBanner title="详情" :back="true" />
     <view v-if="guide" class="card">
       <text class="title">{{ guide.title }}</text>
       <rich-text class="content" :nodes="guide.content"></rich-text>

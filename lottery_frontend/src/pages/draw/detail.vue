@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="开奖详情" />
+    <TopBanner title="开奖详情" :back="true" />
     <view v-if="draw" class="card">
       <view class="head">
         <text class="issue">第 {{ draw.issue }} 期</text>
