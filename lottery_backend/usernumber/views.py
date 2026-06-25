@@ -10,7 +10,7 @@ from common.utils import make_response
 from common.auth import mock_code_to_openid, wechat_code_to_openid, set_user_session, current_user_id
 from lottery.views import _get_active_lottery
 from lottery.validators import validate_numbers
-from usernumber.models import UserNumber, Feedback, PurchaseRecord
+from usernumber.models import UserNumber, Feedback, PurchaseRecord, AppUser, get_or_create_app_user
 from usernumber.generator import random_numbers, dan_random_numbers
 from usernumber.serializers import UserNumberSerializer, PurchaseRecordSerializer
 from lottery.models import DrawResult
@@ -31,6 +31,7 @@ class LoginView(APIView):
         if not openid:
             return Response(make_response(code=1, msg="登录失败", error="code 无效"))
         uid = set_user_session(request, openid)
+        get_or_create_app_user(uid, openid)
         return Response(make_response(data={"logged_in": True, "token": uid}))
 
 
@@ -324,4 +325,5 @@ class WechatLoginView(APIView):
         if not openid:
             return Response(make_response(code=1, msg="微信登录失败", error="code 无效或已过期"))
         uid = set_user_session(request, openid)
+        get_or_create_app_user(uid, openid)
         return Response(make_response(data={"logged_in": True, "token": uid}))
