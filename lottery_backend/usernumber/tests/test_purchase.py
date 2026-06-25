@@ -68,10 +68,23 @@ def test_purchase_create_defaults(ssq, auth_client):
     assert rec.purchase_date == timezone.now().date()
 
 
-def test_purchase_create_unauthenticated(ssq):
+def test_purchase_create_unauthenticated(db):
     resp = APIClient().post("/api/user/purchase/create",
         {"code": "ssq", "issue": "2026073", "numbers": VALID}, format="json")
     assert resp.json()["code"] == 1
+
+
+def test_purchase_create_invalid_date(ssq, auth_client):
+    resp = auth_client.post("/api/user/purchase/create",
+        {"code": "ssq", "issue": "2026073", "numbers": VALID, "purchase_date": "not-a-date"}, format="json")
+    assert resp.json()["code"] == 1
+    assert PurchaseRecord.objects.count() == 0
+
+
+def test_purchase_list_filter_by_code(ssq, auth_client):
+    _make("tester-openid", ssq)
+    resp = auth_client.get("/api/user/purchase/list?code=dlt")
+    assert resp.json()["data"] == []
 
 
 def test_purchase_list_only_own(ssq, auth_client):
