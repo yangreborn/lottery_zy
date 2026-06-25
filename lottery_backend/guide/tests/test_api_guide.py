@@ -85,3 +85,14 @@ def test_list_notice_type_filter(ssq):
     PlayGuide.objects.create(lottery=ssq, type="intro", title="玩法一")
     titles = [g["title"] for g in APIClient().get("/api/openapi/guide/list?code=ssq&type=notice").json()["data"]]
     assert titles == ["通知一"]
+
+
+def test_list_multi_type_filter(ssq):
+    PlayGuide.objects.create(lottery=ssq, type="intro", title="玩法A")
+    PlayGuide.objects.create(lottery=ssq, type="rule", title="奖级B")
+    PlayGuide.objects.create(lottery=ssq, type="activity", title="活动C")
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="通知D")
+    t1 = {g["title"] for g in APIClient().get("/api/openapi/guide/list", {"code": "ssq", "type": "intro,rule"}).json()["data"]}
+    assert t1 == {"玩法A", "奖级B"}
+    t2 = {g["title"] for g in APIClient().get("/api/openapi/guide/list", {"code": "ssq", "type": "activity,notice"}).json()["data"]}
+    assert t2 == {"活动C", "通知D"}

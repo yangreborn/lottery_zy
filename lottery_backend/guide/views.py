@@ -29,7 +29,9 @@ class GuideListView(APIView):
             qs = qs.filter(Q(lottery__code=code) | Q(lottery__isnull=True))
         gtype = request.query_params.get("type")
         if gtype:
-            qs = qs.filter(type=gtype)
+            types = [t for t in gtype.split(",") if t]
+            if types:
+                qs = qs.filter(type__in=types)
         if request.query_params.get("important") == "1":
             qs = qs.filter(is_important=True)
         return Response(make_response(data=GuideListSerializer(qs, many=True).data))
