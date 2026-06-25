@@ -12,7 +12,8 @@
     { "path": "pages/legal/doc", "style": { "navigationBarTitleText": "协议" } },
     { "path": "pages/feedback/index", "style": { "navigationBarTitleText": "我要反馈" } },
     { "path": "pages/purchase/index", "style": { "navigationBarTitleText": "购买记录" } },
-    { "path": "pages/purchase/create", "style": { "navigationBarTitleText": "新增购买" } }
+    { "path": "pages/purchase/create", "style": { "navigationBarTitleText": "新增购买" } },
+    { "path": "pages/poster/index", "style": { "navigationBarTitleText": "开奖海报" } }
   ],
   "tabBar": {
     "color": "#666",
