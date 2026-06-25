@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="玩法介绍" />
+    <TopBanner title="玩法说明" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="types">
       <view
@@ -38,6 +38,7 @@ const types = [
   { key: 'intro', label: '玩法说明' },
   { key: 'rule', label: '奖级规则' },
   { key: 'activity', label: '活动' },
+  { key: 'notice', label: '通知' },
 ]
 const curType = ref('')
 

@@ -23,6 +23,7 @@ describe('HOME_MENU', () => {
     expect(byKey.guide.nav).toBe('navigateTo')
     expect(byKey.feedback.nav).toBe('navigateTo')
     expect(byKey.purchase.nav).toBe('navigateTo')
+    expect(byKey.guide.title).toBe('玩法说明')
   })
 })
 
