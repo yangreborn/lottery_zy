@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_date
 
 from common.utils import make_response
-from common.auth import mock_code_to_openid, wechat_code_to_openid, set_user_session, current_user_id
+from common.auth import mock_code_to_openid, wechat_code_to_session, set_user_session, current_user_id
 from lottery.views import _get_active_lottery
 from lottery.validators import validate_numbers
 from usernumber.models import UserNumber, Feedback, PurchaseRecord, AppUser, get_or_create_app_user
@@ -349,9 +349,14 @@ class WechatLoginView(APIView):
         if not settings.WECHAT_APPID or not settings.WECHAT_SECRET:
             return Response(make_response(code=1, msg="微信登录未配置",
                                           error="后端缺少 WECHAT_APPID/WECHAT_SECRET"))
-        openid = wechat_code_to_openid(code)
-        if not openid:
+        session = wechat_code_to_session(code)
+        if not session:
             return Response(make_response(code=1, msg="微信登录失败", error="code 无效或已过期"))
+        openid = session["openid"]
         uid = set_user_session(request, openid)
-        get_or_create_app_user(uid, openid)
+        user = get_or_create_app_user(uid, openid)
+        unionid = session.get("unionid") or ""
+        if unionid and user.unionid != unionid:
+            user.unionid = unionid
+            user.save(update_fields=["unionid", "updated_at"])
         return Response(make_response(data={"logged_in": True, "token": uid}))

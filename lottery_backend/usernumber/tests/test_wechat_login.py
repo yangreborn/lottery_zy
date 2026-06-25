@@ -1,33 +1,42 @@
 from rest_framework.test import APIClient
+from usernumber.models import AppUser
 
 
 def test_wechat_login_success(db, monkeypatch, settings):
     settings.WECHAT_APPID = "appid"
     settings.WECHAT_SECRET = "secret"
-    monkeypatch.setattr("usernumber.views.wechat_code_to_openid", lambda code: "wx-openid-123")
+    monkeypatch.setattr("usernumber.views.wechat_code_to_session",
+                        lambda code: {"openid": "wx-openid-123", "unionid": "uni-1"})
     c = APIClient()
-    resp = c.post("/api/user/login/wechat", {"code": "wxcode"}, format="json")
-    body = resp.json()
+    body = c.post("/api/user/login/wechat", {"code": "wxcode"}, format="json").json()
     assert body["code"] == 0
     assert body["data"]["logged_in"] is True
     assert len(body["data"]["token"]) == 64
     assert c.session.get("uid")
+    assert AppUser.objects.get(openid="wx-openid-123").unionid == "uni-1"
+
+
+def test_wechat_login_no_unionid_blank(db, monkeypatch, settings):
+    settings.WECHAT_APPID = "appid"
+    settings.WECHAT_SECRET = "secret"
+    monkeypatch.setattr("usernumber.views.wechat_code_to_session",
+                        lambda code: {"openid": "wx-openid-x", "unionid": ""})
+    APIClient().post("/api/user/login/wechat", {"code": "c"}, format="json")
+    assert AppUser.objects.get(openid="wx-openid-x").unionid == ""
 
 
 def test_wechat_login_failure(db, monkeypatch, settings):
     settings.WECHAT_APPID = "appid"
     settings.WECHAT_SECRET = "secret"
-    monkeypatch.setattr("usernumber.views.wechat_code_to_openid", lambda code: None)
-    resp = APIClient().post("/api/user/login/wechat", {"code": "badcode"}, format="json")
-    body = resp.json()
+    monkeypatch.setattr("usernumber.views.wechat_code_to_session", lambda code: None)
+    body = APIClient().post("/api/user/login/wechat", {"code": "bad"}, format="json").json()
     assert body["code"] == 1
     assert body["msg"] == "微信登录失败"
     assert body["error"]
 
 
 def test_wechat_login_missing_code(db):
-    resp = APIClient().post("/api/user/login/wechat", {}, format="json")
-    assert resp.json()["code"] == 1
+    assert APIClient().post("/api/user/login/wechat", {}, format="json").json()["code"] == 1
 
 
 def test_wechat_login_not_configured(db, settings):
@@ -39,7 +48,6 @@ def test_wechat_login_not_configured(db, settings):
 
 
 def test_anonymous_login_uses_mock(db):
-    resp = APIClient().post("/api/user/login", {"code": "dev-xyz"}, format="json")
-    body = resp.json()
+    body = APIClient().post("/api/user/login", {"code": "dev-xyz"}, format="json").json()
     assert body["code"] == 0
     assert len(body["data"]["token"]) == 64
