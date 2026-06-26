@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { HOME_MENU, goMenu } from '../src/utils/menu.js'
 
 describe('HOME_MENU', () => {
-  it('7 项且字段完整', () => {
-    expect(HOME_MENU.length).toBe(7)
+  it('8 项且字段完整', () => {
+    expect(HOME_MENU.length).toBe(8)
     for (const m of HOME_MENU) {
       expect(typeof m.key).toBe('string')
       expect(typeof m.title).toBe('string')
@@ -32,6 +32,8 @@ describe('HOME_MENU', () => {
     expect(byKey.notice.nav).toBe('navigateTo')
     expect(byKey.notice.path).toBe('/pages/notice/index')
     expect(byKey.poster.nav).toBe('navigateTo')
+    expect(byKey.chart.nav).toBe('navigateTo')
+    expect(byKey.chart.path).toBe('/pages/chart/index')
   })
 })
 
