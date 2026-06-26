@@ -6,7 +6,7 @@ export const HOME_MENU = [
   { key: 'guide', title: '玩法说明', icon: '📖', path: '/pages/guide/index', nav: 'navigateTo' },
   { key: 'notice', title: '通知', icon: '📢', path: '/pages/notice/index', nav: 'navigateTo' },
   { key: 'poster', title: '开奖海报', icon: '🖼️', path: '/pages/poster/index', nav: 'navigateTo' },
-  { key: 'chart', title: '走势折线图', icon: '📈', path: '/pages/chart/index', nav: 'navigateTo' },
+  { key: 'chart', title: '走势图', icon: '📈', path: '/pages/chart/index', nav: 'navigateTo' },
 ]
 
 export function goMenu(item) {

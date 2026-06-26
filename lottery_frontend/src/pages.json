@@ -16,7 +16,7 @@
     { "path": "pages/purchase/index", "style": { "navigationBarTitleText": "购买记录" } },
     { "path": "pages/purchase/create", "style": { "navigationBarTitleText": "新增购买" } },
     { "path": "pages/poster/index", "style": { "navigationBarTitleText": "开奖海报" } },
-    { "path": "pages/chart/index", "style": { "navigationBarTitleText": "走势折线图" } }
+    { "path": "pages/chart/index", "style": { "navigationBarTitleText": "走势图" } }
   ],
   "tabBar": {
     "color": "#666",
