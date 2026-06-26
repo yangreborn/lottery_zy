@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { POSTER_THEMES, buildPosterData } from '../src/utils/poster.js'
+import {
+  POSTER_THEMES,
+  buildPosterData,
+  MERGE_PRESETS,
+  presetCodes,
+  buildMergedPosterData,
+  measureMerged,
+} from '../src/utils/poster.js'
 import { ballColor } from '../src/utils/format.js'
 
 describe('POSTER_THEMES', () => {
@@ -54,5 +61,65 @@ describe('buildPosterData', () => {
   it('体彩 source 为 sporttery.cn', () => {
     const dlt = { name: '超级大乐透', category: '体彩', rule_config: { zones: [] } }
     expect(buildPosterData(detail, dlt).source).toBe('sporttery.cn')
+  })
+})
+
+describe('合并海报', () => {
+  const lotteries = [
+    { code: 'ssq', name: '双色球', category: '福彩' },
+    { code: '3d', name: '福彩3D', category: '福彩' },
+    { code: 'dlt', name: '超级大乐透', category: '体彩' },
+    { code: 'pl3', name: '排列三', category: '体彩' },
+  ]
+
+  it('MERGE_PRESETS 含福彩/体彩/自定义', () => {
+    expect(MERGE_PRESETS.map((p) => p.key)).toEqual(['fc', 'tc', 'custom'])
+  })
+
+  it('presetCodes 按 category 过滤彩种', () => {
+    expect(presetCodes('fc', lotteries)).toEqual(['ssq', '3d'])
+    expect(presetCodes('tc', lotteries)).toEqual(['dlt', 'pl3'])
+  })
+
+  it('presetCodes custom 用传入的勾选 codes', () => {
+    expect(presetCodes('custom', lotteries, ['ssq', 'dlt'])).toEqual(['ssq', 'dlt'])
+  })
+
+  it('buildMergedPosterData 组装每条 entry 并过滤无效项', () => {
+    const items = [
+      {
+        detail: { issue: '2026001', draw_date: '2026-06-01', numbers: { red: [1, 2], blue: [7] } },
+        lottery: { name: '双色球', category: '福彩', rule_config: { zones: [{ key: 'red', label: '红球', color: '#e53935' }] } },
+      },
+      null,
+      { detail: null, lottery: {} },
+    ]
+    const d = buildMergedPosterData(items, '福彩开奖')
+    expect(d.title).toBe('福彩开奖')
+    expect(d.entries.length).toBe(1)
+    expect(d.entries[0].name).toBe('双色球')
+    expect(d.entries[0].issue).toBe('2026001')
+    expect(d.entries[0].zones[0].label).toBe('红球')
+  })
+
+  it('measureMerged 返回随 entry 数增长的总高度', () => {
+    const mk = (n) => ({ title: 'x', entries: Array.from({ length: n }, () => ({
+      name: '双色球', issue: '1', date: '2026-06-01',
+      zones: [{ key: 'red', label: '红球', color: '#e53935', nums: [1, 2, 3, 4, 5, 6] }],
+    })) })
+    const one = measureMerged(mk(1))
+    const three = measureMerged(mk(3))
+    expect(one.W).toBe(600)
+    expect(one.entries.length).toBe(1)
+    expect(three.entries.length).toBe(3)
+    expect(three.H).toBeGreaterThan(one.H)
+    // 卡片自上而下排布，第二张在第一张之下
+    expect(three.entries[1].top).toBeGreaterThan(three.entries[0].top)
+  })
+
+  it('measureMerged 空 entries 仍返回正高度', () => {
+    const m = measureMerged({ title: 'x', entries: [] })
+    expect(m.H).toBeGreaterThan(0)
+    expect(m.entries).toEqual([])
   })
 })
