@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="号码统计" />
+    <TopBanner title="号码统计" :home-back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="periods">
       <view
@@ -18,6 +18,7 @@
         <text>{{ s.label }}</text>
       </view>
     </view>
+    <view class="legend">出现 = 近{{ statsData.periods || periods }}期内中出的次数；遗漏 = 距上次出现过去的期数（0=最近一期出现，越大越久未出）</view>
     <view v-for="z in zoneKeys" :key="z" class="zone-block">
       <view class="zone-title">{{ zoneLabel(z) }}</view>
       <Heatmap :cells="sortedOf(z)" />
@@ -85,6 +86,7 @@ onShow(async () => {
 .periods { display: flex; flex-wrap: wrap; padding: 12rpx 20rpx; }
 .opt { padding: 12rpx 24rpx; margin: 6rpx 16rpx 6rpx 0; background: #fff; border-radius: 30rpx; color: #666; font-size: 30rpx; }
 .opt.active { background: #e53935; color: #fff; }
+.legend { padding: 8rpx 24rpx 0; color: #999; font-size: 24rpx; line-height: 1.5; }
 .zone-title { padding: 16rpx 24rpx 0; color: #888; font-size: 30rpx; }
 .empty { text-align: center; color: #999; padding: 60rpx 0; }
 </style>

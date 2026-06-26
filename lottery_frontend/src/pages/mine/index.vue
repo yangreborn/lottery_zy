@@ -2,7 +2,8 @@
   <view class="page">
     <TopBanner title="我的" />
     <view class="authbar">
-      <text class="uname" @click="editNickname">{{ nickname || '点击设置昵称' }}</text>
+      <text v-if="auth.isWechat" class="uname" @click="editNickname">{{ nickname || '点击设置昵称' }}</text>
+      <text v-else class="uname plain">{{ nickname || '匿名用户' }}</text>
       <text class="abtn" @click="auth.isWechat ? doLogout() : doWechatLogin()">{{ auth.isWechat ? '退出' : '微信登录' }}</text>
     </view>
     <view class="menu">
@@ -98,6 +99,7 @@ onShow(async () => {
 <style scoped>
 .authbar { display: flex; justify-content: space-between; align-items: center; padding: 32rpx 24rpx; }
 .uname { font-size: 34rpx; color: #333; font-weight: 600; }
+.uname.plain { color: #666; }
 .abtn { font-size: 28rpx; color: #e53935; }
 .menu { margin: 12rpx 20rpx; background: #fff; border-radius: 16rpx; overflow: hidden; }
 .entry { display: flex; align-items: center; padding: 32rpx 28rpx; border-bottom: 1rpx solid #f3f3f3; }

@@ -7,7 +7,7 @@
     { "path": "pages/draw/stats", "style": { "navigationBarTitleText": "号码统计" } },
     { "path": "pages/guide/index", "style": { "navigationBarTitleText": "玩法说明" } },
     { "path": "pages/guide/detail", "style": { "navigationBarTitleText": "详情" } },
-    { "path": "pages/notice/index", "style": { "navigationBarTitleText": "通知活动" } },
+    { "path": "pages/notice/index", "style": { "navigationBarTitleText": "通知" } },
     { "path": "pages/mine/index", "style": { "navigationBarTitleText": "我的" } },
     { "path": "pages/mine/numbers", "style": { "navigationBarTitleText": "我的号码" } },
     { "path": "pages/mine/picker", "style": { "navigationBarTitleText": "选号" } },

@@ -3,6 +3,9 @@
     <view class="status-bar"></view>
     <view class="bar">
       <text v-if="back" class="tb-back" @click="goBack">‹ 返回</text>
+      <!-- #ifdef H5 -->
+      <text v-else-if="homeBack" class="tb-back" @click="goHome">‹ 首页</text>
+      <!-- #endif -->
       <text class="tb-title">{{ title }}</text>
     </view>
   </view>
@@ -12,11 +15,16 @@
 defineProps({
   title: { type: String, default: '' },
   back: { type: Boolean, default: false },
+  // homeBack: 仅 H5 渲染，给 tab 页(统计/选号)在 PC 网页上补一个返回首页入口
+  homeBack: { type: Boolean, default: false },
 })
 function goBack() {
   const pages = getCurrentPages()
   if (pages.length > 1) uni.navigateBack()
   else uni.switchTab({ url: '/pages/home/index' })
+}
+function goHome() {
+  uni.switchTab({ url: '/pages/home/index' })
 }
 </script>
 
