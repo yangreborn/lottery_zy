@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .env
 db.sqlite3
+lottery_backend/staticfiles/
 .pytest_cache/
 .superpowers/
 lottery_frontend/node_modules/
