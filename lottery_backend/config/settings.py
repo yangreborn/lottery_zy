@@ -117,7 +117,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # 生产 collectstatic 收集目录（admin 等静态文件，由 nginx 托管）
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# 可用环境变量 STATIC_ROOT 指定到 nginx 可读目录(如 /var/www/lottery/static)
+STATIC_ROOT = os.environ.get("STATIC_ROOT", str(BASE_DIR / "staticfiles"))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
