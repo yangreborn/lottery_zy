@@ -27,14 +27,17 @@
     </view>
 
     <view class="zoom">
-      <button class="zbtn" size="mini" @click="zoom(-1)">－ 缩小</button>
-      <button class="zbtn" size="mini" @click="zoom(1)">＋ 放大</button>
-      <text class="ztip">左右滑动查看</text>
+      <button class="zbtn" size="mini" @click="zoom(1)">－ 缩小</button>
+      <button class="zbtn" size="mini" @click="zoom(-1)">＋ 放大</button>
+      <text class="ztip">手指左右拖动查看更多期</text>
     </view>
 
-    <scroll-view scroll-x class="cvscroll">
-      <canvas canvas-id="chart" class="chart" :style="{ width: canvasW + 'rpx' }"></canvas>
-    </scroll-view>
+    <view class="cvwrap">
+      <canvas
+        canvas-id="chart" class="chart"
+        @touchstart="onTouchStart" @touchmove="onTouchMove"
+      ></canvas>
+    </view>
 
     <view v-if="!series.length" class="empty">{{ emptyMsg }}</view>
   </view>
@@ -47,7 +50,10 @@ import TopBanner from '../../components/TopBanner.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getLotteryList, getHistory } from '../../api/lottery.js'
-import { primaryZoneKey, sumSeries, missSeries, chartWidth, drawLineChart } from '../../utils/chart.js'
+import { primaryZoneKey, sumSeries, missSeries, clampWindow, drawLineChart } from '../../utils/chart.js'
+
+const CANVAS_W = 710 // 逻辑宽度(rpx)，固定屏宽，避免 canvas 放进 scroll-view 在小程序不显示
+const CANVAS_H = 460
 
 const store = lotteryStore
 const lotteries = ref([])
@@ -63,12 +69,13 @@ const metricOptions = [
 ]
 const metric = ref('sum')
 
-const SPACING_MIN = 28
-const SPACING_MAX = 160
-const spacing = ref(60)
-
 const zoneKey = ref('')
 const number = ref(1)
+
+// 可视窗口
+const WINDOW_MIN = 6
+const windowSize = ref(20)
+const startIdx = ref(0)
 
 const numberZones = computed(() => ((rule.value && rule.value.zones) || []).filter((z) => z.min !== undefined && z.max !== undefined))
 const zoneLabels = computed(() => numberZones.value.map((z) => z.label || z.key))
@@ -91,7 +98,8 @@ const series = computed(() => {
   return missSeries(draws.value, zoneKey.value, number.value)
 })
 
-const canvasW = computed(() => Math.round(chartWidth(series.value.length, spacing.value)))
+const win = computed(() => clampWindow(series.value.length, startIdx.value, windowSize.value))
+const windowed = computed(() => series.value.slice(win.value.start, win.value.start + win.value.size))
 
 const curName = computed(() => {
   const l = lotteries.value.find((x) => x.code === store.code)
@@ -103,12 +111,12 @@ const title = computed(() => {
 })
 
 function redraw() {
-  if (!series.value.length) return
+  if (!windowed.value.length) return
   const ctx = uni.createCanvasContext('chart')
-  const scale = uni.upx2px(100) / 100
-  drawLineChart(ctx, series.value, {
-    height: 460,
-    spacing: spacing.value,
+  const scale = uni.upx2px(CANVAS_W) / CANVAS_W
+  drawLineChart(ctx, windowed.value, {
+    width: CANVAS_W,
+    height: CANVAS_H,
     color: metric.value === 'sum' ? '#e53935' : '#1e88e5',
     title: title.value,
   }, scale)
@@ -123,11 +131,19 @@ async function load() {
     const res = await getHistory(store.code, { page: 1, page_size: periods.value })
     draws.value = res.results || []
     if (!draws.value.length) emptyMsg.value = '暂无数据'
-    setTimeout(redraw, 50)
+    resetWindow()
+    setTimeout(redraw, 60)
   } catch (e) {
     emptyMsg.value = e.msg || '加载失败'
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   }
+}
+
+// 默认窗口落在最新一段
+function resetWindow() {
+  const total = series.value.length
+  windowSize.value = Math.min(total || WINDOW_MIN, 20)
+  startIdx.value = Math.max(0, total - windowSize.value)
 }
 
 function ensureNumberDefault() {
@@ -141,22 +157,50 @@ function choosePeriod(p) { periods.value = p; load() }
 function chooseMetric(k) {
   metric.value = k
   if (k === 'miss') ensureNumberDefault()
+  resetWindow()
   setTimeout(redraw, 30)
 }
 function onZone(e) {
   const z = numberZones.value[Number(e.detail.value)]
   if (z) { zoneKey.value = z.key; number.value = z.min }
+  resetWindow()
   setTimeout(redraw, 30)
 }
 function onNumber(e) {
   const z = curZone.value
   if (z) number.value = z.min + Number(e.detail.value)
+  resetWindow()
   setTimeout(redraw, 30)
 }
 function zoom(dir) {
-  const next = spacing.value + dir * 24
-  spacing.value = Math.max(SPACING_MIN, Math.min(SPACING_MAX, next))
-  setTimeout(redraw, 30)
+  // dir=-1 放大(看更少期、更稀疏)，dir=1 缩小(看更多期)
+  const total = series.value.length
+  let size = windowSize.value + dir * 6
+  size = Math.max(WINDOW_MIN, Math.min(size, total || WINDOW_MIN))
+  // 放大时尽量保持窗口右端（最新）不变
+  const right = win.value.start + win.value.size
+  windowSize.value = size
+  startIdx.value = Math.max(0, right - size)
+  setTimeout(redraw, 20)
+}
+
+// 拖动平移
+let dragX = 0
+let dragStart = 0
+function onTouchStart(e) {
+  const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0])
+  dragX = t ? t.clientX : 0
+  dragStart = win.value.start
+}
+function onTouchMove(e) {
+  const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0])
+  if (!t) return
+  const dx = t.clientX - dragX
+  // 每拖动一个点距(屏宽/窗口)移动一格；向右拖看更早的期
+  const pxPerPoint = uni.upx2px(CANVAS_W) / Math.max(2, win.value.size)
+  const shift = Math.round(-dx / pxPerPoint)
+  startIdx.value = clampWindow(series.value.length, dragStart + shift, windowSize.value).start
+  redraw()
 }
 
 function onChange(code) { setCode(code); load() }
@@ -178,7 +222,7 @@ onShow(async () => {
 .zoom { display: flex; align-items: center; padding: 16rpx 20rpx; }
 .zbtn { background: #fff; color: #1e88e5; border: 1rpx solid #1e88e5; margin-right: 16rpx; }
 .ztip { color: #999; font-size: 24rpx; }
-.cvscroll { white-space: nowrap; width: 100%; }
-.chart { height: 460rpx; background: #fff; display: inline-block; }
+.cvwrap { display: flex; justify-content: center; padding: 12rpx 0; }
+.chart { width: 710rpx; height: 460rpx; background: #fff; border-radius: 12rpx; }
 .empty { text-align: center; color: #999; padding: 60rpx 0; }
 </style>

@@ -54,10 +54,19 @@ export function chartWidth(pointCount, spacing) {
   return PAD_L + PAD_R + (n - 1) * spacing
 }
 
+// 计算可视窗口：返回 clamp 后的 {start, size}。size 不超过 total，start 落在合法范围。
+export function clampWindow(total, start, size) {
+  if (total <= 0) return { start: 0, size: 0 }
+  const sz = Math.max(2, Math.min(size, total))
+  const maxStart = Math.max(0, total - sz)
+  const st = Math.max(0, Math.min(start, maxStart))
+  return { start: st, size: sz }
+}
+
 export function drawLineChart(ctx, series, opts, scale = 1) {
   const H = opts.height || 460
-  const spacing = opts.spacing || 60
-  const W = chartWidth(series.length, spacing)
+  // 固定宽度优先（屏宽 canvas，小程序友好）；否则按点距推算（旧滚动模式）
+  const W = opts.width || chartWidth(series.length, opts.spacing || 60)
   const color = opts.color || '#e53935'
   const title = opts.title || ''
 

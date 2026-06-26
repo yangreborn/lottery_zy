@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { primaryZoneKey, sumSeries, missSeries, seriesRange, chartWidth } from '../src/utils/chart.js'
+import { primaryZoneKey, sumSeries, missSeries, seriesRange, chartWidth, clampWindow } from '../src/utils/chart.js'
 
 describe('primaryZoneKey', () => {
   it('取第一个带 min/max 的号码区', () => {
@@ -68,5 +68,26 @@ describe('chartWidth', () => {
   it('随点数与间距增长（缩放放大变宽）', () => {
     expect(chartWidth(10, 60)).toBeLessThan(chartWidth(10, 120))
     expect(chartWidth(5, 60)).toBeLessThan(chartWidth(20, 60))
+  })
+})
+
+describe('clampWindow', () => {
+  it('正常窗口原样返回', () => {
+    expect(clampWindow(100, 10, 20)).toEqual({ start: 10, size: 20 })
+  })
+  it('size 超过 total 时截到 total', () => {
+    expect(clampWindow(15, 0, 30)).toEqual({ start: 0, size: 15 })
+  })
+  it('start 越界回拉到末尾窗口', () => {
+    expect(clampWindow(50, 999, 10)).toEqual({ start: 40, size: 10 })
+  })
+  it('start 负值回 0', () => {
+    expect(clampWindow(50, -5, 10)).toEqual({ start: 0, size: 10 })
+  })
+  it('size 最小为 2', () => {
+    expect(clampWindow(50, 0, 1)).toEqual({ start: 0, size: 2 })
+  })
+  it('空数据返回 0/0', () => {
+    expect(clampWindow(0, 0, 10)).toEqual({ start: 0, size: 0 })
   })
 })
