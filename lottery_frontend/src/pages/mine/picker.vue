@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="选号" :home-back="true" />
+    <TopBanner title="选号" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <template v-if="zones.length">
       <view class="modes">

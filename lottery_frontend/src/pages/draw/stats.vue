@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="号码统计" :home-back="true" />
+    <TopBanner title="号码统计" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="periods">
       <view

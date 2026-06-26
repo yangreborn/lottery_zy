@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <TopBanner title="走势图" :back="true" :home-back="true" />
+    <TopBanner title="走势图" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
 
     <scroll-view scroll-x class="typebar">
