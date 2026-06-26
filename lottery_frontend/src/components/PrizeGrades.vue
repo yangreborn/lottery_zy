@@ -1,5 +1,5 @@
 <template>
-  <view class="grades">
+  <view v-if="hasData" class="grades">
     <view class="grade head-row">
       <text class="c1">奖级</text><text class="c2">注数</text><text class="c3">单注奖金</text>
     </view>
@@ -9,7 +9,6 @@
         <text class="c2">{{ g.count }}</text>
         <text class="c3">{{ formatAmount(g.amount) }}</text>
       </view>
-      <view v-if="!data.flat.length" class="none">暂无奖级数据</view>
     </template>
     <template v-else>
       <view v-for="grp in data.groups" :key="grp.pick" class="kgroup">
@@ -38,6 +37,12 @@ const props = defineProps({
   grades: { type: Array, default: () => [] },
 })
 const data = computed(() => normalizePrizes(props.grades))
+// 无有效奖级数据时整块不渲染（如福彩3D：官方接口未回填中奖注数/奖金）
+const hasData = computed(() =>
+  data.value.grouped
+    ? data.value.groups.some((g) => g.rows.length)
+    : data.value.flat.length > 0
+)
 const open = ref([])
 function toggle(pick) {
   open.value = open.value.includes(pick)
@@ -55,5 +60,4 @@ function toggle(pick) {
 .head-row { color: #999; font-weight: 600; }
 .kgroup { border-bottom: 1px solid #f5f5f5; }
 .ghead { display: flex; justify-content: space-between; padding: 16rpx 0; font-size: 30rpx; color: #555; font-weight: 600; }
-.none { text-align: center; color: #999; padding: 20rpx 0; font-size: 28rpx; }
 </style>
