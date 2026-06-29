@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { HOME_MENU, goMenu } from '../src/utils/menu.js'
 
 describe('HOME_MENU', () => {
-  it('8 项且字段完整', () => {
-    expect(HOME_MENU.length).toBe(8)
+  it('7 项且字段完整', () => {
+    expect(HOME_MENU.length).toBe(7)
     for (const m of HOME_MENU) {
       expect(typeof m.key).toBe('string')
       expect(typeof m.title).toBe('string')
@@ -13,11 +13,12 @@ describe('HOME_MENU', () => {
     }
   })
 
-  it('已移除 mine/feedback/purchase，新增 notice', () => {
+  it('已移除 mine/feedback/purchase/latest，新增 notice', () => {
     const keys = HOME_MENU.map((m) => m.key)
     expect(keys).not.toContain('mine')
     expect(keys).not.toContain('feedback')
     expect(keys).not.toContain('purchase')
+    expect(keys).not.toContain('latest')
     expect(keys).toContain('notice')
   })
 
@@ -25,7 +26,6 @@ describe('HOME_MENU', () => {
     const byKey = Object.fromEntries(HOME_MENU.map((m) => [m.key, m]))
     expect(byKey.stats.nav).toBe('switchTab')
     expect(byKey.picker.nav).toBe('switchTab')
-    expect(byKey.latest.nav).toBe('navigateTo')
     expect(byKey.history.nav).toBe('navigateTo')
     expect(byKey.guide.nav).toBe('navigateTo')
     expect(byKey.guide.title).toBe('玩法说明')
