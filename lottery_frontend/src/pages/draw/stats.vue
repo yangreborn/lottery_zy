@@ -9,6 +9,11 @@
       >
         <text>近{{ p }}期</text>
       </view>
+      <input
+        class="pinput" type="number" :value="String(periods)"
+        placeholder="自定义" confirm-type="search"
+        @confirm="onCustom" @blur="onCustom"
+      />
     </view>
     <view class="periods">
       <view
@@ -72,6 +77,15 @@ function choose(p) {
   load()
 }
 
+function onCustom(e) {
+  const raw = parseInt((e.detail && e.detail.value) || '', 10)
+  if (!raw || raw < 1) return // 非法/空：维持当前期数
+  const v = Math.min(raw, 100) // 后端上限 100
+  if (v === periods.value) return
+  periods.value = v
+  load()
+}
+
 function onChange(code) { setCode(code); load() }
 
 onShow(async () => {
@@ -86,6 +100,7 @@ onShow(async () => {
 .periods { display: flex; flex-wrap: wrap; padding: 12rpx 20rpx; }
 .opt { padding: 12rpx 24rpx; margin: 6rpx 16rpx 6rpx 0; background: #fff; border-radius: 30rpx; color: #666; font-size: 30rpx; }
 .opt.active { background: #e53935; color: #fff; }
+.pinput { width: 140rpx; padding: 12rpx 20rpx; margin: 6rpx 0; background: #fff; border-radius: 30rpx; color: #333; font-size: 30rpx; text-align: center; }
 .legend { padding: 8rpx 24rpx 0; color: #999; font-size: 24rpx; line-height: 1.5; }
 .zone-title { padding: 16rpx 24rpx 0; color: #888; font-size: 30rpx; }
 .empty { text-align: center; color: #999; padding: 60rpx 0; }
