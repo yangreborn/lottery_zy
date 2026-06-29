@@ -11,26 +11,34 @@
     </view>
     <view v-if="hasPool(draw.pool_amount)" class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
     <template v-if="collapsible">
-      <view class="prize-toggle" @click="showPrize = !showPrize">
-        <text>{{ showPrize ? '收起奖级 ▲' : '展开奖级 ▾' }}</text>
-      </view>
-      <PrizeGrades v-if="showPrize" :grades="draw.prize_grades" />
+      <template v-if="hasPrize">
+        <view class="prize-toggle" @click="showPrize = !showPrize">
+          <text>{{ showPrize ? '收起奖级 ▲' : '展开奖级 ▾' }}</text>
+        </view>
+        <PrizeGrades v-if="showPrize" :grades="draw.prize_grades" />
+      </template>
     </template>
     <PrizeGrades v-else :grades="draw.prize_grades" />
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Ball from './Ball.vue'
 import PrizeGrades from './PrizeGrades.vue'
 import { formatAmount, hasPool } from '../utils/format.js'
+import { normalizePrizes } from '../utils/prize.js'
 
-defineProps({
+const props = defineProps({
   draw: { type: Object, required: true },
   collapsible: { type: Boolean, default: false },
 })
 const showPrize = ref(false)
+// 无有效奖级数据时（如福彩3D官方未回填）整块不显示，连"展开奖级"也不出现
+const hasPrize = computed(() => {
+  const d = normalizePrizes(props.draw.prize_grades)
+  return d.grouped ? d.groups.some((g) => g.rows.length) : d.flat.length > 0
+})
 </script>
 
 <style scoped>

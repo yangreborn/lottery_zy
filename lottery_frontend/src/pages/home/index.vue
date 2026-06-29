@@ -54,6 +54,18 @@ function go(m) { goMenu(m) }
 function openDoc(type) { popupType.value = type; popupVisible.value = true }
 function goNotices() { uni.navigateTo({ url: '/pages/notice/index' }) }
 
+const LATEST_TTL = 5 * 60 * 1000 // 当期开奖缓存 5 分钟（开奖一天一次，足够新）
+function readLatestCache(code) {
+  try {
+    const c = uni.getStorageSync('latest_' + code)
+    if (c && c.ts && Date.now() - c.ts < LATEST_TTL) return c.draw
+  } catch (e) { /* 读缓存失败忽略 */ }
+  return null
+}
+function writeLatestCache(code, draw) {
+  try { uni.setStorageSync('latest_' + code, { ts: Date.now(), draw }) } catch (e) { /* 写缓存失败忽略 */ }
+}
+
 async function loadCards() {
   try {
     const all = await getLotteryList()
@@ -63,10 +75,14 @@ async function loadCards() {
       try { const p = await getProfile(); pref = p.home_lotteries || [] } catch (e) { /* 偏好拉取失败不阻塞 */ }
     }
     const list = filterHomeLotteries(all, pref)
-    cards.value = list.map((l) => ({ code: l.code, name: l.name, draw: null }))
+    // 先用缓存即时渲染；缓存新鲜(5分钟内)的彩种跳过网络请求，避免每次白屏重载
+    cards.value = list.map((l) => ({ code: l.code, name: l.name, draw: readLatestCache(l.code) }))
     await Promise.all(list.map(async (l, idx) => {
+      if (cards.value[idx].draw) return
       try {
-        cards.value[idx].draw = await getLatest(l.code)
+        const d = await getLatest(l.code)
+        cards.value[idx].draw = d
+        writeLatestCache(l.code, d)
       } catch (e) {
         // 单个彩种暂无开奖不阻塞整体
       }
