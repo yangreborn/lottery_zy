@@ -68,6 +68,7 @@ class AppUser(models.Model):
     openid = models.CharField("openid", max_length=128, unique=True)
     unionid = models.CharField("unionid", max_length=128, blank=True, default="", db_index=True)
     nickname = models.CharField("昵称", max_length=30, blank=True, default="")
+    home_lotteries = models.JSONField("首页彩种", default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

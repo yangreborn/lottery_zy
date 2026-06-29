@@ -13,7 +13,7 @@ from lottery.validators import validate_numbers
 from usernumber.models import UserNumber, Feedback, PurchaseRecord, AppUser, get_or_create_app_user
 from usernumber.generator import random_numbers, dan_random_numbers
 from usernumber.serializers import UserNumberSerializer, PurchaseRecordSerializer
-from lottery.models import DrawResult
+from lottery.models import DrawResult, Lottery
 from usernumber.judge import judge_prize, judge_keno, judge_digit
 
 logger = logging.getLogger(__name__)
@@ -45,22 +45,37 @@ class ProfileView(APIView):
             return Response(make_response(code=1, msg="未登录"))
         user = AppUser.objects.filter(user_id=uid).first()
         nickname = user.nickname if user else ""
-        return Response(make_response(data={"nickname": nickname, "short_id": uid[:8]}))
+        home = user.home_lotteries if user else []
+        return Response(make_response(data={"nickname": nickname, "short_id": uid[:8], "home_lotteries": home}))
 
     def post(self, request):
         uid = current_user_id(request)
         if not uid:
             return Response(make_response(code=1, msg="未登录"))
-        nickname = (request.data.get("nickname") or "").strip()
-        if len(nickname) > 30:
-            return Response(make_response(code=1, msg="昵称过长", error="昵称不超过 30 字符"))
         # 不在此建档：档案只在登录时创建，避免写入以 hash 兜底的脏 openid
         user = AppUser.objects.filter(user_id=uid).first()
         if user is None:
             return Response(make_response(code=1, msg="请先登录", error="用户档案不存在"))
-        user.nickname = nickname
-        user.save(update_fields=["nickname", "updated_at"])
-        return Response(make_response(data={"nickname": user.nickname, "short_id": user.short_id}))
+        # 昵称(可选)
+        if "nickname" in request.data:
+            nickname = (request.data.get("nickname") or "").strip()
+            if len(nickname) > 30:
+                return Response(make_response(code=1, msg="昵称过长", error="昵称不超过 30 字符"))
+            user.nickname = nickname
+            user.save(update_fields=["nickname", "updated_at"])
+        # 首页彩种(可选)：过滤掉非上架彩种 code
+        if "home_lotteries" in request.data:
+            codes = request.data.get("home_lotteries")
+            if not isinstance(codes, list):
+                return Response(make_response(code=1, msg="参数非法", error="home_lotteries 应为数组"))
+            valid = set(Lottery.objects.filter(is_active=True).values_list("code", flat=True))
+            user.home_lotteries = [c for c in codes if c in valid]
+            user.save(update_fields=["home_lotteries", "updated_at"])
+        return Response(make_response(data={
+            "nickname": user.nickname,
+            "short_id": user.short_id,
+            "home_lotteries": user.home_lotteries,
+        }))
 
 
 class NumberCreateView(APIView):
