@@ -2,8 +2,13 @@
   <view class="home">
     <view class="banner"><text class="bt">彩票查询</text></view>
     <NoticeBar :notice="topNotice" @tap="goNotices" />
-    <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
-    <DrawCard v-if="draw" :draw="draw" />
+    <view v-if="cards.length">
+      <view v-for="c in cards" :key="c.code" class="lblock">
+        <view class="lname">{{ c.name }}</view>
+        <DrawCard v-if="c.draw" :draw="c.draw" :collapsible="true" />
+        <view v-else class="lempty">暂无开奖数据</view>
+      </view>
+    </view>
     <view v-else class="empty">{{ emptyMsg }}</view>
     <view class="grid">
       <view v-for="m in menu" :key="m.key" class="mcard" @click="go(m)">
@@ -24,22 +29,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import NoticeBar from '../../components/NoticeBar.vue'
-import LotteryTabs from '../../components/LotteryTabs.vue'
 import DrawCard from '../../components/DrawCard.vue'
 import LegalPopup from '../../components/LegalPopup.vue'
 import { HOME_MENU, goMenu } from '../../utils/menu.js'
 import { getNotices } from '../../api/guide.js'
 import { getLotteryList, getLatest } from '../../api/lottery.js'
-import { lotteryStore, setCode } from '../../store/lottery.js'
+import { lotteryStore } from '../../store/lottery.js'
 
 const store = lotteryStore
 const menu = HOME_MENU
 const topNotice = ref(null)
-const lotteries = ref([])
-const draw = ref(null)
+const cards = ref([])
 const emptyMsg = ref('加载中…')
 const popupVisible = ref(false)
 const popupType = ref('agreement')
@@ -48,29 +51,26 @@ function go(m) { goMenu(m) }
 function openDoc(type) { popupType.value = type; popupVisible.value = true }
 function goNotices() { uni.navigateTo({ url: '/pages/notice/index' }) }
 
-async function loadDraw() {
-  draw.value = null
-  emptyMsg.value = '加载中…'
+async function loadCards() {
   try {
-    draw.value = await getLatest(store.code)
+    const list = await getLotteryList()
+    cards.value = list.map((l) => ({ code: l.code, name: l.name, draw: null }))
+    await Promise.all(list.map(async (l, idx) => {
+      try {
+        cards.value[idx].draw = await getLatest(l.code)
+      } catch (e) {
+        // 单个彩种暂无开奖不阻塞整体
+      }
+    }))
+    cards.value = [...cards.value]
+    if (!cards.value.length) emptyMsg.value = '暂无数据'
   } catch (e) {
-    emptyMsg.value = e.msg || '暂无数据'
+    emptyMsg.value = e.msg || '加载失败'
   }
-}
-function onChange(code) {
-  setCode(code)
-  loadDraw()
 }
 
-onMounted(async () => {
-  try {
-    lotteries.value = await getLotteryList()
-  } catch (e) {
-    // 彩种列表失败不阻塞首页
-  }
-})
 onShow(async () => {
-  loadDraw()
+  loadCards()
   try {
     const list = await getNotices(store.code)
     topNotice.value = (list && list.length) ? list[0] : null
@@ -84,6 +84,9 @@ onShow(async () => {
 .home { min-height: 100vh; background: linear-gradient(180deg, #ffd9d4 0%, #fff0ee 35%, #fbfbfb 100%); }
 .banner { background: linear-gradient(180deg, #e53935 0%, #ff6f61 100%); padding: calc(44rpx + var(--status-bar-height, 0px)) 0 44rpx; text-align: center; }
 .bt { color: #fff; font-size: 42rpx; font-weight: 700; letter-spacing: 8rpx; }
+.lblock { margin-top: 12rpx; }
+.lname { padding: 8rpx 28rpx 0; color: #333; font-size: 30rpx; font-weight: 700; }
+.lempty { text-align: center; color: #999; padding: 30rpx 0; font-size: 26rpx; }
 .empty { text-align: center; color: #999; padding: 60rpx 0; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24rpx; padding: 28rpx; }
 .mcard { background: #fff; border-radius: 20rpx; padding: 44rpx 0; text-align: center; box-shadow: 0 4rpx 16rpx rgba(229, 57, 53, 0.10); }
