@@ -16,6 +16,14 @@ export function sortLotteries(list) {
   return [...(list || [])].sort((a, b) => rank(a.code) - rank(b.code))
 }
 
+// 按用户首页彩种偏好过滤；codes 为空/缺省 = 显示全部（顺序随入参，已排序）
+export function filterHomeLotteries(list, codes) {
+  const arr = list || []
+  if (!codes || !codes.length) return arr
+  const set = new Set(codes)
+  return arr.filter((l) => set.has(l.code))
+}
+
 export function splitTabs(list, hotCodes = HOT_CODES) {
   const arr = list || []
   return {

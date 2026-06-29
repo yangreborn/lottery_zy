@@ -37,6 +37,9 @@ import LegalPopup from '../../components/LegalPopup.vue'
 import { HOME_MENU, goMenu } from '../../utils/menu.js'
 import { getNotices } from '../../api/guide.js'
 import { getLotteryList, getLatest } from '../../api/lottery.js'
+import { getProfile } from '../../api/user.js'
+import { filterHomeLotteries } from '../../utils/lottery.js'
+import { authState } from '../../store/auth.js'
 import { lotteryStore } from '../../store/lottery.js'
 
 const store = lotteryStore
@@ -53,7 +56,13 @@ function goNotices() { uni.navigateTo({ url: '/pages/notice/index' }) }
 
 async function loadCards() {
   try {
-    const list = await getLotteryList()
+    const all = await getLotteryList()
+    // 仅微信登录用户读取首页彩种偏好；匿名/失败 → 显示全部
+    let pref = []
+    if (authState.isWechat) {
+      try { const p = await getProfile(); pref = p.home_lotteries || [] } catch (e) { /* 偏好拉取失败不阻塞 */ }
+    }
+    const list = filterHomeLotteries(all, pref)
     cards.value = list.map((l) => ({ code: l.code, name: l.name, draw: null }))
     await Promise.all(list.map(async (l, idx) => {
       try {

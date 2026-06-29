@@ -75,3 +75,7 @@ export function getProfile() {
 export function setProfile(nickname) {
   return request('/api/user/profile', { method: 'POST', data: { nickname } })
 }
+
+export function setHomeLotteries(codes) {
+  return request('/api/user/profile', { method: 'POST', data: { home_lotteries: codes } })
+}

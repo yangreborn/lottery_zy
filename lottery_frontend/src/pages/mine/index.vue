@@ -7,6 +7,9 @@
       <text class="abtn" @click="auth.isWechat ? doLogout() : doWechatLogin()">{{ auth.isWechat ? '退出' : '微信登录' }}</text>
     </view>
     <view class="menu">
+      <view v-if="auth.isWechat" class="entry" @click="go('/pages/mine/home_lotteries')">
+        <text class="ic">🏠</text><text class="tx">首页彩种</text><text class="arr">›</text>
+      </view>
       <view class="entry" @click="go('/pages/mine/numbers')">
         <text class="ic">⭐</text><text class="tx">我的号码</text><text class="arr">›</text>
       </view>
