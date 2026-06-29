@@ -1,7 +1,8 @@
 import { request } from './request.js'
+import { sortLotteries } from '../utils/lottery.js'
 
 export function getLotteryList() {
-  return request('/api/openapi/lottery/list')
+  return request('/api/openapi/lottery/list').then(sortLotteries)
 }
 
 export function getLatest(code) {
