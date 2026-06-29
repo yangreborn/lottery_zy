@@ -38,9 +38,7 @@
     <!-- 折线：和值/跨度/单号遗漏 -->
     <template v-else-if="isLine">
       <view class="zoom">
-        <button class="zbtn" size="mini" @click="zoom(1)">－ 缩小</button>
-        <button class="zbtn" size="mini" @click="zoom(-1)">＋ 放大</button>
-        <text class="ztip">手指左右拖动查看更多期</text>
+        <text class="ztip">双指缩放、单指左右拖动看更多期</text>
       </view>
       <view class="cvwrap">
         <canvas
@@ -68,7 +66,7 @@ import { isDigitGame, numberMatrix, intervalTrend, spanSeries } from '../../util
 import { ballColor } from '../../utils/format.js'
 
 const CANVAS_W = 710
-const CANVAS_H = 460
+const CANVAS_H = 560
 
 const store = lotteryStore
 const lotteries = ref([])
@@ -214,30 +212,52 @@ function onNumber(e) {
   resetWindow()
   setTimeout(redraw, 30)
 }
-function zoom(dir) {
-  const total = lineSeries.value.length
-  let size = windowSize.value + dir * 6
-  size = Math.max(WINDOW_MIN, Math.min(size, total || WINDOW_MIN))
-  const right = win.value.start + win.value.size
-  windowSize.value = size
-  startIdx.value = Math.max(0, right - size)
-  setTimeout(redraw, 20)
-}
-
 let dragX = 0
 let dragStart = 0
+let pinchDist0 = 0
+let pinchSize0 = 0
+
+function touchDist(touches) {
+  const a = touches[0]
+  const b = touches[1]
+  const dx = a.clientX - b.clientX
+  const dy = a.clientY - b.clientY
+  return Math.sqrt(dx * dx + dy * dy)
+}
+
 function onTouchStart(e) {
+  if (e.touches && e.touches.length >= 2) {
+    pinchDist0 = touchDist(e.touches)
+    pinchSize0 = windowSize.value
+    return
+  }
+  pinchDist0 = 0
   const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0])
   dragX = t ? t.clientX : 0
   dragStart = win.value.start
 }
+
 function onTouchMove(e) {
+  const total = lineSeries.value.length
+  // 双指捏合缩放：张开放大(窗口变小)、捏合缩小(窗口变大)
+  if (e.touches && e.touches.length >= 2) {
+    if (!pinchDist0) { pinchDist0 = touchDist(e.touches); pinchSize0 = windowSize.value; return }
+    const ratio = touchDist(e.touches) / pinchDist0
+    let size = Math.round(pinchSize0 / ratio)
+    size = Math.max(WINDOW_MIN, Math.min(size, total || WINDOW_MIN))
+    const right = win.value.start + win.value.size
+    windowSize.value = size
+    startIdx.value = Math.max(0, right - size)
+    redraw()
+    return
+  }
+  // 单指左右拖动平移
   const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0])
   if (!t) return
   const dx = t.clientX - dragX
   const pxPerPoint = uni.upx2px(CANVAS_W) / Math.max(2, win.value.size)
   const shift = Math.round(-dx / pxPerPoint)
-  startIdx.value = clampWindow(lineSeries.value.length, dragStart + shift, windowSize.value).start
+  startIdx.value = clampWindow(total, dragStart + shift, windowSize.value).start
   redraw()
 }
 
@@ -261,9 +281,8 @@ onShow(async () => {
 .pickers { display: flex; padding: 12rpx 20rpx 0; }
 .pk { background: #fff; border-radius: 30rpx; padding: 12rpx 24rpx; margin-right: 16rpx; color: #333; font-size: 28rpx; }
 .zoom { display: flex; align-items: center; padding: 16rpx 20rpx; }
-.zbtn { background: #fff; color: #1e88e5; border: 1rpx solid #1e88e5; margin-right: 16rpx; }
 .ztip { color: #999; font-size: 24rpx; }
 .cvwrap { display: flex; justify-content: center; padding: 12rpx 0; }
-.chart { width: 710rpx; height: 460rpx; background: #fff; border-radius: 12rpx; }
+.chart { width: 710rpx; height: 560rpx; background: #fff; border-radius: 12rpx; }
 .empty { text-align: center; color: #999; padding: 60rpx 0; }
 </style>
