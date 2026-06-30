@@ -10,9 +10,14 @@
 
 ```
 微信小程序 → HTTPS(api.example.com) → nginx(443) → gunicorn(127.0.0.1:8000) → Django
-                                         └── /static/ 直接由 nginx 托管
+H5 网页    →                          ├── /            H5 静态站点 /var/www/lottery/h5
+                                       ├── /api/ /admin/ 反代 gunicorn
+                                       └── /static/     nginx 托管 /var/www/lottery/static
                                     PostgreSQL(本机 127.0.0.1:5432 或阿里云 RDS)
 ```
+
+> 本项目当前实际部署:公网 IP `47.100.161.8`,代码在 `/root/lottery_zy`,
+> 尚未备案域名 / HTTPS,故小程序只能用开发者工具开发版联调(见第 8、10 节)。
 
 ## 0. 前置准备
 
@@ -43,35 +48,55 @@ SQL
 sudo -u postgres psql -d lottery -c "GRANT ALL ON SCHEMA public TO lottery_user;"
 ```
 
+> ⚠️ 坑:若曾用 `postgres` 超级用户建过表,后续用 `lottery_user` 执行 `migrate`
+> 会报 `must be owner of table ...`。把库内所有表/序列 owner 改给 `lottery_user`：
+> ```bash
+> sudo -u postgres psql -d lottery <<'SQL'
+> DO $$ DECLARE r RECORD; BEGIN
+>   FOR r IN SELECT tablename FROM pg_tables WHERE schemaname='public' LOOP
+>     EXECUTE format('ALTER TABLE public.%I OWNER TO lottery_user', r.tablename); END LOOP;
+>   FOR r IN SELECT sequencename FROM pg_sequences WHERE schemaname='public' LOOP
+>     EXECUTE format('ALTER SEQUENCE public.%I OWNER TO lottery_user', r.sequencename); END LOOP;
+> END $$; SQL
+> ```
+
 > 若用**阿里云 RDS PostgreSQL**：跳过本机安装，直接在 RDS 控制台建库建账号，把内网地址/端口/账号填进下面的 `.env`，并把 ECS 加入 RDS 白名单。
 
 ## 3. 拉代码 + 虚拟环境 + 依赖
 
 ```bash
-mkdir -p /opt && cd /opt
-git clone git@github.com:yangreborn/lottery_zy.git lottery   # 或 https 方式
-cd /opt/lottery/lottery_backend
+cd /root
+git clone git@github.com:yangreborn/lottery_zy.git   # 或 https 方式 → /root/lottery_zy
+cd /root/lottery_zy/lottery_backend
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -U pip
 pip install -r requirements.txt
 ```
 
+> 本项目实际把代码放在 `/root/lottery_zy`(故 systemd 以 root 运行)。
+> 若想用 `www-data` 运行更安全,改 clone 到 `/opt/lottery` 并把下文所有
+> `/root/lottery_zy` 路径、`User=root` 相应替换即可。
+
 ## 4. 配置 .env
 
 后端 `settings.py` 会自动读取 `lottery_backend/.env`。新建该文件：
 
 ```bash
-cat > /opt/lottery/lottery_backend/.env <<'ENV'
+cat > /root/lottery_zy/lottery_backend/.env <<'ENV'
 SECRET_KEY=用一段足够长的随机字符串
 DEBUG=False
-ALLOWED_HOSTS=api.example.com
+# 未备案域名前用公网 IP；备案后改成 api.example.com
+ALLOWED_HOSTS=47.100.161.8,api.example.com
 
 DB_NAME=lottery
 DB_USER=lottery_user
 DB_PASSWORD=改成强密码
 DB_HOST=127.0.0.1
 DB_PORT=5432
+
+# collectstatic 收集到 nginx 可读目录（见 settings.py STATIC_ROOT）
+STATIC_ROOT=/var/www/lottery/static
 
 # 微信小程序（在微信公众平台-开发设置里拿）
 WECHAT_APPID=wx3b0f890a8af52a9c
@@ -85,20 +110,24 @@ ENV
 ## 5. 初始化数据
 
 ```bash
-cd /opt/lottery/lottery_backend && . .venv/bin/activate
+mkdir -p /var/www/lottery/static /var/www/lottery/h5   # nginx 托管目录
+cd /root/lottery_zy/lottery_backend && . .venv/bin/activate
 python manage.py migrate
-python manage.py collectstatic --noinput      # 收集到 staticfiles/
+python manage.py collectstatic --noinput      # 收集到 STATIC_ROOT(/var/www/lottery/static)
 python manage.py createsuperuser               # 建后台管理员
 python manage.py seed_lotteries                # 写入彩种基础数据
-python manage.py crawl_draw                    # 抓一次开奖（草稿）
+python manage.py load_history --count 100      # 拉最近100期并自动发布
 ```
+
+> `crawl_draw` 只抓最新 1 期且为**草稿**,需到后台「开奖结果」勾选→「发布选中开奖记录」才对外可见;
+> `load_history --count N` 抓 N 期并**自动发布**,初始化建议用它。
 
 抓取后到后台「开奖结果」里勾选→「发布选中开奖记录」才会对外可见（见 `docs/admin-manual-setup.md`）。
 
 ## 6. gunicorn 跑起来（先手测）
 
 ```bash
-cd /opt/lottery/lottery_backend && . .venv/bin/activate
+cd /root/lottery_zy/lottery_backend && . .venv/bin/activate
 gunicorn config.wsgi:application --bind 127.0.0.1:8000
 # 浏览器/另开终端 curl 本机 8000 验证后退出
 ```
@@ -112,10 +141,9 @@ Description=lottery gunicorn
 After=network.target postgresql.service
 
 [Service]
-User=www-data
-Group=www-data
-WorkingDirectory=/opt/lottery/lottery_backend
-ExecStart=/opt/lottery/lottery_backend/.venv/bin/gunicorn config.wsgi:application \
+User=root
+WorkingDirectory=/root/lottery_zy/lottery_backend
+ExecStart=/root/lottery_zy/lottery_backend/.venv/bin/gunicorn config.wsgi:application \
   --workers 3 --bind 127.0.0.1:8000
 Restart=always
 
@@ -123,8 +151,6 @@ Restart=always
 WantedBy=multi-user.target
 UNIT
 
-# 目录授权给运行用户
-chown -R www-data:www-data /opt/lottery/lottery_backend
 systemctl daemon-reload
 systemctl enable --now lottery
 systemctl status lottery   # 看是否 active(running)
@@ -132,17 +158,28 @@ systemctl status lottery   # 看是否 active(running)
 
 ## 7. nginx 反向代理 + 静态托管
 
+同一个 server 同时托管 H5 静态站点(`/`)和后端 API(`/api/`、`/admin/`、`/static/`)：
+
 ```bash
 cat > /etc/nginx/sites-available/lottery <<'NGINX'
 server {
     listen 80;
-    server_name api.example.com;
+    server_name 47.100.161.8 api.example.com;   # 未备案前用 IP
 
-    location /static/ {
-        alias /opt/lottery/lottery_backend/staticfiles/;
+    # H5 网页（uni-app build:h5 产物）
+    root /var/www/lottery/h5;
+    index index.html;
+    location / {
+        try_files $uri $uri/ /index.html;
     }
 
-    location / {
+    # Django 后台静态资源
+    location /static/ {
+        alias /var/www/lottery/static/;
+    }
+
+    # 后端 API 与后台管理 → gunicorn
+    location ~ ^/(api|admin)/ {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -153,10 +190,12 @@ server {
 NGINX
 
 ln -sf /etc/nginx/sites-available/lottery /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default   # 去掉默认站点避免抢占
 nginx -t && systemctl reload nginx
 ```
 
-此时 `http://api.example.com/api/openapi/lottery/list` 应能返回 JSON。
+此时 `http://47.100.161.8/api/openapi/lottery/list` 应返回 JSON,`http://47.100.161.8/` 打开 H5 页面。
+> `sites-enabled/lottery` 是指向 `sites-available/lottery` 的软链接,核对实际生效配置用 `nginx -T`。
 
 ## 8. 开启 HTTPS（微信强制要求）
 
@@ -181,8 +220,11 @@ mp.weixin.qq.com → 开发管理 → 开发设置 → 服务器域名 →
 
 本地 `lottery_frontend/` 新建 `.env.production`：
 ```
+# 备案 + HTTPS 完成后用域名；当前阶段先用公网 IP（仅开发者工具开发版可联调）
 VITE_API_BASE=https://api.example.com
 ```
+> ⚠️ 现状是 `VITE_API_BASE=http://47.100.161.8`。小程序**体验版/正式版必须 HTTPS+已备案域名**,
+> 所以 http/IP 下只能用开发者工具开发版(本地设置勾「不校验合法域名」)联调,无法上传体验版。
 然后：
 ```bash
 cd lottery_frontend
@@ -192,8 +234,9 @@ npm run build:mp-weixin
 
 ## 11. 日常更新流程
 
+**后端更新：**
 ```bash
-cd /opt/lottery && git pull
+cd /root/lottery_zy && git pull
 cd lottery_backend && . .venv/bin/activate
 pip install -r requirements.txt        # 依赖有变动时
 python manage.py migrate               # 有新迁移时
@@ -201,7 +244,21 @@ python manage.py collectstatic --noinput
 systemctl restart lottery
 ```
 
-开奖更新：定期 `python manage.py crawl_draw` 后到后台发布（调度未做，可自行加 crontab，见 note40）。
+**H5 更新**(本地构建后上传产物,再覆盖到 nginx 目录)：
+```bash
+# 本地
+cd lottery_frontend && npm run build:h5         # 产物在 dist/build/h5
+# 上传到 ECS 后（产物放在 ~/h5）：
+rm -rf /var/www/lottery/h5/* && cp -r ~/h5/. /var/www/lottery/h5/
+chmod -R a+rX /var/www/lottery/h5
+```
+> 坑:H5 对外目录是 `/var/www/lottery/h5`,拷到别处(如 `~/lottery_frontend/h5`)不会生效。
+
+**开奖更新**：crontab 定时跑 `crawl_draw`(草稿需后台发布)或 `load_history --count N`(自动发布)。
+crontab 示例(每天 22:00,注意服务器时区 `timedatectl`)：
+```cron
+0 22 * * * cd /root/lottery_zy/lottery_backend && .venv/bin/python manage.py crawl_draw >> /var/log/lottery_crawl.log 2>&1
+```
 
 ## 备忘
 - DB 密码、SECRET_KEY、WECHAT_SECRET 只放在服务器 `.env`，**不要提交到 git**。
