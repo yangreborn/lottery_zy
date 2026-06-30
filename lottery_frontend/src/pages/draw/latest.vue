@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="当期开奖" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <DrawCard v-if="draw" :draw="draw" />
@@ -8,6 +8,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -49,5 +53,6 @@ onShow(() => { load() })
 
 <style scoped>
 .page { padding: 0 0 30rpx; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

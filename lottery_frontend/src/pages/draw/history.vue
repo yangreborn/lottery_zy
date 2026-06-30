@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="历史开奖" :back="true" />
     <LotteryTabs :list="lotteries" :active="lotteryStore.code" @change="onChange" />
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
@@ -20,19 +20,22 @@
         </view>
       </view>
       <view v-if="!items.length" class="empty">{{ emptyMsg }}</view>
-      <view v-else-if="!hasMore" class="end">没有更多了</view>
+      <view v-else-if="!hasMore" class="end">— 没有更多了 —</view>
     </scroll-view>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
 import Ball from '../../components/Ball.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
 import { lotteryStore, setCode } from '../../store/lottery.js'
 import { getHistory, getLotteryList } from '../../api/lottery.js'
+import { themeState, themeVarString } from '../../store/theme.js'
+
+const themeVars = computed(() => { void themeState.key; return themeVarString() })
 
 const lotteries = ref([])
 const items = ref([])
@@ -88,10 +91,16 @@ onShow(() => {
 </script>
 
 <style scoped>
-.page { height: 100vh; }
+.page { height: 100vh; background: var(--bg); }
 .list { height: 100vh; }
-.row { background: #fff; margin: 16rpx 20rpx; padding: 24rpx; border-radius: 12rpx; }
-.row-top { display: flex; justify-content: space-between; color: #888; font-size: 30rpx; }
-.balls { display: flex; flex-wrap: wrap; margin-top: 14rpx; }
-.empty, .end { text-align: center; color: #999; padding: 40rpx 0; font-size: 30rpx; }
+.row {
+  background: var(--surface); margin: 18rpx 24rpx; padding: 28rpx;
+  border-radius: 24rpx; border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+.row-top { display: flex; justify-content: space-between; align-items: center; }
+.issue { color: var(--text); font-size: 28rpx; font-weight: 700; font-variant-numeric: tabular-nums; }
+.date { color: var(--text-3); font-size: 24rpx; font-variant-numeric: tabular-nums; }
+.balls { display: flex; flex-wrap: wrap; margin-top: 18rpx; }
+.empty, .end { text-align: center; color: var(--text-3); padding: 44rpx 0; font-size: 27rpx; }
 </style>

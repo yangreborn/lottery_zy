@@ -21,28 +21,30 @@ defineProps({
   matrix: { type: Object, default: () => ({ numbers: [], rows: [] }) },
   // ball: 命中显示球、缺失留白；miss: 缺失格显示遗漏期数
   mode: { type: String, default: 'ball' },
-  color: { type: String, default: '#e53935' },
+  // 传入主题色变量，如 'var(--ball-red)' / 'var(--ball-blue)'
+  color: { type: String, default: 'var(--ball-red)' },
 })
 function pad(n) { return String(n).padStart(2, '0') }
 function shortIssue(s) { return String(s).slice(-5) }
 </script>
 
 <style scoped>
-.matrix { width: 100%; height: 70vh; background: #fff; white-space: nowrap; }
+.matrix { width: 100%; height: 70vh; background: var(--surface); white-space: nowrap; }
 .inner { display: inline-block; }
 .mrow { display: flex; }
-.mrow.header { position: sticky; top: 0; background: #fafafa; z-index: 1; }
+.mrow.header { position: sticky; top: 0; background: var(--trend-header-bg); z-index: 1; }
 .mcell {
   width: 56rpx; height: 56rpx; flex: 0 0 56rpx;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22rpx; color: #bbb; border-bottom: 1rpx solid #f2f2f2;
+  font-size: 22rpx; color: var(--text-3); border-bottom: 1rpx solid var(--grid-line);
 }
-.mcell.issue { width: 120rpx; flex: 0 0 120rpx; color: #666; font-size: 22rpx; }
-.mcell.hcell { color: #888; font-weight: 600; }
+.mcell.issue { width: 120rpx; flex: 0 0 120rpx; color: var(--text-2); font-size: 22rpx; font-variant-numeric: tabular-nums; }
+.mcell.hcell { color: var(--text-3); font-weight: 600; }
 .ball {
   width: 44rpx; height: 44rpx; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 22rpx;
+  color: #fff; font-size: 22rpx; font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
-.miss { color: #ccc; font-size: 22rpx; }
+.miss { color: var(--matrix-miss); font-size: 22rpx; }
 </style>

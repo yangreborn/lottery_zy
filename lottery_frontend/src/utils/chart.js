@@ -69,15 +69,20 @@ export function drawLineChart(ctx, series, opts, scale = 1) {
   const W = opts.width || chartWidth(series.length, opts.spacing || 60)
   const color = opts.color || '#e53935'
   const title = opts.title || ''
+  // 主题色（不传则回退到浅色默认）
+  const bg = opts.bg || '#ffffff'
+  const gridColor = opts.grid || '#eeeeee'
+  const axisText = opts.axisText || '#999999'
+  const titleText = opts.titleText || '#333333'
 
   ctx.save()
   ctx.scale(scale, scale)
-  ctx.setFillStyle('#ffffff')
+  ctx.setFillStyle(bg)
   ctx.fillRect(0, 0, W, H)
 
   // 标题
   if (title) {
-    ctx.setFillStyle('#333333')
+    ctx.setFillStyle(titleText)
     ctx.setFontSize(24)
     ctx.setTextAlign('left')
     ctx.fillText(title, PAD_L, 24)
@@ -98,18 +103,18 @@ export function drawLineChart(ctx, series, opts, scale = 1) {
     const v = min + ((max - min) * g) / 4
     const y = yOf(v)
     ctx.beginPath()
-    ctx.setStrokeStyle('#eeeeee')
+    ctx.setStrokeStyle(gridColor)
     ctx.moveTo(PAD_L, y)
     ctx.lineTo(W - PAD_R, y)
     ctx.stroke()
-    ctx.setFillStyle('#999999')
+    ctx.setFillStyle(axisText)
     ctx.fillText(String(Math.round(v)), PAD_L - 8, y + 6)
   }
 
   // x 轴标签（稀疏，最多 ~6 个，取期号后 4 位）
   const step = Math.max(1, Math.ceil(series.length / 6))
   ctx.setTextAlign('center')
-  ctx.setFillStyle('#999999')
+  ctx.setFillStyle(axisText)
   ctx.setFontSize(18)
   for (let i = 0; i < series.length; i += step) {
     const label = String(series[i].issue).slice(-4)

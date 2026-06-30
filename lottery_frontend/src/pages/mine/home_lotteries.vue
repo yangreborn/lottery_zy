@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="首页彩种" :back="true" />
     <view class="tip">勾选要在首页展示的彩种；不选 = 显示全部。</view>
     <view class="list">
@@ -15,6 +15,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -53,12 +57,13 @@ onLoad(async () => {
 </script>
 
 <style scoped>
-.tip { padding: 16rpx 28rpx; color: #999; font-size: 26rpx; }
-.list { margin: 0 20rpx; background: #fff; border-radius: 16rpx; overflow: hidden; }
-.row { display: flex; align-items: center; justify-content: space-between; padding: 30rpx 28rpx; border-bottom: 1rpx solid #f3f3f3; }
+.tip { padding: 16rpx 28rpx; color: var(--text-3); font-size: 26rpx; }
+.list { margin: 0 20rpx; background: var(--surface); border-radius: 16rpx; overflow: hidden; }
+.row { display: flex; align-items: center; justify-content: space-between; padding: 30rpx 28rpx; border-bottom: 1rpx solid var(--border); }
 .row:last-child { border-bottom: none; }
-.name { font-size: 32rpx; color: #333; }
-.chk { font-size: 40rpx; color: #e53935; }
+.name { font-size: 32rpx; color: var(--text); }
+.chk { font-size: 40rpx; color: var(--brand); }
 .actions { padding: 32rpx 20rpx; }
-.btn { background: #e53935; color: #fff; font-size: 32rpx; width: 100%; }
+.btn { background: var(--brand); color: var(--surface); font-size: 32rpx; width: 100%; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

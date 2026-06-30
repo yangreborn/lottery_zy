@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="开奖海报" :back="true" />
 
     <view class="modes">
@@ -72,6 +72,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -248,25 +252,26 @@ onShow(async () => {
 </script>
 
 <style scoped>
-.modes { display: flex; margin: 16rpx 20rpx; background: #fff; border-radius: 12rpx; overflow: hidden; }
-.mode { flex: 1; text-align: center; padding: 20rpx 0; color: #666; font-size: 30rpx; }
-.mode.active { background: #e53935; color: #fff; font-weight: 600; }
+.modes { display: flex; margin: 16rpx 20rpx; background: var(--surface); border-radius: 12rpx; overflow: hidden; }
+.mode { flex: 1; text-align: center; padding: 20rpx 0; color: var(--text-2); font-size: 30rpx; }
+.mode.active { background: var(--brand); color: var(--surface); font-weight: 600; }
 .issues { white-space: nowrap; padding: 16rpx 20rpx; }
-.ichip { display: inline-block; padding: 10rpx 24rpx; margin-right: 14rpx; background: #fff; border-radius: 28rpx; color: #666; font-size: 28rpx; }
-.ichip.active { background: #e53935; color: #fff; }
+.ichip { display: inline-block; padding: 10rpx 24rpx; margin-right: 14rpx; background: var(--surface); border-radius: 28rpx; color: var(--text-2); font-size: 28rpx; }
+.ichip.active { background: var(--brand); color: var(--surface); }
 .themes { display: flex; flex-wrap: wrap; padding: 0 20rpx 12rpx; }
 .themes.presets { padding-top: 12rpx; }
-.tchip { padding: 10rpx 24rpx; margin: 0 14rpx 12rpx 0; background: #fff; border-radius: 28rpx; color: #666; font-size: 28rpx; }
-.tchip.active { background: #fb8c00; color: #fff; }
-.picklist { background: #fff; margin: 0 20rpx 12rpx; border-radius: 12rpx; overflow: hidden; }
-.pitem { display: flex; align-items: center; padding: 22rpx 24rpx; border-bottom: 1rpx solid #f3f3f3; }
+.tchip { padding: 10rpx 24rpx; margin: 0 14rpx 12rpx 0; background: var(--surface); border-radius: 28rpx; color: var(--text-2); font-size: 28rpx; }
+.tchip.active { background: var(--accent); color: var(--surface); }
+.picklist { background: var(--surface); margin: 0 20rpx 12rpx; border-radius: 12rpx; overflow: hidden; }
+.pitem { display: flex; align-items: center; padding: 22rpx 24rpx; border-bottom: 1rpx solid var(--border); }
 .pitem:last-child { border-bottom: none; }
-.pitem .chk { font-size: 34rpx; color: #e53935; width: 48rpx; }
-.pitem.on .pname { color: #e53935; }
-.pname { font-size: 30rpx; color: #333; }
+.pitem .chk { font-size: 34rpx; color: var(--brand); width: 48rpx; }
+.pitem.on .pname { color: var(--brand); }
+.pname { font-size: 30rpx; color: var(--text); }
 .cvwrap { display: flex; justify-content: center; padding: 12rpx 0; }
-.poster { width: 600rpx; height: 840rpx; background: #fff; }
-.hint { text-align: center; color: #999; padding: 20rpx; font-size: 28rpx; }
+.poster { width: 600rpx; height: 840rpx; background: var(--surface); }
+.hint { text-align: center; color: var(--text-3); padding: 20rpx; font-size: 28rpx; }
 .actions { padding: 24rpx 20rpx; }
-.btn { width: 100%; background: #e53935; color: #fff; font-size: 30rpx; }
+.btn { width: 100%; background: var(--brand); color: var(--surface); font-size: 30rpx; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

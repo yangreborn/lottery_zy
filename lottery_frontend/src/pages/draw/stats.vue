@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="号码统计" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="periods">
@@ -33,6 +33,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -98,10 +102,11 @@ onShow(async () => {
 
 <style scoped>
 .periods { display: flex; flex-wrap: wrap; padding: 12rpx 20rpx; }
-.opt { padding: 12rpx 24rpx; margin: 6rpx 16rpx 6rpx 0; background: #fff; border-radius: 30rpx; color: #666; font-size: 30rpx; }
-.opt.active { background: #e53935; color: #fff; }
-.pinput { width: 140rpx; padding: 12rpx 20rpx; margin: 6rpx 0; background: #fff; border-radius: 30rpx; color: #333; font-size: 30rpx; text-align: center; }
-.legend { padding: 8rpx 24rpx 0; color: #999; font-size: 24rpx; line-height: 1.5; }
-.zone-title { padding: 16rpx 24rpx 0; color: #888; font-size: 30rpx; }
-.empty { text-align: center; color: #999; padding: 60rpx 0; }
+.opt { padding: 12rpx 24rpx; margin: 6rpx 16rpx 6rpx 0; background: var(--surface); border-radius: 30rpx; color: var(--text-2); font-size: 30rpx; }
+.opt.active { background: var(--brand); color: var(--surface); }
+.pinput { width: 140rpx; padding: 12rpx 20rpx; margin: 6rpx 0; background: var(--surface); border-radius: 30rpx; color: var(--text); font-size: 30rpx; text-align: center; }
+.legend { padding: 8rpx 24rpx 0; color: var(--text-3); font-size: 24rpx; line-height: 1.5; }
+.zone-title { padding: 16rpx 24rpx 0; color: var(--text-2); font-size: 30rpx; }
+.empty { text-align: center; color: var(--text-3); padding: 60rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

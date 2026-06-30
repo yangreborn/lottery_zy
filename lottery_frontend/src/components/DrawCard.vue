@@ -1,7 +1,9 @@
 <template>
   <view class="card">
     <view class="head">
-      <text class="issue">第 {{ draw.issue }} 期</text>
+      <view class="head-l">
+        <text class="issue">第 {{ draw.issue }} 期</text>
+      </view>
       <text class="date">{{ draw.draw_date }}</text>
     </view>
     <view class="balls">
@@ -9,11 +11,15 @@
         <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" :pad="key === 'digits' ? 1 : 2" />
       </template>
     </view>
-    <view v-if="hasPool(draw.pool_amount)" class="pool">奖池：{{ formatAmount(draw.pool_amount) }} 元</view>
+    <view v-if="hasPool(draw.pool_amount)" class="pool">
+      <text class="pool-lb">奖池滚存</text>
+      <text class="pool-val">{{ formatAmount(draw.pool_amount) }} <text class="pool-unit">元</text></text>
+    </view>
     <template v-if="collapsible">
       <template v-if="hasPrize">
         <view class="prize-toggle" @click="showPrize = !showPrize">
-          <text>{{ showPrize ? '收起奖级 ▲' : '展开奖级 ▾' }}</text>
+          <text>{{ showPrize ? '收起奖级' : '展开奖级' }}</text>
+          <text class="caret">{{ showPrize ? '▲' : '▼' }}</text>
         </view>
         <PrizeGrades v-if="showPrize" :grades="draw.prize_grades" />
       </template>
@@ -42,9 +48,36 @@ const hasPrize = computed(() => {
 </script>
 
 <style scoped>
-.card { background: #fff; margin: 20rpx; padding: 30rpx; border-radius: 16rpx; }
-.head { display: flex; justify-content: space-between; color: #888; font-size: 30rpx; }
-.balls { display: flex; flex-wrap: wrap; margin: 24rpx 0; }
-.pool { color: #e53935; font-size: 34rpx; margin-bottom: 16rpx; }
-.prize-toggle { text-align: center; color: #1e88e5; font-size: 28rpx; padding: 12rpx 0; border-top: 1px solid #f0f0f0; }
+.card {
+  background: var(--surface); margin: 20rpx 24rpx; padding: 32rpx;
+  border-radius: 28rpx; border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+.head { display: flex; justify-content: space-between; align-items: center; }
+.issue {
+  color: var(--text); font-size: 30rpx; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.date { color: var(--text-3); font-size: 25rpx; font-variant-numeric: tabular-nums; }
+.balls { display: flex; flex-wrap: wrap; margin: 26rpx 0 6rpx; }
+
+.pool {
+  display: flex; align-items: baseline; gap: 12rpx;
+  margin: 18rpx 0 4rpx; padding-top: 22rpx;
+  border-top: 1rpx solid var(--border);
+}
+.pool-lb { color: var(--text-3); font-size: 24rpx; }
+.pool-val {
+  color: var(--brand); font-size: 34rpx; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.pool-unit { color: var(--text-2); font-size: 22rpx; font-weight: 500; }
+
+.prize-toggle {
+  display: flex; align-items: center; justify-content: center; gap: 8rpx;
+  margin-top: 20rpx; padding: 16rpx 0;
+  color: var(--brand); font-size: 27rpx; font-weight: 600;
+  border-top: 1rpx solid var(--border);
+}
+.caret { font-size: 20rpx; }
 </style>

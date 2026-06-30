@@ -23,18 +23,18 @@ const props = defineProps({
 
 const max = computed(() => props.cells.reduce((m, c) => Math.max(m, c.count), 0))
 
-const TIER_COLORS = ['#eeeeee', '#ffe0b2', '#ffb74d', '#fb8c00', '#e65100']
+// 颜色取自主题 --heat-0..4，切换主题自动跟随
 function tierColor(count) {
-  return TIER_COLORS[statsTier(count, max.value)]
+  return `var(--heat-${statsTier(count, max.value)})`
 }
 </script>
 
 <style scoped>
 .grid { display: flex; flex-wrap: wrap; padding: 16rpx; }
 .cell {
-  width: 96rpx; height: 96rpx; margin: 8rpx; border-radius: 10rpx;
+  width: 96rpx; height: 96rpx; margin: 8rpx; border-radius: 14rpx;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.n { font-size: 26rpx; font-weight: 600; color: #333; }
-.meta { font-size: 18rpx; color: #555; }
+.n { font-size: 26rpx; font-weight: 700; color: var(--heat-text); font-variant-numeric: tabular-nums; }
+.meta { font-size: 18rpx; color: var(--heat-meta); }
 </style>

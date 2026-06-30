@@ -5,7 +5,7 @@
     </view>
     <template v-if="!data.grouped">
       <view v-for="(g, i) in data.flat" :key="i" class="grade">
-        <text class="c1">{{ g.label }}</text>
+        <text class="c1" :class="{ top: i === 0 }">{{ g.label }}</text>
         <text class="c2">{{ g.count }}</text>
         <text class="c3">{{ formatAmount(g.amount) }}</text>
       </view>
@@ -14,7 +14,7 @@
       <view v-for="grp in data.groups" :key="grp.pick" class="kgroup">
         <view class="ghead" @click="toggle(grp.pick)">
           <text>{{ grp.label }}（{{ grp.rows.length }}档）</text>
-          <text>{{ open.includes(grp.pick) ? '▲' : '▼' }}</text>
+          <text class="caret">{{ open.includes(grp.pick) ? '▲' : '▼' }}</text>
         </view>
         <template v-if="open.includes(grp.pick)">
           <view v-for="(g, i) in grp.rows" :key="i" class="grade">
@@ -52,12 +52,24 @@ function toggle(pick) {
 </script>
 
 <style scoped>
-.grades { border-top: 1px solid #f0f0f0; padding-top: 16rpx; }
-.grade { display: flex; padding: 10rpx 0; font-size: 30rpx; color: #555; }
-.c1 { flex: 2; }
-.c2 { flex: 1; text-align: center; }
-.c3 { flex: 2; text-align: right; }
-.head-row { color: #999; font-weight: 600; }
-.kgroup { border-bottom: 1px solid #f5f5f5; }
-.ghead { display: flex; justify-content: space-between; padding: 16rpx 0; font-size: 30rpx; color: #555; font-weight: 600; }
+.grades { border-top: 1rpx solid var(--border); padding-top: 16rpx; margin-top: 4rpx; }
+.grade {
+  display: flex; align-items: center; padding: 14rpx 0;
+  font-size: 28rpx; color: var(--text-2);
+  border-bottom: 1rpx solid var(--border);
+}
+.c1 { flex: 2; font-weight: 600; }
+.c1.top { color: var(--brand); }
+.c2 { flex: 1; text-align: center; font-variant-numeric: tabular-nums; color: var(--text); }
+.c3 {
+  flex: 2; text-align: right; font-weight: 700; color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.head-row { border-bottom: 1rpx solid var(--border); }
+.head-row .c1, .head-row .c2, .head-row .c3 { color: var(--text-3); font-weight: 600; font-size: 24rpx; }
+.ghead {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18rpx 0; font-size: 28rpx; color: var(--text); font-weight: 700;
+}
+.caret { font-size: 22rpx; color: var(--text-3); }
 </style>

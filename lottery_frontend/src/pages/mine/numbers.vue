@@ -1,5 +1,5 @@
 <template>
-  <view class="page" :class="{ 'has-batch': manageMode }">
+  <view class="page" :style="themeVars" :class="{ 'has-batch': manageMode }">
     <TopBanner title="我的号码" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="bar">
@@ -47,6 +47,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -205,24 +209,25 @@ onShow(async () => {
 <style scoped>
 .page.has-batch { padding-bottom: 120rpx; }
 .bar { display: flex; justify-content: flex-end; padding: 16rpx 20rpx 0; }
-.manage { background: #fff; color: #e53935; border: 1rpx solid #e53935; margin-right: 16rpx; }
-.go { background: #e53935; color: #fff; }
-.group-title { padding: 16rpx 24rpx 4rpx; font-size: 28rpx; color: #e53935; font-weight: bold; }
-.card { background: #fff; margin: 16rpx 20rpx; padding: 24rpx; border-radius: 12rpx; }
-.card.sel { box-shadow: 0 0 0 2rpx #e53935; }
-.top { display: flex; justify-content: space-between; font-size: 28rpx; color: #888; }
+.manage { background: var(--surface); color: var(--brand); border: 1rpx solid var(--brand); margin-right: 16rpx; }
+.go { background: var(--brand); color: var(--surface); }
+.group-title { padding: 16rpx 24rpx 4rpx; font-size: 28rpx; color: var(--brand); font-weight: bold; }
+.card { background: var(--surface); margin: 16rpx 20rpx; padding: 24rpx; border-radius: 12rpx; }
+.card.sel { box-shadow: 0 0 0 2rpx var(--brand); }
+.top { display: flex; justify-content: space-between; font-size: 28rpx; color: var(--text-2); }
 .top-left { display: flex; align-items: center; }
-.chk { font-size: 34rpx; color: #e53935; margin-right: 12rpx; }
-.tag { color: #e53935; }
+.chk { font-size: 34rpx; color: var(--brand); margin-right: 12rpx; }
+.tag { color: var(--brand); }
 .balls { display: flex; flex-wrap: wrap; margin: 14rpx 0; }
-.note { font-size: 28rpx; color: #999; }
-.time { font-size: 24rpx; color: #bbb; margin-top: 6rpx; }
+.note { font-size: 28rpx; color: var(--text-3); }
+.time { font-size: 24rpx; color: var(--text-3); margin-top: 6rpx; }
 .ops { display: flex; justify-content: flex-end; margin-top: 10rpx; }
-.op { margin-left: 28rpx; font-size: 30rpx; color: #1e88e5; }
-.op.del { color: #999; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
-.batchbar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: #fff; border-top: 1rpx solid #eee; padding: 20rpx 0; }
-.bb { flex: 1; text-align: center; font-size: 30rpx; color: #1e88e5; }
-.bb.del { color: #e53935; }
-.bb.disabled { color: #ccc; }
+.op { margin-left: 28rpx; font-size: 30rpx; color: var(--accent); }
+.op.del { color: var(--text-3); }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.batchbar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--surface); border-top: 1rpx solid var(--border); padding: 20rpx 0; }
+.bb { flex: 1; text-align: center; font-size: 30rpx; color: var(--accent); }
+.bb.del { color: var(--brand); }
+.bb.disabled { color: var(--text-3); }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

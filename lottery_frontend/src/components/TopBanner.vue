@@ -22,9 +22,9 @@ function goBack() {
 </script>
 
 <style scoped>
-.top-banner { background: linear-gradient(180deg, #e53935 0%, #ff6f61 100%); }
+.top-banner { background: var(--banner-bg); border-bottom: 1rpx solid var(--banner-border); }
 .status-bar { height: var(--status-bar-height, 0px); }
 .bar { position: relative; padding: 28rpx 0; text-align: center; }
-.tb-back { position: absolute; left: 24rpx; top: 50%; transform: translateY(-50%); color: #fff; font-size: 30rpx; }
-.tb-title { color: #fff; font-size: 34rpx; font-weight: 700; letter-spacing: 4rpx; }
+.tb-back { position: absolute; left: 24rpx; top: 50%; transform: translateY(-50%); color: var(--banner-text); font-size: 30rpx; }
+.tb-title { color: var(--banner-text); font-size: 34rpx; font-weight: 700; letter-spacing: 4rpx; }
 </style>

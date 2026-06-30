@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="我要反馈" :back="true" />
     <view class="form">
       <textarea class="ta" v-model="content" placeholder="请写下你的意见或建议…" maxlength="500" />
@@ -10,6 +10,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref } from 'vue'
 import TopBanner from '../../components/TopBanner.vue'
 import { submitFeedback } from '../../api/user.js'
@@ -37,7 +41,8 @@ async function submit() {
 
 <style scoped>
 .form { padding: 24rpx; }
-.ta { background: #fff; border-radius: 12rpx; padding: 20rpx; width: 100%; height: 240rpx; font-size: 28rpx; box-sizing: border-box; }
-.ipt { background: #fff; border-radius: 12rpx; padding: 20rpx; margin-top: 20rpx; font-size: 28rpx; }
-.btn { background: #e53935; color: #fff; font-size: 30rpx; margin-top: 32rpx; }
+.ta { background: var(--surface); border-radius: 12rpx; padding: 20rpx; width: 100%; height: 240rpx; font-size: 28rpx; box-sizing: border-box; }
+.ipt { background: var(--surface); border-radius: 12rpx; padding: 20rpx; margin-top: 20rpx; font-size: 28rpx; }
+.btn { background: var(--brand); color: var(--surface); font-size: 30rpx; margin-top: 32rpx; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

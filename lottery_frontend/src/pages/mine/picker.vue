@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="选号" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <template v-if="zones.length">
@@ -91,6 +91,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref, computed, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -296,38 +300,39 @@ onLoad(async () => {
 </script>
 
 <style scoped>
-.modes { display: flex; margin: 16rpx 20rpx; background: #fff; border-radius: 12rpx; overflow: hidden; }
-.mode { flex: 1; text-align: center; padding: 20rpx 0; color: #666; font-size: 30rpx; }
-.mode.active { background: #e53935; color: #fff; font-weight: 600; }
-.play { background: #fff; margin: 0 20rpx 12rpx; padding: 16rpx 20rpx; border-radius: 12rpx; }
-.pt { font-size: 28rpx; color: #888; }
+.modes { display: flex; margin: 16rpx 20rpx; background: var(--surface); border-radius: 12rpx; overflow: hidden; }
+.mode { flex: 1; text-align: center; padding: 20rpx 0; color: var(--text-2); font-size: 30rpx; }
+.mode.active { background: var(--brand); color: var(--surface); font-weight: 600; }
+.play { background: var(--surface); margin: 0 20rpx 12rpx; padding: 16rpx 20rpx; border-radius: 12rpx; }
+.pt { font-size: 28rpx; color: var(--text-2); }
 .play-opts { display: flex; flex-wrap: wrap; margin-top: 10rpx; }
-.popt { padding: 10rpx 22rpx; margin: 6rpx 14rpx 6rpx 0; background: #f5f5f5; border-radius: 28rpx; color: #666; font-size: 28rpx; }
-.popt.active { background: #fb8c00; color: #fff; }
+.popt { padding: 10rpx 22rpx; margin: 6rpx 14rpx 6rpx 0; background: var(--chip-bg); border-radius: 28rpx; color: var(--text-2); font-size: 28rpx; }
+.popt.active { background: var(--accent); color: var(--surface); }
 .gen-bar { display: flex; flex-wrap: wrap; padding: 12rpx 20rpx; }
-.rand-tip { padding: 0 20rpx 10rpx; color: #999; font-size: 24rpx; }
-.setblock { background: #fff; margin: 12rpx 20rpx; border-radius: 12rpx; border: 2rpx solid transparent; overflow: hidden; }
-.setblock.sel { border-color: #e53935; }
+.rand-tip { padding: 0 20rpx 10rpx; color: var(--text-3); font-size: 24rpx; }
+.setblock { background: var(--surface); margin: 12rpx 20rpx; border-radius: 12rpx; border: 2rpx solid transparent; overflow: hidden; }
+.setblock.sel { border-color: var(--brand); }
 .setrow { display: flex; align-items: center; padding: 18rpx; }
-.chk { font-size: 34rpx; color: #e53935; width: 48rpx; }
+.chk { font-size: 34rpx; color: var(--brand); width: 48rpx; }
 .balls { display: flex; flex-wrap: wrap; flex: 1; }
 .ballwrap { display: inline-flex; border-radius: 50%; }
-.ballwrap.editing { box-shadow: 0 0 0 4rpx #fb8c00; }
+.ballwrap.editing { box-shadow: 0 0 0 4rpx var(--accent); }
 .editbar { padding: 0 18rpx 18rpx; }
-.ehint { color: #888; font-size: 26rpx; }
+.ehint { color: var(--text-2); font-size: 26rpx; }
 .enums { display: flex; flex-wrap: wrap; margin-top: 10rpx; }
-.enum { width: 64rpx; height: 64rpx; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 8rpx; font-size: 30rpx; border: 2rpx solid #fb8c00; color: #fb8c00; }
-.hint { text-align: center; color: #999; padding: 40rpx 20rpx; font-size: 26rpx; }
-.zone { background: #fff; margin: 16rpx 20rpx; padding: 20rpx; border-radius: 12rpx; }
-.zt { font-size: 30rpx; color: #666; }
+.enum { width: 64rpx; height: 64rpx; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 8rpx; font-size: 30rpx; border: 2rpx solid var(--accent); color: var(--accent); }
+.hint { text-align: center; color: var(--text-3); padding: 40rpx 20rpx; font-size: 26rpx; }
+.zone { background: var(--surface); margin: 16rpx 20rpx; padding: 20rpx; border-radius: 12rpx; }
+.zt { font-size: 30rpx; color: var(--text-2); }
 .grid { display: flex; flex-wrap: wrap; margin-top: 12rpx; }
 .dbtn { width: 64rpx; height: 64rpx; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 8rpx; font-size: 32rpx; border: 2rpx solid #43a047; color: #43a047; }
-.dbtn.active { background: #43a047; color: #fff; }
+.dbtn.active { background: #43a047; color: var(--surface); }
 .fields { margin: 0 20rpx; }
-.ipt { background: #fff; border-radius: 10rpx; padding: 18rpx; margin-top: 16rpx; font-size: 28rpx; }
+.ipt { background: var(--surface); border-radius: 10rpx; padding: 18rpx; margin-top: 16rpx; font-size: 28rpx; }
 .actions { padding: 24rpx 20rpx; }
-.btn { background: #e53935; color: #fff; font-size: 30rpx; margin: 8rpx; }
-.btn.alt { background: #1e88e5; }
+.btn { background: var(--brand); color: var(--surface); font-size: 30rpx; margin: 8rpx; }
+.btn.alt { background: var(--accent); }
 .btn.save { width: 100%; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

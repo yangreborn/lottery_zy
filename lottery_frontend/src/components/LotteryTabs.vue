@@ -54,11 +54,28 @@ function pick(code) {
 </script>
 
 <style scoped>
-.tabs { display: flex; border-bottom: 1px solid #eee; position: relative; }
-.tab { flex: 1; text-align: center; padding: 20rpx 0; color: #666; }
-.tab.active { color: #e53935; border-bottom: 4rpx solid #e53935; font-weight: 600; }
-.more { flex: 0 0 120rpx; }
-.dropdown { position: absolute; right: 0; top: 100%; z-index: 20; background: #fff; box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.12); border-radius: 0 0 12rpx 12rpx; min-width: 180rpx; }
-.ditem { padding: 20rpx 28rpx; color: #666; }
-.ditem.active { color: #e53935; font-weight: 600; }
+/* 胶囊式彩种切换：选中态填充品牌色 */
+.tabs {
+  display: flex; align-items: center; gap: 12rpx;
+  background: var(--surface); padding: 18rpx 24rpx;
+  border-bottom: 1rpx solid var(--border); position: relative;
+}
+.tab {
+  flex: none; padding: 12rpx 26rpx; border-radius: 999rpx;
+  background: var(--chip-bg); border: 1rpx solid var(--chip-border);
+  color: var(--chip-text); font-size: 27rpx;
+}
+.tab.active {
+  background: var(--brand); color: var(--brand-on); font-weight: 700;
+  border-color: var(--brand);
+}
+.more { flex: none; }
+.dropdown {
+  position: absolute; right: 24rpx; top: 100%; z-index: 20;
+  background: var(--surface); box-shadow: var(--shadow-card);
+  border: 1rpx solid var(--border); border-radius: 18rpx; overflow: hidden;
+  min-width: 200rpx; margin-top: 8rpx;
+}
+.ditem { padding: 22rpx 28rpx; color: var(--text-2); font-size: 27rpx; }
+.ditem.active { color: var(--brand); font-weight: 700; background: var(--brand-soft-bg); }
 </style>

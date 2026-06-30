@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="购买记录" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view class="bar"><button class="go" size="mini" @click="goCreate">新增购买</button></view>
@@ -23,6 +23,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -73,12 +77,13 @@ onShow(async () => {
 
 <style scoped>
 .bar { display: flex; justify-content: flex-end; padding: 16rpx 20rpx 0; }
-.go { background: #e53935; color: #fff; }
-.card { background: #fff; margin: 16rpx 20rpx; padding: 24rpx; border-radius: 12rpx; }
-.top { display: flex; justify-content: space-between; font-size: 30rpx; color: #888; }
+.go { background: var(--brand); color: var(--surface); }
+.card { background: var(--surface); margin: 16rpx 20rpx; padding: 24rpx; border-radius: 12rpx; }
+.top { display: flex; justify-content: space-between; font-size: 30rpx; color: var(--text-2); }
 .balls { display: flex; flex-wrap: wrap; margin: 14rpx 0; }
 .meta { display: flex; justify-content: space-between; align-items: center; }
-.bet { font-size: 28rpx; color: #fb8c00; }
-.op.del { font-size: 30rpx; color: #999; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
+.bet { font-size: 28rpx; color: var(--accent); }
+.op.del { font-size: 30rpx; color: var(--text-3); }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

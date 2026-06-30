@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="我的" />
     <view class="authbar">
       <text v-if="auth.isWechat" class="uname" @click="editNickname">{{ nickname || '点击设置昵称' }}</text>
@@ -8,22 +8,28 @@
     </view>
     <view class="menu">
       <view v-if="auth.isWechat" class="entry" @click="go('/pages/mine/home_lotteries')">
-        <text class="ic">🏠</text><text class="tx">首页彩种</text><text class="arr">›</text>
+        <view class="ic-chip"><image class="ic" :src="ic('house')" mode="aspectFit" /></view><text class="tx">首页彩种</text><text class="arr">›</text>
       </view>
       <view class="entry" @click="go('/pages/mine/numbers')">
-        <text class="ic">⭐</text><text class="tx">我的号码</text><text class="arr">›</text>
+        <view class="ic-chip"><image class="ic" :src="ic('star')" mode="aspectFit" /></view><text class="tx">我的号码</text><text class="arr">›</text>
       </view>
       <view class="entry" @click="go('/pages/purchase/index')">
-        <text class="ic">🛒</text><text class="tx">购买记录</text><text class="arr">›</text>
+        <view class="ic-chip"><image class="ic" :src="ic('cart')" mode="aspectFit" /></view><text class="tx">购买记录</text><text class="arr">›</text>
       </view>
       <view class="entry" @click="go('/pages/feedback/index')">
-        <text class="ic">💬</text><text class="tx">我要反馈</text><text class="arr">›</text>
+        <view class="ic-chip"><image class="ic" :src="ic('message')" mode="aspectFit" /></view><text class="tx">我要反馈</text><text class="arr">›</text>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs, currentTheme as __ct } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+import { lineIcon } from '../../utils/icons.js'
+function ic(name) { void __ts.key; return lineIcon(name, __ct().vars['--text-2']) }
+
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -101,13 +107,15 @@ onShow(async () => {
 
 <style scoped>
 .authbar { display: flex; justify-content: space-between; align-items: center; padding: 32rpx 24rpx; }
-.uname { font-size: 34rpx; color: #333; font-weight: 600; }
-.uname.plain { color: #666; }
-.abtn { font-size: 28rpx; color: #e53935; }
-.menu { margin: 12rpx 20rpx; background: #fff; border-radius: 16rpx; overflow: hidden; }
-.entry { display: flex; align-items: center; padding: 32rpx 28rpx; border-bottom: 1rpx solid #f3f3f3; }
+.uname { font-size: 34rpx; color: var(--text); font-weight: 600; }
+.uname.plain { color: var(--text-2); }
+.abtn { font-size: 28rpx; color: var(--brand); }
+.menu { margin: 12rpx 20rpx; background: var(--surface); border-radius: 16rpx; overflow: hidden; }
+.entry { display: flex; align-items: center; padding: 32rpx 28rpx; border-bottom: 1rpx solid var(--border); }
 .entry:last-child { border-bottom: none; }
-.ic { font-size: 40rpx; margin-right: 20rpx; }
-.tx { flex: 1; font-size: 32rpx; color: #333; }
-.arr { color: #ccc; font-size: 36rpx; }
+.ic-chip { width: 64rpx; height: 64rpx; border-radius: 18rpx; background: var(--surface-2); display: flex; align-items: center; justify-content: center; margin-right: 20rpx; }
+.ic { width: 38rpx; height: 38rpx; }
+.tx { flex: 1; font-size: 32rpx; color: var(--text); }
+.arr { color: var(--text-3); font-size: 36rpx; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="玩法说明" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
     <view v-for="g in items" :key="g.id" class="row" @click="goDetail(g.id)">
@@ -11,6 +11,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -47,8 +51,9 @@ onShow(async () => {
 </script>
 
 <style scoped>
-.row { background: #fff; margin: 12rpx 20rpx; padding: 24rpx; border-radius: 12rpx; display: flex; justify-content: space-between; align-items: center; }
-.title { font-size: 34rpx; color: #333; }
-.tag { font-size: 22rpx; color: #999; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
+.row { background: var(--surface); margin: 12rpx 20rpx; padding: 24rpx; border-radius: 12rpx; display: flex; justify-content: space-between; align-items: center; }
+.title { font-size: 34rpx; color: var(--text); }
+.tag { font-size: 22rpx; color: var(--text-3); }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

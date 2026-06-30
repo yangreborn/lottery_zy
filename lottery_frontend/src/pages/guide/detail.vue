@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="详情" :back="true" />
     <view v-if="guide" class="card">
       <text class="title">{{ guide.title }}</text>
@@ -10,6 +10,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -29,8 +33,9 @@ onLoad(async (q) => {
 </script>
 
 <style scoped>
-.card { background: #fff; margin: 20rpx; padding: 30rpx; border-radius: 16rpx; }
-.title { font-size: 34rpx; font-weight: 600; color: #333; display: block; margin-bottom: 20rpx; }
-.content { font-size: 30rpx; color: #555; line-height: 1.6; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
+.card { background: var(--surface); margin: 20rpx; padding: 30rpx; border-radius: 16rpx; }
+.title { font-size: 34rpx; font-weight: 600; color: var(--text); display: block; margin-bottom: 20rpx; }
+.content { font-size: 30rpx; color: var(--text-2); line-height: 1.6; }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

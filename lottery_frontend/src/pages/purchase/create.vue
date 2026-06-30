@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="新增购买" :back="true" />
     <template v-if="zones.length">
       <view v-if="variableZone" class="play">
@@ -40,6 +40,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref, computed, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -119,20 +123,21 @@ onLoad(async () => {
 </script>
 
 <style scoped>
-.play { background: #fff; margin: 16rpx 20rpx 12rpx; padding: 16rpx 20rpx; border-radius: 12rpx; }
-.pt { font-size: 28rpx; color: #888; }
+.play { background: var(--surface); margin: 16rpx 20rpx 12rpx; padding: 16rpx 20rpx; border-radius: 12rpx; }
+.pt { font-size: 28rpx; color: var(--text-2); }
 .play-opts { display: flex; flex-wrap: wrap; margin-top: 10rpx; }
-.popt { padding: 10rpx 22rpx; margin: 6rpx 14rpx 6rpx 0; background: #f5f5f5; border-radius: 28rpx; color: #666; font-size: 28rpx; }
-.popt.active { background: #fb8c00; color: #fff; }
-.zone { background: #fff; margin: 16rpx 20rpx; padding: 20rpx; border-radius: 12rpx; }
-.zt { font-size: 30rpx; color: #666; }
+.popt { padding: 10rpx 22rpx; margin: 6rpx 14rpx 6rpx 0; background: var(--chip-bg); border-radius: 28rpx; color: var(--text-2); font-size: 28rpx; }
+.popt.active { background: var(--accent); color: var(--surface); }
+.zone { background: var(--surface); margin: 16rpx 20rpx; padding: 20rpx; border-radius: 12rpx; }
+.zt { font-size: 30rpx; color: var(--text-2); }
 .grid { display: flex; flex-wrap: wrap; margin-top: 12rpx; }
 .dbtn { width: 64rpx; height: 64rpx; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 8rpx; font-size: 32rpx; border: 2rpx solid #43a047; color: #43a047; }
-.dbtn.active { background: #43a047; color: #fff; }
+.dbtn.active { background: #43a047; color: var(--surface); }
 .fields { margin: 0 20rpx; }
-.ipt { background: #fff; border-radius: 10rpx; padding: 18rpx; margin-top: 16rpx; font-size: 28rpx; }
-.ipt.date { color: #555; }
+.ipt { background: var(--surface); border-radius: 10rpx; padding: 18rpx; margin-top: 16rpx; font-size: 28rpx; }
+.ipt.date { color: var(--text-2); }
 .actions { padding: 24rpx 20rpx; }
-.btn.save { width: 100%; background: #e53935; color: #fff; font-size: 30rpx; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
+.btn.save { width: 100%; background: var(--brand); color: var(--surface); font-size: 30rpx; }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

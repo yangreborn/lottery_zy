@@ -28,12 +28,12 @@ function barW(c) { return Math.round((c / maxCount()) * 100) + '%' }
 </script>
 
 <style scoped>
-.wrap { width: 100%; height: 70vh; background: #fff; }
-.row { display: flex; align-items: stretch; border-bottom: 1rpx solid #f2f2f2; }
-.row.header { background: #fafafa; }
-.row.header .seg { color: #888; font-weight: 600; justify-content: center; }
-.issue { flex: 0 0 130rpx; display: flex; align-items: center; padding-left: 16rpx; color: #666; font-size: 24rpx; }
+.wrap { width: 100%; height: 70vh; background: var(--surface); }
+.row { display: flex; align-items: stretch; border-bottom: 1rpx solid var(--grid-line); }
+.row.header { background: var(--trend-header-bg); }
+.row.header .seg { color: var(--text-3); font-weight: 600; justify-content: center; }
+.issue { flex: 0 0 130rpx; display: flex; align-items: center; padding-left: 16rpx; color: var(--text-2); font-size: 24rpx; font-variant-numeric: tabular-nums; }
 .seg { flex: 1; position: relative; display: flex; align-items: center; padding: 16rpx 12rpx; font-size: 24rpx; }
-.bar { position: absolute; left: 0; top: 50%; transform: translateY(-50%); height: 60%; background: #ffd9d4; border-radius: 6rpx; }
-.cnt { position: relative; color: #e53935; font-weight: 600; }
+.bar { position: absolute; left: 0; top: 50%; transform: translateY(-50%); height: 60%; background: var(--trend-bar); border-radius: 6rpx; }
+.cnt { position: relative; color: var(--trend-bar-text); font-weight: 600; font-variant-numeric: tabular-nums; }
 </style>

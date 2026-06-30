@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="开奖详情" :back="true" />
     <view v-if="draw" class="card">
       <view class="head">
@@ -19,6 +19,10 @@
 </template>
 
 <script setup>
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
@@ -41,9 +45,10 @@ onLoad(async (q) => {
 </script>
 
 <style scoped>
-.card { background: #fff; margin: 20rpx; padding: 30rpx; border-radius: 16rpx; }
-.head { display: flex; justify-content: space-between; color: #888; font-size: 30rpx; }
+.card { background: var(--surface); margin: 20rpx; padding: 30rpx; border-radius: 16rpx; }
+.head { display: flex; justify-content: space-between; color: var(--text-2); font-size: 30rpx; }
 .balls { display: flex; flex-wrap: wrap; margin: 24rpx 0; }
-.pool { color: #e53935; font-size: 34rpx; margin-bottom: 16rpx; }
-.empty { text-align: center; color: #999; padding: 80rpx 0; }
+.pool { color: var(--brand); font-size: 34rpx; margin-bottom: 16rpx; }
+.empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

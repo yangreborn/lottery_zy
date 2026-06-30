@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="themeVars">
     <TopBanner title="走势图" :back="true" />
     <LotteryTabs :list="lotteries" :active="store.code" @change="onChange" />
 
@@ -53,7 +53,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed as __cmp } from 'vue'
+import { themeState as __ts, themeVarString as __tvs, currentTheme as __ct } from '../../store/theme.js'
+const themeVars = __cmp(() => { void __ts.key; return __tvs() })
+
+import { ref, computed, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import TopBanner from '../../components/TopBanner.vue'
 import LotteryTabs from '../../components/LotteryTabs.vue'
@@ -153,11 +157,16 @@ function redraw() {
   if (!isLine.value || !windowed.value.length) return
   const ctx = uni.createCanvasContext('chart')
   const scale = uni.upx2px(CANVAS_W) / CANVAS_W
+  const tv = __ct().vars
   drawLineChart(ctx, windowed.value, {
     width: CANVAS_W,
     height: CANVAS_H,
-    color: chartType.value === 'single' ? '#1e88e5' : '#e53935',
+    color: chartType.value === 'single' ? tv['--pick-blue'] : tv['--brand'],
     title: lineTitle.value,
+    bg: tv['--surface'],
+    grid: tv['--grid-line'],
+    axisText: tv['--text-3'],
+    titleText: tv['--text'],
   }, scale)
 }
 
@@ -263,6 +272,9 @@ function onTouchMove(e) {
 
 function onChange(code) { setCode(code); load() }
 
+// 切换主题时重绘折线（canvas 不吃 CSS 变量）
+watch(() => __ts.key, () => { setTimeout(redraw, 30) })
+
 onShow(async () => {
   if (!lotteries.value.length) {
     try { lotteries.value = await getLotteryList() } catch (e) { /* 容错 */ }
@@ -273,16 +285,17 @@ onShow(async () => {
 
 <style scoped>
 .typebar { white-space: nowrap; padding: 12rpx 20rpx 0; }
-.ty { display: inline-block; padding: 12rpx 26rpx; margin-right: 14rpx; background: #fff; border-radius: 30rpx; color: #666; font-size: 28rpx; }
-.ty.active { background: #e53935; color: #fff; }
+.ty { display: inline-block; padding: 12rpx 26rpx; margin-right: 14rpx; background: var(--surface); border-radius: 30rpx; color: var(--text-2); font-size: 28rpx; }
+.ty.active { background: var(--brand); color: var(--surface); }
 .opts { display: flex; flex-wrap: wrap; padding: 10rpx 20rpx 0; }
-.opt { padding: 12rpx 24rpx; margin: 6rpx 16rpx 6rpx 0; background: #fff; border-radius: 30rpx; color: #666; font-size: 30rpx; }
-.opt.active { background: #e53935; color: #fff; }
+.opt { padding: 12rpx 24rpx; margin: 6rpx 16rpx 6rpx 0; background: var(--surface); border-radius: 30rpx; color: var(--text-2); font-size: 30rpx; }
+.opt.active { background: var(--brand); color: var(--surface); }
 .pickers { display: flex; padding: 12rpx 20rpx 0; }
-.pk { background: #fff; border-radius: 30rpx; padding: 12rpx 24rpx; margin-right: 16rpx; color: #333; font-size: 28rpx; }
+.pk { background: var(--surface); border-radius: 30rpx; padding: 12rpx 24rpx; margin-right: 16rpx; color: var(--text); font-size: 28rpx; }
 .zoom { display: flex; align-items: center; padding: 16rpx 20rpx; }
-.ztip { color: #999; font-size: 24rpx; }
+.ztip { color: var(--text-3); font-size: 24rpx; }
 .cvwrap { display: flex; justify-content: center; padding: 12rpx 0; }
-.chart { width: 710rpx; height: 560rpx; background: #fff; border-radius: 12rpx; }
-.empty { text-align: center; color: #999; padding: 60rpx 0; }
+.chart { width: 710rpx; height: 560rpx; background: var(--surface); border-radius: 12rpx; }
+.empty { text-align: center; color: var(--text-3); padding: 60rpx 0; }
+.page { background: var(--bg); min-height: 100vh; }
 </style>

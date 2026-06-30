@@ -23,10 +23,10 @@ const doc = computed(() => getLegalDoc(props.type))
 </script>
 
 <style scoped>
-.mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
-.dialog { width: 80%; background: #fff; border-radius: 20rpx; overflow: hidden; }
-.title { text-align: center; font-size: 34rpx; font-weight: 700; color: #333; padding: 28rpx 0 16rpx; }
+.mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: var(--mask); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.dialog { width: 80%; background: var(--surface); border-radius: 24rpx; overflow: hidden; border: 1rpx solid var(--border); }
+.title { text-align: center; font-size: 34rpx; font-weight: 700; color: var(--text); padding: 28rpx 0 16rpx; }
 .content { max-height: 56vh; padding: 0 28rpx; }
-.para { font-size: 26rpx; color: #555; line-height: 1.8; margin-bottom: 16rpx; }
-.btn { text-align: center; color: #e53935; font-size: 32rpx; font-weight: 600; padding: 24rpx 0; border-top: 1px solid #f0f0f0; }
+.para { font-size: 26rpx; color: var(--text-2); line-height: 1.8; margin-bottom: 16rpx; }
+.btn { text-align: center; color: var(--brand); font-size: 32rpx; font-weight: 600; padding: 24rpx 0; border-top: 1rpx solid var(--border); }
 </style>
