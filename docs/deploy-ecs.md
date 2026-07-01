@@ -254,11 +254,80 @@ chmod -R a+rX /var/www/lottery/h5
 ```
 > 坑:H5 对外目录是 `/var/www/lottery/h5`,拷到别处(如 `~/lottery_frontend/h5`)不会生效。
 
-**开奖更新**：crontab 定时跑 `crawl_draw`(草稿需后台发布)或 `load_history --count N`(自动发布)。
-crontab 示例(每天 22:00,注意服务器时区 `timedatectl`)：
+**开奖更新**：推荐用下面第 12 节的 django-rq 实时抓取(开奖第一时间自动入库发布)。
+如暂不启用队列,也可用 crontab 兜底(每天 22:00,注意服务器时区 `timedatectl`)：
 ```cron
-0 22 * * * cd /root/lottery_zy/lottery_backend && .venv/bin/python manage.py crawl_draw >> /var/log/lottery_crawl.log 2>&1
+0 22 * * * cd /root/lottery_zy/lottery_backend && .venv/bin/python manage.py load_history --count 1 >> /var/log/lottery_crawl.log 2>&1
 ```
+
+## 12. 实时开奖抓取（django-rq，推荐）
+
+在官网出结果的第一时间(≤约 1 分钟)自动抓取并发布,平时不空转。原理:
+`rqscheduler` 每分钟触发巡检 → 命中开奖窗口的彩种入队 → `rqworker` 执行抓取+自动发布,
+拿到当日结果后自动停止(见 `crawler/schedule.py`、`crawler/tasks.py`)。
+
+### 12.1 安装 Redis（仅监听本机）
+
+```bash
+apt install -y redis-server
+# 确认 bind 为 127.0.0.1（默认即是），启动并自启
+systemctl enable --now redis-server
+redis-cli ping   # 返回 PONG
+```
+
+> 各彩种开奖时间存在 `Lottery.draw_time`,由 `seed_lotteries` 写入;
+> 窗口时长由 `.env` 的 `POLL_WINDOW_MINUTES`(默认 90)控制。Redis 地址可用
+> `REDIS_HOST/REDIS_PORT/REDIS_DB` 覆盖,默认本机 6379/0。
+
+### 12.2 两个常驻 systemd 服务
+
+```bash
+cat > /etc/systemd/system/lottery-rqworker.service <<'UNIT'
+[Unit]
+Description=lottery rq worker
+After=network.target redis-server.service
+
+[Service]
+User=root
+WorkingDirectory=/root/lottery_zy/lottery_backend
+ExecStart=/root/lottery_zy/lottery_backend/.venv/bin/python manage.py rqworker default
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+cat > /etc/systemd/system/lottery-rqscheduler.service <<'UNIT'
+[Unit]
+Description=lottery rq scheduler
+After=network.target redis-server.service
+
+[Service]
+User=root
+WorkingDirectory=/root/lottery_zy/lottery_backend
+ExecStart=/root/lottery_zy/lottery_backend/.venv/bin/python manage.py rqscheduler
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+systemctl daemon-reload
+systemctl enable --now lottery-rqworker lottery-rqscheduler
+```
+
+### 12.3 注册每分钟巡检任务（部署后跑一次，幂等）
+
+```bash
+cd /root/lottery_zy/lottery_backend && . .venv/bin/activate
+python manage.py migrate            # 应用 draw_time 迁移
+python manage.py seed_lotteries     # 回填各彩种 draw_time
+python manage.py setup_schedules    # 注册 dispatch_due_polls(每分钟)
+```
+
+> 更新代码后:`pip install -r requirements.txt`(装了 redis/django-rq/rq-scheduler)→
+> `migrate` → `systemctl restart lottery lottery-rqworker lottery-rqscheduler`。
+> 巡检任务改动过才需重跑 `setup_schedules`。排查:`redis-cli` 看队列、`journalctl -u lottery-rqworker -f` 看日志。
 
 ## 备忘
 - DB 密码、SECRET_KEY、WECHAT_SECRET 只放在服务器 `.env`，**不要提交到 git**。
