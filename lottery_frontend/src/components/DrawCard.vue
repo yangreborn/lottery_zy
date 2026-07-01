@@ -48,7 +48,7 @@ const hasPrize = computed(() => {
 
 <style scoped>
 .card {
-  background: var(--surface); margin: 20rpx 24rpx; padding: 32rpx;
+  background: var(--surface); margin: 20rpx 24rpx; padding: 32rpx 32rpx 20rpx;
   border-radius: 28rpx; border: 1rpx solid var(--border);
   box-shadow: var(--shadow-card);
 }
@@ -74,7 +74,7 @@ const hasPrize = computed(() => {
 
 .prize-toggle {
   display: flex; align-items: center; justify-content: center; gap: 8rpx;
-  margin-top: 20rpx; padding: 16rpx 0;
+  margin-top: 16rpx; padding: 16rpx 0 4rpx;
   color: var(--brand); font-size: 27rpx; font-weight: 600;
   border-top: 1rpx solid var(--border);
 }

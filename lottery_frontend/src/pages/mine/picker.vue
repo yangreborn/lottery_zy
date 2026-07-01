@@ -300,39 +300,85 @@ onLoad(async () => {
 </script>
 
 <style scoped>
-.modes { display: flex; margin: 16rpx 20rpx; background: var(--surface); border-radius: 12rpx; overflow: hidden; }
-.mode { flex: 1; text-align: center; padding: 20rpx 0; color: var(--text-2); font-size: 30rpx; }
-.mode.active { background: var(--brand); color: var(--surface); font-weight: 600; }
-.play { background: var(--surface); margin: 0 20rpx 12rpx; padding: 16rpx 20rpx; border-radius: 12rpx; }
-.pt { font-size: 28rpx; color: var(--text-2); }
-.play-opts { display: flex; flex-wrap: wrap; margin-top: 10rpx; }
-.popt { padding: 10rpx 22rpx; margin: 6rpx 14rpx 6rpx 0; background: var(--chip-bg); border-radius: 28rpx; color: var(--text-2); font-size: 28rpx; }
-.popt.active { background: var(--accent); color: var(--surface); }
-.gen-bar { display: flex; flex-wrap: wrap; padding: 12rpx 20rpx; }
-.rand-tip { padding: 0 20rpx 10rpx; color: var(--text-3); font-size: 24rpx; }
-.setblock { background: var(--surface); margin: 12rpx 20rpx; border-radius: 12rpx; border: 2rpx solid transparent; overflow: hidden; }
-.setblock.sel { border-color: var(--brand); }
-.setrow { display: flex; align-items: center; padding: 18rpx; }
-.chk { font-size: 34rpx; color: var(--brand); width: 48rpx; }
+.page { background: var(--bg); min-height: 100vh; padding-bottom: 40rpx; }
+
+/* 机选/手动：分段控件 */
+.modes {
+  display: flex; margin: 20rpx; padding: 6rpx;
+  background: var(--surface-2); border-radius: 18rpx;
+}
+.mode {
+  flex: 1; text-align: center; padding: 16rpx 0;
+  color: var(--text-2); font-size: 29rpx; border-radius: 14rpx;
+  transition: background .2s, color .2s;
+}
+.mode.active { background: var(--brand); color: var(--brand-on); font-weight: 600; box-shadow: var(--shadow-chip); }
+
+/* 玩法选择 */
+.play {
+  background: var(--surface); margin: 0 20rpx 14rpx; padding: 20rpx 22rpx;
+  border-radius: 20rpx; border: 1rpx solid var(--border); box-shadow: var(--shadow-chip);
+}
+.pt { font-size: 27rpx; color: var(--text-3); font-weight: 600; }
+.play-opts { display: flex; flex-wrap: wrap; margin-top: 14rpx; }
+.popt {
+  padding: 12rpx 26rpx; margin: 6rpx 16rpx 6rpx 0;
+  background: var(--chip-bg); border-radius: 28rpx; color: var(--text-2); font-size: 28rpx;
+  transition: background .2s, color .2s;
+}
+.popt.active { background: var(--accent); color: var(--brand-on); font-weight: 600; }
+
+/* 机选生成区 */
+.gen-bar { display: flex; flex-wrap: wrap; gap: 12rpx; padding: 14rpx 20rpx 4rpx; }
+.rand-tip { padding: 6rpx 22rpx 12rpx; color: var(--text-3); font-size: 23rpx; line-height: 1.5; }
+.setblock {
+  background: var(--surface); margin: 14rpx 20rpx; border-radius: 20rpx;
+  border: 2rpx solid var(--border); box-shadow: var(--shadow-chip); overflow: hidden;
+  transition: border-color .2s;
+}
+.setblock.sel { border-color: var(--brand); background: var(--brand-soft-bg); }
+.setrow { display: flex; align-items: center; padding: 20rpx; }
+.chk { font-size: 36rpx; color: var(--brand); width: 52rpx; flex-shrink: 0; }
 .balls { display: flex; flex-wrap: wrap; flex: 1; }
 .ballwrap { display: inline-flex; border-radius: 50%; }
 .ballwrap.editing { box-shadow: 0 0 0 4rpx var(--accent); }
-.editbar { padding: 0 18rpx 18rpx; }
-.ehint { color: var(--text-2); font-size: 26rpx; }
-.enums { display: flex; flex-wrap: wrap; margin-top: 10rpx; }
-.enum { width: 64rpx; height: 64rpx; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 8rpx; font-size: 30rpx; border: 2rpx solid var(--accent); color: var(--accent); }
-.hint { text-align: center; color: var(--text-3); padding: 40rpx 20rpx; font-size: 26rpx; }
-.zone { background: var(--surface); margin: 16rpx 20rpx; padding: 20rpx; border-radius: 12rpx; }
-.zt { font-size: 30rpx; color: var(--text-2); }
-.grid { display: flex; flex-wrap: wrap; margin-top: 12rpx; }
-.dbtn { width: 64rpx; height: 64rpx; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 8rpx; font-size: 32rpx; border: 2rpx solid #43a047; color: #43a047; }
-.dbtn.active { background: #43a047; color: var(--surface); }
-.fields { margin: 0 20rpx; }
-.ipt { background: var(--surface); border-radius: 10rpx; padding: 18rpx; margin-top: 16rpx; font-size: 28rpx; }
-.actions { padding: 24rpx 20rpx; }
-.btn { background: var(--brand); color: var(--surface); font-size: 30rpx; margin: 8rpx; }
+.editbar { padding: 0 20rpx 20rpx; }
+.ehint { color: var(--text-2); font-size: 25rpx; }
+.enums { display: flex; flex-wrap: wrap; margin-top: 12rpx; }
+.enum {
+  width: 66rpx; height: 66rpx; border-radius: 50%; display: inline-flex;
+  align-items: center; justify-content: center; margin: 8rpx; font-size: 30rpx;
+  border: 2rpx solid var(--accent); color: var(--accent); background: var(--surface);
+}
+.hint { text-align: center; color: var(--text-3); padding: 48rpx 20rpx; font-size: 26rpx; }
+
+/* 手选分区 */
+.zone {
+  background: var(--surface); margin: 16rpx 20rpx; padding: 22rpx;
+  border-radius: 20rpx; border: 1rpx solid var(--border); box-shadow: var(--shadow-chip);
+}
+.zt { font-size: 29rpx; color: var(--text-2); font-weight: 600; }
+.grid { display: flex; flex-wrap: wrap; margin-top: 14rpx; }
+.dbtn {
+  width: 66rpx; height: 66rpx; border-radius: 50%; display: inline-flex;
+  align-items: center; justify-content: center; margin: 8rpx; font-size: 32rpx;
+  border: 2rpx solid var(--accent); color: var(--accent); background: var(--surface);
+  transition: background .2s, color .2s;
+}
+.dbtn.active { background: var(--accent); color: var(--brand-on); box-shadow: var(--shadow-chip); }
+
+/* 备注/期号 */
+.fields { margin: 4rpx 20rpx 0; }
+.ipt {
+  background: var(--surface); border-radius: 14rpx; padding: 20rpx;
+  margin-top: 16rpx; font-size: 28rpx; border: 1rpx solid var(--border);
+}
+
+/* 操作按钮 */
+.actions { padding: 28rpx 20rpx 8rpx; }
+.btn { background: var(--brand); color: var(--brand-on); font-size: 30rpx; margin: 0; border-radius: 12rpx; }
+.gen-bar .btn { margin: 0; }
 .btn.alt { background: var(--accent); }
-.btn.save { width: 100%; }
+.btn.save { width: 100%; height: 92rpx; line-height: 92rpx; font-weight: 600; border-radius: 18rpx; }
 .empty { text-align: center; color: var(--text-3); padding: 80rpx 0; }
-.page { background: var(--bg); min-height: 100vh; }
 </style>
