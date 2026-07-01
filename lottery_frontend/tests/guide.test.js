@@ -31,11 +31,11 @@ describe('guide api', () => {
 
   it('getNotices 带 code', async () => {
     await getNotices('ssq')
-    expect(request).toHaveBeenCalledWith('/api/openapi/guide/list', { data: { important: 1, code: 'ssq' } })
+    expect(request).toHaveBeenCalledWith('/api/openapi/guide/list', { data: { type: 'activity,notice', code: 'ssq' } })
   })
 
   it('getNotices 无 code', async () => {
     await getNotices('')
-    expect(request).toHaveBeenCalledWith('/api/openapi/guide/list', { data: { important: 1 } })
+    expect(request).toHaveBeenCalledWith('/api/openapi/guide/list', { data: { type: 'activity,notice' } })
   })
 })

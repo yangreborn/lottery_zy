@@ -24,7 +24,7 @@
     "selectedColor": "#e53935",
     "list": [
       { "pagePath": "pages/home/index", "text": "首页" },
-      { "pagePath": "pages/draw/stats", "text": "统计" },
+      { "pagePath": "pages/chart/index", "text": "走势图" },
       { "pagePath": "pages/mine/picker", "text": "选号" },
       { "pagePath": "pages/mine/index", "text": "我的" }
     ]

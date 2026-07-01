@@ -24,6 +24,20 @@ def test_list_code_includes_common(ssq):
     assert "大乐透玩法" not in titles
 
 
+def test_list_important_first_then_publish_desc(ssq):
+    now = timezone.now()
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="旧普通",
+                             is_important=False, publish_at=now - datetime.timedelta(days=2))
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="新普通",
+                             is_important=False, publish_at=now - datetime.timedelta(days=1))
+    PlayGuide.objects.create(lottery=ssq, type="notice", title="重点",
+                             is_important=True, publish_at=now - datetime.timedelta(days=3))
+    titles = [g["title"] for g in
+              APIClient().get("/api/openapi/guide/list?code=ssq&type=notice").json()["data"]]
+    # 重点排最前(即使发布最早)，其余按发布时间倒序
+    assert titles == ["重点", "新普通", "旧普通"]
+
+
 def test_list_type_filter(ssq):
     PlayGuide.objects.create(lottery=ssq, type="intro", title="玩法")
     PlayGuide.objects.create(lottery=ssq, type="rule", title="奖级")

@@ -34,6 +34,8 @@ class GuideListView(APIView):
                 qs = qs.filter(type__in=types)
         if request.query_params.get("important") == "1":
             qs = qs.filter(is_important=True)
+        # 重点(is_important)排最前，再按人工排序、发布时间倒序
+        qs = qs.order_by("-is_important", "sort", "-publish_at")
         return Response(make_response(data=GuideListSerializer(qs, many=True).data))
 
 
