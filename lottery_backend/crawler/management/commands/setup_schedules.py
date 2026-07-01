@@ -5,7 +5,7 @@ from crawler.schedule import dispatch_due_polls
 
 logger = logging.getLogger(__name__)
 
-JOB_ID = "crawler.dispatch_due_polls"
+JOB_ID = "crawler_dispatch_due_polls"
 
 
 class Command(BaseCommand):
