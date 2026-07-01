@@ -1,6 +1,6 @@
 <template>
   <view class="home" :style="themeVars">
-    <view class="header">
+    <view class="header" :style="headerStyle">
       <view class="brand">
         <view class="logo">彩</view>
         <view class="brand-txt">
@@ -70,6 +70,16 @@ const emptyMsg = ref('加载中…')
 const popupVisible = ref(false)
 const popupType = ref('agreement')
 const themeOpen = ref(false)
+
+// 顶部避让微信胶囊按钮：把头部内容整体下移到胶囊下方，主题按钮不再与胶囊重叠
+const headerPadTop = ref(0)
+// #ifdef MP-WEIXIN
+try {
+  const rect = uni.getMenuButtonBoundingClientRect()
+  if (rect && rect.bottom) headerPadTop.value = rect.bottom + 8
+} catch (e) { /* 获取胶囊位置失败则用默认内边距 */ }
+// #endif
+const headerStyle = computed(() => headerPadTop.value ? `padding-top:${headerPadTop.value}px` : '')
 
 // 主题：根节点下发 CSS 变量；图标按主题着色（依赖 themeState.key 触发重算）
 const themeVars = computed(() => { void themeState.key; return themeVarString() })

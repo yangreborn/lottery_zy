@@ -11,20 +11,19 @@
         <Ball v-for="(n, i) in nums" :key="key + i" :value="n" :zone="key" :pad="key === 'digits' ? 1 : 2" />
       </template>
     </view>
-    <view v-if="hasPool(draw.pool_amount)" class="pool">
-      <text class="pool-lb">奖池滚存</text>
-      <text class="pool-val">{{ formatAmount(draw.pool_amount) }} <text class="pool-unit">元</text></text>
+    <!-- 折叠模式（首页）：奖池滚存并入展开区，默认隐藏；非折叠（详情）：直接展示 -->
+    <view v-if="collapsible && (hasPrize || hasPool(draw.pool_amount))"
+          class="prize-toggle" @click="showPrize = !showPrize">
+      <text>{{ showPrize ? '收起奖级' : '展开奖级' }}</text>
+      <text class="caret">{{ showPrize ? '▲' : '▼' }}</text>
     </view>
-    <template v-if="collapsible">
-      <template v-if="hasPrize">
-        <view class="prize-toggle" @click="showPrize = !showPrize">
-          <text>{{ showPrize ? '收起奖级' : '展开奖级' }}</text>
-          <text class="caret">{{ showPrize ? '▲' : '▼' }}</text>
-        </view>
-        <PrizeGrades v-if="showPrize" :grades="draw.prize_grades" />
-      </template>
+    <template v-if="!collapsible || showPrize">
+      <view v-if="hasPool(draw.pool_amount)" class="pool">
+        <text class="pool-lb">奖池滚存</text>
+        <text class="pool-val">{{ formatAmount(draw.pool_amount) }} <text class="pool-unit">元</text></text>
+      </view>
+      <PrizeGrades :grades="draw.prize_grades" />
     </template>
-    <PrizeGrades v-else :grades="draw.prize_grades" />
   </view>
 </template>
 

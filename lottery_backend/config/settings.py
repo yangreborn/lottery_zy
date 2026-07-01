@@ -137,6 +137,12 @@ LOGGING = {
 WECHAT_APPID = os.environ.get("WECHAT_APPID", "")
 WECHAT_SECRET = os.environ.get("WECHAT_SECRET", "")
 
+# 假微信登录开关：仅供开发/未注册主体时在开发者工具走通微信登录 UI。
+# 打开后 /api/user/login/wechat 不再请求微信，直接返回一个固定测试身份。
+# 生产环境务必保持关闭（默认关）。
+WECHAT_MOCK_LOGIN = os.environ.get("WECHAT_MOCK_LOGIN", "0") == "1"
+WECHAT_MOCK_OPENID = os.environ.get("WECHAT_MOCK_OPENID", "mock-wechat-user")
+
 # django-rq：实时开奖抓取任务队列（Redis 仅监听本机）
 RQ_QUEUES = {
     "default": {

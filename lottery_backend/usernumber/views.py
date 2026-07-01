@@ -361,12 +361,17 @@ class WechatLoginView(APIView):
         code = request.data.get("code")
         if not code:
             return Response(make_response(code=1, msg="缺少 code"))
-        if not settings.WECHAT_APPID or not settings.WECHAT_SECRET:
-            return Response(make_response(code=1, msg="微信登录未配置",
-                                          error="后端缺少 WECHAT_APPID/WECHAT_SECRET"))
-        session = wechat_code_to_session(code)
-        if not session:
-            return Response(make_response(code=1, msg="微信登录失败", error="code 无效或已过期"))
+        if settings.WECHAT_MOCK_LOGIN:
+            # 假微信登录开关：跳过 code2session，返回固定测试身份（仅开发用）
+            logger.warning("微信登录走假登录开关，返回固定测试身份 %s", settings.WECHAT_MOCK_OPENID)
+            session = {"openid": settings.WECHAT_MOCK_OPENID, "unionid": ""}
+        else:
+            if not settings.WECHAT_APPID or not settings.WECHAT_SECRET:
+                return Response(make_response(code=1, msg="微信登录未配置",
+                                              error="后端缺少 WECHAT_APPID/WECHAT_SECRET"))
+            session = wechat_code_to_session(code)
+            if not session:
+                return Response(make_response(code=1, msg="微信登录失败", error="code 无效或已过期"))
         openid = session["openid"]
         uid = set_user_session(request, openid)
         user = get_or_create_app_user(uid, openid)
