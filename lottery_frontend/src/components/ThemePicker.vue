@@ -50,7 +50,7 @@ function pick(key) {
 }
 .sheet {
   width: 100%; background: var(--surface); border-radius: 32rpx 32rpx 0 0;
-  padding: 28rpx 28rpx calc(40rpx + env(safe-area-inset-bottom));
+  padding: 28rpx 28rpx calc(120rpx + env(safe-area-inset-bottom));
   border-top: 1rpx solid var(--border);
 }
 .sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12rpx; }

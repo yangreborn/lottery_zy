@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { HOME_MENU, goMenu } from '../src/utils/menu.js'
 
 describe('HOME_MENU', () => {
-  it('7 项且字段完整', () => {
-    expect(HOME_MENU.length).toBe(7)
+  it('6 项且字段完整', () => {
+    expect(HOME_MENU.length).toBe(6)
     for (const m of HOME_MENU) {
       expect(typeof m.key).toBe('string')
       expect(typeof m.title).toBe('string')
@@ -13,12 +13,13 @@ describe('HOME_MENU', () => {
     }
   })
 
-  it('已移除 mine/feedback/purchase/latest，新增 notice', () => {
+  it('已移除 mine/feedback/purchase/latest/guide，保留 notice', () => {
     const keys = HOME_MENU.map((m) => m.key)
     expect(keys).not.toContain('mine')
     expect(keys).not.toContain('feedback')
     expect(keys).not.toContain('purchase')
     expect(keys).not.toContain('latest')
+    expect(keys).not.toContain('guide')
     expect(keys).toContain('notice')
   })
 
@@ -27,8 +28,7 @@ describe('HOME_MENU', () => {
     expect(byKey.stats.nav).toBe('switchTab')
     expect(byKey.picker.nav).toBe('switchTab')
     expect(byKey.history.nav).toBe('navigateTo')
-    expect(byKey.guide.nav).toBe('navigateTo')
-    expect(byKey.guide.title).toBe('玩法说明')
+    expect(byKey.guide).toBeUndefined()
     expect(byKey.notice.nav).toBe('navigateTo')
     expect(byKey.notice.path).toBe('/pages/notice/index')
     expect(byKey.poster.nav).toBe('navigateTo')
