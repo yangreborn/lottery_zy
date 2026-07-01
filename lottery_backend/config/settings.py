@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "django_rq",
     "common",
     "lottery",
     # common / lottery / crawler 在各自任务中追加
@@ -135,6 +136,18 @@ LOGGING = {
 # 微信小程序登录（未注册主体前留空；留空时登录走开发态 mock）
 WECHAT_APPID = os.environ.get("WECHAT_APPID", "")
 WECHAT_SECRET = os.environ.get("WECHAT_SECRET", "")
+
+# django-rq：实时开奖抓取任务队列（Redis 仅监听本机）
+RQ_QUEUES = {
+    "default": {
+        "HOST": os.environ.get("REDIS_HOST", "127.0.0.1"),
+        "PORT": int(os.environ.get("REDIS_PORT", 6379)),
+        "DB": int(os.environ.get("REDIS_DB", 0)),
+        "DEFAULT_TIMEOUT": 300,
+    }
+}
+# 开奖窗口：从 draw_time 起持续抓取的分钟数
+POLL_WINDOW_MINUTES = int(os.environ.get("POLL_WINDOW_MINUTES", 90))
 
 # H5 本地开发跨域；生产同域 nginx，不放开
 if DEBUG:

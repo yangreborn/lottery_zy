@@ -10,6 +10,7 @@ class Lottery(models.Model):
     category = models.CharField("类别", max_length=10, choices=CATEGORY_CHOICES)
     rule_config = models.JSONField("号码规则", default=dict)
     draw_days = models.JSONField("开奖星期", default=list)
+    draw_time = models.CharField("开奖时间", max_length=5, blank=True, default="")  # "HH:MM"，空则不参与智能轮询
     is_active = models.BooleanField("是否上架", default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

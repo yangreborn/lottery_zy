@@ -73,6 +73,7 @@ SEEDS = [
             ],
         },
         "draw_days": [2, 4, 7],
+        "draw_time": "21:15",
     },
     {
         "code": "dlt", "name": "超级大乐透", "category": "体彩",
@@ -92,6 +93,7 @@ SEEDS = [
             ],
         },
         "draw_days": [1, 3, 6],
+        "draw_time": "21:25",
     },
     {
         "code": "kl8", "name": "快乐8", "category": "福彩",
@@ -104,16 +106,19 @@ SEEDS = [
             "prize_rules": KENO_PRIZES,
         },
         "draw_days": [1, 2, 3, 4, 5, 6, 7],
+        "draw_time": "21:30",
     },
     {
         "code": "3d", "name": "福彩3D", "category": "福彩",
         "rule_config": {"play_type": "digit", "zones": [DIGIT_ZONE], "prize_rules": DIGIT_PRIZES},
         "draw_days": [1, 2, 3, 4, 5, 6, 7],
+        "draw_time": "20:30",
     },
     {
         "code": "pl3", "name": "排列三", "category": "体彩",
         "rule_config": {"play_type": "digit", "zones": [DIGIT_ZONE], "prize_rules": DIGIT_PRIZES},
         "draw_days": [1, 2, 3, 4, 5, 6, 7],
+        "draw_time": "20:30",
     },
 ]
 
