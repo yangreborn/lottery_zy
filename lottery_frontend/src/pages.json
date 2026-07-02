@@ -21,7 +21,7 @@
   ],
   "tabBar": {
     "color": "#666",
-    "selectedColor": "#e53935",
+    "selectedColor": "#ce3f26",
     "list": [
       { "pagePath": "pages/home/index", "text": "首页" },
       { "pagePath": "pages/chart/index", "text": "走势图" },
@@ -33,7 +33,7 @@
     "navigationStyle": "custom",
     "navigationBarTextStyle": "white",
     "navigationBarTitleText": "彩票查询",
-    "navigationBarBackgroundColor": "#e53935",
-    "backgroundColor": "#fff0ee"
+    "navigationBarBackgroundColor": "#ce3f26",
+    "backgroundColor": "#f3efe6"
   }
 }
