@@ -1,6 +1,6 @@
 <template>
   <scroll-view scroll-x scroll-y class="matrix">
-    <view class="inner">
+    <view class="inner" :style="innerStyle">
       <view class="mrow header">
         <view class="mcell issue">期号</view>
         <view v-for="n in matrix.numbers" :key="n" class="mcell hcell">{{ pad(n) }}</view>
@@ -17,13 +17,21 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   matrix: { type: Object, default: () => ({ numbers: [], rows: [] }) },
   // ball: 命中显示球、缺失留白；miss: 缺失格显示遗漏期数
   mode: { type: String, default: 'ball' },
   // 传入主题色变量，如 'var(--ball-red)' / 'var(--ball-blue)'
   color: { type: String, default: 'var(--ball-red)' },
 })
+// 显式指定内容宽度：期号列 120rpx + 号码列数 × 56rpx（与 .mcell 宽度一致）。
+// 否则小程序 scroll-view 测不出 inline-block 内 flex 行的真实宽度，横向滚动被截断
+// （如快乐8 80 列只能滚到约 35 列）。
+const CELL = 56
+const ISSUE = 120
+const innerStyle = computed(() => ({ width: ISSUE + (props.matrix.numbers || []).length * CELL + 'rpx' }))
 function pad(n) { return String(n).padStart(2, '0') }
 function shortIssue(s) { return String(s).slice(-5) }
 </script>
